@@ -1,0 +1,3 @@
+[submodule "external/CNN_FPGA"]
+	path = external/CNN_FPGA
+	url = https://github.com/Keelan-Reilly/CNN_FPGA.git
