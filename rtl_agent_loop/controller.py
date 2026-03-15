@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-from dataclasses import asdict
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -199,6 +198,43 @@ class Controller:
         self.store.init_db()
         return [dict(row) for row in self.store.list_candidates()]
 
+    def compute_candidate_score(self, candidate_id: str, run_dir: Path | None = None) -> dict[str, Any]:
+        self.store.init_db()
+        candidate = self.store.get_candidate(candidate_id)
+        if candidate is None:
+            raise ValidationError(f"Candidate {candidate_id!r} is not registered")
+
+        resolved_run_dir = run_dir
+        if resolved_run_dir is None:
+            latest_run = self.store.latest_run(candidate_id)
+            if latest_run is None:
+                raise ValidationError(f"Candidate {candidate_id!r} has no recorded runs")
+            resolved_run_dir = Path(latest_run["run_dir"])
+
+        vivado_result_path = resolved_run_dir / "vivado" / "vivado_result.json"
+        perf_result_path = resolved_run_dir / "verilator_perf" / "verilator_result.json"
+        vivado_payload = load_json(vivado_result_path) if vivado_result_path.exists() else {}
+        perf_payload = load_json(perf_result_path) if perf_result_path.exists() else {}
+
+        stage_failed = any(
+            payload and payload.get("status") != "passed"
+            for payload in (vivado_payload, perf_payload)
+        )
+        score = score_candidate(
+            self.score_weights,
+            vivado_payload.get("metrics"),
+            perf_payload.get("metrics"),
+            stage_failed=stage_failed,
+        )
+        return {
+            "candidate_id": candidate_id,
+            "run_dir": str(resolved_run_dir),
+            "vivado_result_path": str(vivado_result_path) if vivado_result_path.exists() else None,
+            "perf_result_path": str(perf_result_path) if perf_result_path.exists() else None,
+            "stage_failed": stage_failed,
+            "score": score,
+        }
+
     def _run_stage(self, stage_name: str, manifest_path: Path, run_dir: Path, result_relpath: str) -> StageResult:
         script_map = {
             "fast_verify": SCRIPTS_DIR / "fast_verify.sh",
@@ -238,4 +274,3 @@ class Controller:
         vivado_metrics = stage_outputs.get("vivado", {}).get("metrics")
         perf_metrics = stage_outputs.get("verilator_perf", {}).get("metrics")
         return score_candidate(self.score_weights, vivado_metrics, perf_metrics, stage_failed=stage_failed)
-

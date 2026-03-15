@@ -83,7 +83,9 @@ The Python controller owns:
 
 Shell wrappers in [`scripts/`](./scripts) provide a stable contract to external tools. Each wrapper:
 
-- accepts `--candidate-manifest <path> --run-dir <dir>`
+- accepts `--candidate-id <id>` or `--candidate-manifest <path>`
+- accepts `--run-dir <dir>`
+- accepts `--external-repo <path>` to override the default external checkout
 - writes a stage-specific JSON file
 - writes a stage-specific log file
 - exits non-zero on failure
@@ -131,9 +133,34 @@ Tables:
 
 This keeps candidate registration separate from per-run execution history.
 
+## Local Setup
+
+Bootstrap a local worktree and validate the environment:
+
+```bash
+make setup
+```
+
+Override the environment explicitly when needed:
+
+```bash
+RTL_AGENT_LOOP_PYTHON=python3.12 \
+RTL_AGENT_LOOP_EXTERNAL_REPO=/abs/path/to/CNN_FPGA \
+VIVADO_BIN=/tool/Xilinx/2025.2/Vivado/bin/vivado \
+make setup
+```
+
+Expected environment variables:
+
+- `RTL_AGENT_LOOP_PYTHON`: Python interpreter for controller and task commands.
+- `RTL_AGENT_LOOP_EXTERNAL_REPO`: path to the underlying `CNN_FPGA` checkout. Defaults to `external/CNN_FPGA`.
+- `VIVADO_BIN`: Vivado executable used by the external batch flow. Defaults to `vivado`.
+
+The bootstrap script is [`scripts/bootstrap_env.sh`](./scripts/bootstrap_env.sh).
+
 ## Quickstart
 
-Initialize the database:
+Initialize the database directly:
 
 ```bash
 python3 -m rtl_agent_loop init-db
@@ -162,6 +189,56 @@ Run pending candidates:
 
 ```bash
 python3 -m rtl_agent_loop run-pending --limit 5
+```
+
+Compute a candidate score from its latest run:
+
+```bash
+python3 -m rtl_agent_loop score --candidate-id dense2_dw16_fb7_base
+```
+
+## Stable Task Commands
+
+These `make` targets are intended to be the stable automation interface for Codex worktrees.
+
+Validate Python dependencies and initialize the local database:
+
+```bash
+make setup
+```
+
+Run fast verification on a candidate:
+
+```bash
+make verify_candidate CANDIDATE_ID=dense2_dw16_fb7_base
+```
+
+Run Vivado batch for a candidate:
+
+```bash
+make implement_candidate CANDIDATE_ID=dense2_dw16_fb7_base
+```
+
+Run Verilator performance collection for a candidate:
+
+```bash
+make perf_candidate CANDIDATE_ID=dense2_dw16_fb7_base
+```
+
+Compute and print a candidate score:
+
+```bash
+make score_candidate CANDIDATE_ID=dense2_dw16_fb7_base
+```
+
+All task commands also accept explicit path overrides:
+
+```bash
+make verify_candidate \
+  CANDIDATE_ID=dense2_dw16_fb7_base \
+  MANIFEST_PATH=/abs/path/to/candidate_manifest.json \
+  RUN_DIR=/abs/path/to/run_dir \
+  EXTERNAL_REPO=/abs/path/to/CNN_FPGA
 ```
 
 ## Wrapper Workflow

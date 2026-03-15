@@ -26,6 +26,10 @@ def build_parser() -> argparse.ArgumentParser:
     status_parser = subparsers.add_parser("status", help="Show candidate status")
     status_parser.add_argument("--candidate-id", required=True)
 
+    score_parser = subparsers.add_parser("score", help="Compute and print a candidate score")
+    score_parser.add_argument("--candidate-id", required=True)
+    score_parser.add_argument("--run-dir", type=Path)
+
     subparsers.add_parser("list-candidates", help="List registered candidates")
     return parser
 
@@ -54,6 +58,10 @@ def main() -> int:
             return 0
         if args.command == "status":
             result = controller.get_status(args.candidate_id)
+            print(json.dumps(result, indent=2))
+            return 0
+        if args.command == "score":
+            result = controller.compute_candidate_score(args.candidate_id, run_dir=args.run_dir)
             print(json.dumps(result, indent=2))
             return 0
         if args.command == "list-candidates":

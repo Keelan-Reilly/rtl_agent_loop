@@ -3,25 +3,36 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+PYTHON_BIN="${RTL_AGENT_LOOP_PYTHON:-python3}"
 
 CANDIDATE_MANIFEST=""
+CANDIDATE_ID=""
 RUN_DIR=""
+EXTERNAL_REPO=""
 
 usage() {
   cat <<'EOF'
 Usage:
-  scripts/fast_verify.sh --candidate-manifest <path> --run-dir <dir>
+  scripts/fast_verify.sh (--candidate-id <id> | --candidate-manifest <path>) --run-dir <dir> [--external-repo <path>]
 EOF
 }
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
+    --candidate-id)
+      CANDIDATE_ID="$2"
+      shift 2
+      ;;
     --candidate-manifest)
       CANDIDATE_MANIFEST="$2"
       shift 2
       ;;
     --run-dir)
       RUN_DIR="$2"
+      shift 2
+      ;;
+    --external-repo)
+      EXTERNAL_REPO="$2"
       shift 2
       ;;
     -h|--help)
@@ -36,8 +47,14 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-if [[ -z "${CANDIDATE_MANIFEST}" || -z "${RUN_DIR}" ]]; then
-  echo "ERROR: --candidate-manifest and --run-dir are required" >&2
+if [[ -z "${CANDIDATE_ID}" && -z "${CANDIDATE_MANIFEST}" ]]; then
+  echo "ERROR: either --candidate-id or --candidate-manifest is required" >&2
+  usage
+  exit 1
+fi
+
+if [[ -z "${RUN_DIR}" ]]; then
+  echo "ERROR: --run-dir is required" >&2
   usage
   exit 1
 fi
@@ -46,8 +63,9 @@ mkdir -p "${RUN_DIR}/fast_verify"
 LOG_PATH="${RUN_DIR}/fast_verify/fast_verify.log"
 RESULT_PATH="${RUN_DIR}/fast_verify/fast_verify.json"
 
-python3 - "${REPO_ROOT}" "${CANDIDATE_MANIFEST}" "${RUN_DIR}" "${LOG_PATH}" "${RESULT_PATH}" <<'PY'
+"${PYTHON_BIN}" - "${REPO_ROOT}" "${CANDIDATE_ID}" "${CANDIDATE_MANIFEST}" "${RUN_DIR}" "${LOG_PATH}" "${RESULT_PATH}" "${EXTERNAL_REPO}" <<'PY'
 import json
+import os
 import re
 import shutil
 import subprocess
@@ -55,14 +73,21 @@ import sys
 from pathlib import Path
 
 repo_root = Path(sys.argv[1])
-manifest_path = Path(sys.argv[2])
-run_dir = Path(sys.argv[3])
-log_path = Path(sys.argv[4])
-result_path = Path(sys.argv[5])
+candidate_id_arg = sys.argv[2]
+manifest_arg = sys.argv[3]
+run_dir = Path(sys.argv[4])
+log_path = Path(sys.argv[5])
+result_path = Path(sys.argv[6])
+external_repo_arg = sys.argv[7]
 
 config = json.loads((repo_root / "config" / "search_space.json").read_text())
+manifest_path = Path(manifest_arg) if manifest_arg else repo_root / "runs" / candidate_id_arg / "candidate_manifest.json"
 manifest = json.loads(manifest_path.read_text())
-external_root = repo_root / config["external_repo"]["path"]
+external_root = Path(
+    external_repo_arg
+    or os.environ.get("RTL_AGENT_LOOP_EXTERNAL_REPO")
+    or (repo_root / config["external_repo"]["path"])
+)
 makefile_path = external_root / "Makefile"
 top_level_path = external_root / "hdl" / "top_level.sv"
 tb_full_path = external_root / "tb" / "tb_full_pipeline.cpp"
@@ -106,6 +131,7 @@ checks["required_generics_present_in_top_level"] = all(key in top_level_paramete
 
 log_lines = [
     f"candidate_id={manifest.get('candidate_id', '<unknown>')}",
+    f"manifest_path={manifest_path}",
     f"mode={mode}",
     f"external_root={external_root}",
     f"top_level_parameters={sorted(top_level_parameters)}",
