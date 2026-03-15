@@ -15,6 +15,10 @@
       "type": "int",
       "allowed": [6, 7]
     },
+    "DENSE_SPLIT_MAC_PIPELINE": {
+      "type": "int",
+      "allowed": [0, 1]
+    },
     "CONV_VARIANT": {
       "type": "enum",
       "allowed": ["baseline", "pipelined"]

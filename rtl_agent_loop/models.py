@@ -7,6 +7,7 @@ from typing import Any
 
 ALLOWED_CONV_VARIANTS = {"baseline", "pipelined"}
 REQUIRED_PARAMETER_KEYS = ("DENSE_OUT_PAR", "DATA_WIDTH", "FRAC_BITS", "CONV_VARIANT")
+OPTIONAL_PARAMETER_KEYS = ("DENSE_SPLIT_MAC_PIPELINE",)
 
 
 @dataclass(slots=True)

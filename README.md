@@ -380,6 +380,8 @@ Scoring is explicit and config-driven. The controller combines:
 - LUT, FF, DSP, BRAM, and timing metrics from Vivado results
 - penalties for timing failure or missing metrics
 
+For canonical controller use, `score` and `rank-candidates` resolve the latest successful candidate-level `vivado` and `verilator_perf` artifacts, even if those artifacts came from different runs.
+
 Weights live in [`config/score_weights.json`](./config/score_weights.json).
 
 ## TODO Integration Points

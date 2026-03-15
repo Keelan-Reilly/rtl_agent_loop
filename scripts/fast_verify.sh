@@ -115,7 +115,7 @@ top_level_parameters = parse_top_level_parameters(top_level_text)
 candidate_parameters = manifest.get("parameters", {})
 lint_generics = {
     key: candidate_parameters[key]
-    for key in ("DATA_WIDTH", "DENSE_OUT_PAR", "FRAC_BITS")
+    for key in ("DATA_WIDTH", "DENSE_OUT_PAR", "FRAC_BITS", "DENSE_SPLIT_MAC_PIPELINE")
     if key in candidate_parameters
 }
 

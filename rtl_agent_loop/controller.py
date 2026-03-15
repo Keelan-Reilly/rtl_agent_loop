@@ -275,7 +275,11 @@ class Controller:
                     started_at=scoring_started_at,
                     details={"event": "scoring_running"},
                 )
-                scoring_payload = self._score_run(stage_outputs, stage_failed)
+                scoring_payload = self._score_candidate_from_resolved_artifacts(
+                    candidate_id,
+                    preferred_stage_outputs=stage_outputs,
+                    stage_failed=stage_failed,
+                )
                 self.store.record_score(
                     candidate_id=candidate_id,
                     run_id=run_id,
@@ -310,7 +314,11 @@ class Controller:
 
         if stage_failed and scoring_payload is None:
             # Preserve v1 behavior: even failed runs get a score entry when possible.
-            scoring_payload = self._score_run(stage_outputs, stage_failed)
+            scoring_payload = self._score_candidate_from_resolved_artifacts(
+                candidate_id,
+                preferred_stage_outputs=stage_outputs,
+                stage_failed=stage_failed,
+            )
             self.store.record_score(
                 candidate_id=candidate_id,
                 run_id=run_id,
@@ -402,35 +410,42 @@ class Controller:
         if candidate is None:
             raise ValidationError(f"Candidate {candidate_id!r} is not registered")
 
-        resolved_run_dir = run_dir
-        if resolved_run_dir is None:
-            latest_run = self.store.latest_run(candidate_id)
-            if latest_run is None:
-                raise ValidationError(f"Candidate {candidate_id!r} has no recorded runs")
-            resolved_run_dir = Path(latest_run["run_dir"])
+        if run_dir is not None:
+            resolved_run_dir = run_dir
+            vivado_result_path = resolved_run_dir / "vivado" / "vivado_result.json"
+            perf_result_path = resolved_run_dir / "verilator_perf" / "verilator_result.json"
+            vivado_payload = load_json(vivado_result_path) if vivado_result_path.exists() else {}
+            perf_payload = load_json(perf_result_path) if perf_result_path.exists() else {}
+            stage_failed = any(
+                payload and payload.get("status") != "passed"
+                for payload in (vivado_payload, perf_payload)
+            )
+            score = score_candidate(
+                self.score_weights,
+                vivado_payload.get("metrics"),
+                perf_payload.get("metrics"),
+                stage_failed=stage_failed,
+            )
+            return {
+                "candidate_id": candidate_id,
+                "resolution_mode": "explicit_run_dir",
+                "run_dir": str(resolved_run_dir),
+                "vivado_result_path": str(vivado_result_path) if vivado_result_path.exists() else None,
+                "perf_result_path": str(perf_result_path) if perf_result_path.exists() else None,
+                "stage_failed": stage_failed,
+                "score": score,
+            }
 
-        vivado_result_path = resolved_run_dir / "vivado" / "vivado_result.json"
-        perf_result_path = resolved_run_dir / "verilator_perf" / "verilator_result.json"
-        vivado_payload = load_json(vivado_result_path) if vivado_result_path.exists() else {}
-        perf_payload = load_json(perf_result_path) if perf_result_path.exists() else {}
-
-        stage_failed = any(
-            payload and payload.get("status") != "passed"
-            for payload in (vivado_payload, perf_payload)
-        )
-        score = score_candidate(
-            self.score_weights,
-            vivado_payload.get("metrics"),
-            perf_payload.get("metrics"),
-            stage_failed=stage_failed,
-        )
+        resolved_artifacts = self._resolve_candidate_stage_artifacts(candidate_id)
         return {
             "candidate_id": candidate_id,
-            "run_dir": str(resolved_run_dir),
-            "vivado_result_path": str(vivado_result_path) if vivado_result_path.exists() else None,
-            "perf_result_path": str(perf_result_path) if perf_result_path.exists() else None,
-            "stage_failed": stage_failed,
-            "score": score,
+            "resolution_mode": "candidate_latest_successful_stage_artifacts",
+            "run_dir": None,
+            "vivado_result_path": resolved_artifacts["sources"]["vivado"]["result_path"],
+            "perf_result_path": resolved_artifacts["sources"]["verilator_perf"]["result_path"],
+            "stage_failed": False,
+            "score": resolved_artifacts["score"],
+            "artifact_sources": resolved_artifacts["sources"],
         }
 
     def rank_candidates(
@@ -457,8 +472,11 @@ class Controller:
 
         for candidate in candidates:
             candidate_id = candidate["candidate_id"]
-            latest_run = self.store.latest_run(candidate_id)
-            if latest_run is None:
+            resolved_artifacts = self._resolve_candidate_stage_artifacts(candidate_id)
+            vivado_payload = resolved_artifacts["payloads"]["vivado"]
+            perf_payload = resolved_artifacts["payloads"]["verilator_perf"]
+
+            if not vivado_payload and not perf_payload:
                 disqualified.append(
                     {
                         "candidate_id": candidate_id,
@@ -466,16 +484,11 @@ class Controller:
                         "parent_candidate_id": candidate["parent_candidate_id"],
                         "lineage_root_candidate_id": candidate["lineage_root_candidate_id"],
                         "revision_kind": candidate["revision_kind"],
-                        "reason": "No recorded runs are available.",
+                        "reason": "No successful canonical stage artifacts are available.",
                     }
                 )
                 continue
 
-            run_dir = Path(latest_run["run_dir"])
-            vivado_result_path = run_dir / "vivado" / "vivado_result.json"
-            perf_result_path = run_dir / "verilator_perf" / "verilator_result.json"
-            vivado_payload = load_json(vivado_result_path) if vivado_result_path.exists() else {}
-            perf_payload = load_json(perf_result_path) if perf_result_path.exists() else {}
             vivado_metrics = vivado_payload.get("metrics")
             perf_metrics = perf_payload.get("metrics")
 
@@ -492,20 +505,16 @@ class Controller:
                         "parent_candidate_id": candidate["parent_candidate_id"],
                         "lineage_root_candidate_id": candidate["lineage_root_candidate_id"],
                         "revision_kind": candidate["revision_kind"],
-                        "run_dir": str(run_dir),
+                        "run_dir": None,
                         "reason": "Missing measured artifacts required for ranking.",
                         "missing_inputs": missing_inputs,
-                        "vivado_result_path": str(vivado_result_path) if vivado_result_path.exists() else None,
-                        "perf_result_path": str(perf_result_path) if perf_result_path.exists() else None,
+                        "vivado_result_path": resolved_artifacts["sources"]["vivado"]["result_path"],
+                        "perf_result_path": resolved_artifacts["sources"]["verilator_perf"]["result_path"],
                     }
                 )
                 continue
 
-            stage_failed = any(
-                payload and payload.get("status") != "passed"
-                for payload in (vivado_payload, perf_payload)
-            )
-            score = score_candidate(self.score_weights, vivado_metrics, perf_metrics, stage_failed=stage_failed)
+            score = resolved_artifacts["score"]
             wns_value = score["metrics"].get("wns_ns")
             timing_status = "timing_unknown"
             if isinstance(wns_value, (int, float)):
@@ -518,13 +527,14 @@ class Controller:
                     "parent_candidate_id": candidate["parent_candidate_id"],
                     "lineage_root_candidate_id": candidate["lineage_root_candidate_id"],
                     "revision_kind": candidate["revision_kind"],
-                    "run_dir": str(run_dir),
-                    "run_id": latest_run["run_id"],
-                    "attempt_index": latest_run["attempt_index"],
-                    "vivado_result_path": str(vivado_result_path),
-                    "perf_result_path": str(perf_result_path),
+                    "run_dir": None,
+                    "run_id": None,
+                    "attempt_index": None,
+                    "vivado_result_path": resolved_artifacts["sources"]["vivado"]["result_path"],
+                    "perf_result_path": resolved_artifacts["sources"]["verilator_perf"]["result_path"],
+                    "artifact_sources": resolved_artifacts["sources"],
                     "timing_status": timing_status,
-                    "stage_failed": stage_failed,
+                    "stage_failed": False,
                     "score": score,
                 }
             )
@@ -663,6 +673,74 @@ class Controller:
         vivado_metrics = stage_outputs.get("vivado", {}).get("metrics")
         perf_metrics = stage_outputs.get("verilator_perf", {}).get("metrics")
         return score_candidate(self.score_weights, vivado_metrics, perf_metrics, stage_failed=stage_failed)
+
+    def _resolve_candidate_stage_artifacts(
+        self,
+        candidate_id: str,
+        preferred_stage_outputs: dict[str, dict[str, Any]] | None = None,
+    ) -> dict[str, Any]:
+        payloads: dict[str, dict[str, Any]] = {}
+        sources: dict[str, dict[str, Any]] = {}
+        preferred = preferred_stage_outputs or {}
+
+        for stage_name in ("vivado", "verilator_perf"):
+            preferred_payload = preferred.get(stage_name, {})
+            if preferred_payload.get("status") == "passed" and preferred_payload.get("metrics"):
+                payloads[stage_name] = preferred_payload
+                sources[stage_name] = {
+                    "source": "current_run",
+                    "run_id": None,
+                    "result_path": None,
+                }
+                continue
+
+            stage_row = self.store.latest_successful_run_stage(candidate_id, stage_name)
+            if stage_row is None or not stage_row["result_path"]:
+                payloads[stage_name] = {}
+                sources[stage_name] = {
+                    "source": "candidate_latest_successful",
+                    "run_id": None,
+                    "result_path": None,
+                }
+                continue
+
+            result_path = Path(stage_row["result_path"])
+            payloads[stage_name] = load_json(result_path) if result_path.exists() else {}
+            sources[stage_name] = {
+                "source": "candidate_latest_successful",
+                "run_id": stage_row["run_id"],
+                "result_path": str(result_path),
+            }
+
+        score = score_candidate(
+            self.score_weights,
+            payloads["vivado"].get("metrics"),
+            payloads["verilator_perf"].get("metrics"),
+            stage_failed=False,
+        )
+        return {
+            "payloads": payloads,
+            "sources": sources,
+            "score": score,
+        }
+
+    def _score_candidate_from_resolved_artifacts(
+        self,
+        candidate_id: str,
+        *,
+        preferred_stage_outputs: dict[str, dict[str, Any]] | None,
+        stage_failed: bool,
+    ) -> dict[str, Any]:
+        resolved = self._resolve_candidate_stage_artifacts(candidate_id, preferred_stage_outputs=preferred_stage_outputs)
+        score = resolved["score"]
+        if stage_failed:
+            score = score_candidate(
+                self.score_weights,
+                resolved["payloads"]["vivado"].get("metrics"),
+                resolved["payloads"]["verilator_perf"].get("metrics"),
+                stage_failed=True,
+            )
+        return score
 
     def _selected_stage_names(self, start_stage: str, end_stage: str) -> tuple[str, ...]:
         start_index = STAGE_ORDER[start_stage]

@@ -523,6 +523,21 @@ class SQLiteStore:
                 (run_id,),
             ).fetchall()
 
+    def latest_successful_run_stage(self, candidate_id: str, stage_name: str) -> sqlite3.Row | None:
+        with self.connect() as conn:
+            return conn.execute(
+                """
+                SELECT * FROM run_stages
+                WHERE candidate_id = ?
+                  AND stage_name = ?
+                  AND status = 'passed'
+                  AND result_path IS NOT NULL
+                ORDER BY COALESCE(ended_at, '') DESC, run_id DESC
+                LIMIT 1
+                """,
+                (candidate_id, stage_name),
+            ).fetchone()
+
     def state_history(self, candidate_id: str) -> list[sqlite3.Row]:
         with self.connect() as conn:
             return conn.execute(

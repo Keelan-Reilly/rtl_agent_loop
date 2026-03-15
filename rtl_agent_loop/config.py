@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from .models import ALLOWED_CONV_VARIANTS, CandidateManifest, REQUIRED_PARAMETER_KEYS
+from .models import ALLOWED_CONV_VARIANTS, CandidateManifest, OPTIONAL_PARAMETER_KEYS, REQUIRED_PARAMETER_KEYS
 from .paths import DEFAULT_SCORE_WEIGHTS_PATH, DEFAULT_SEARCH_SPACE_PATH
 
 
@@ -42,7 +42,8 @@ def validate_manifest(manifest_data: dict[str, Any], manifest_path: Path, search
     if missing_params:
         raise ValidationError(f"Manifest missing required parameters: {', '.join(missing_params)}")
 
-    unsupported = sorted(set(parameters) - set(REQUIRED_PARAMETER_KEYS))
+    allowed_parameter_keys = set(REQUIRED_PARAMETER_KEYS) | set(OPTIONAL_PARAMETER_KEYS)
+    unsupported = sorted(set(parameters) - allowed_parameter_keys)
     if unsupported:
         raise ValidationError(f"Unsupported parameters in manifest: {', '.join(unsupported)}")
 
@@ -54,6 +55,14 @@ def validate_manifest(manifest_data: dict[str, Any], manifest_path: Path, search
         allowed = search_space_def[key]["allowed"]
         if value not in allowed:
             raise ValidationError(f"{key}={value} is outside allowed set {allowed}")
+
+    if "DENSE_SPLIT_MAC_PIPELINE" in parameters:
+        value = parameters["DENSE_SPLIT_MAC_PIPELINE"]
+        if not isinstance(value, int):
+            raise ValidationError("DENSE_SPLIT_MAC_PIPELINE must be an integer")
+        allowed = search_space_def["DENSE_SPLIT_MAC_PIPELINE"]["allowed"]
+        if value not in allowed:
+            raise ValidationError(f"DENSE_SPLIT_MAC_PIPELINE={value} is outside allowed set {allowed}")
 
     conv_variant = parameters["CONV_VARIANT"]
     if conv_variant not in ALLOWED_CONV_VARIANTS:
@@ -84,4 +93,3 @@ def validate_manifest(manifest_data: dict[str, Any], manifest_path: Path, search
         manifest_path=manifest_path,
         raw=dict(manifest_data),
     )
-
