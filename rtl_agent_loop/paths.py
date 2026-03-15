@@ -12,5 +12,5 @@ RUNS_DIR = REPO_ROOT / "runs"
 LOGS_DIR = REPO_ROOT / "logs"
 VAR_DIR = REPO_ROOT / "var"
 DB_PATH = VAR_DIR / "rtl_agent_loop.db"
+BEST_CANDIDATES_PATH = VAR_DIR / "best_candidates.json"
 SCRIPTS_DIR = REPO_ROOT / "scripts"
-

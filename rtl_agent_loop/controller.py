@@ -7,7 +7,7 @@ from typing import Any
 
 from .config import ValidationError, load_json, load_score_weights, load_search_space, validate_manifest
 from .models import CandidateManifest, StageResult
-from .paths import RUNS_DIR, SCRIPTS_DIR
+from .paths import BEST_CANDIDATES_PATH, DEFAULT_SCORE_WEIGHTS_PATH, RUNS_DIR, SCRIPTS_DIR, VAR_DIR
 from .scoring import score_candidate
 from .sqlite_store import SQLiteStore
 from .state_machine import REGISTERED, SCORED, STAGES
@@ -235,6 +235,142 @@ class Controller:
             "score": score,
         }
 
+    def rank_candidates(self, markdown_out: Path | None = None) -> dict[str, Any]:
+        self.store.init_db()
+        ranked: list[dict[str, Any]] = []
+        disqualified: list[dict[str, Any]] = []
+
+        for candidate in self.store.list_candidates():
+            candidate_id = candidate["candidate_id"]
+            latest_run = self.store.latest_run(candidate_id)
+            if latest_run is None:
+                disqualified.append(
+                    {
+                        "candidate_id": candidate_id,
+                        "current_state": candidate["current_state"],
+                        "reason": "No recorded runs are available.",
+                    }
+                )
+                continue
+
+            run_dir = Path(latest_run["run_dir"])
+            vivado_result_path = run_dir / "vivado" / "vivado_result.json"
+            perf_result_path = run_dir / "verilator_perf" / "verilator_result.json"
+            vivado_payload = load_json(vivado_result_path) if vivado_result_path.exists() else {}
+            perf_payload = load_json(perf_result_path) if perf_result_path.exists() else {}
+            vivado_metrics = vivado_payload.get("metrics")
+            perf_metrics = perf_payload.get("metrics")
+
+            if not vivado_metrics or not perf_metrics:
+                missing_inputs: list[str] = []
+                if not vivado_metrics:
+                    missing_inputs.append("implementation_metrics")
+                if not perf_metrics:
+                    missing_inputs.append("performance_metrics")
+                disqualified.append(
+                    {
+                        "candidate_id": candidate_id,
+                        "current_state": candidate["current_state"],
+                        "run_dir": str(run_dir),
+                        "reason": "Missing measured artifacts required for ranking.",
+                        "missing_inputs": missing_inputs,
+                        "vivado_result_path": str(vivado_result_path) if vivado_result_path.exists() else None,
+                        "perf_result_path": str(perf_result_path) if perf_result_path.exists() else None,
+                    }
+                )
+                continue
+
+            stage_failed = any(
+                payload and payload.get("status") != "passed"
+                for payload in (vivado_payload, perf_payload)
+            )
+            score = score_candidate(
+                self.score_weights,
+                vivado_metrics,
+                perf_metrics,
+                stage_failed=stage_failed,
+            )
+            wns_value = score["metrics"].get("wns_ns")
+            timing_status = "timing_unknown"
+            if isinstance(wns_value, (int, float)):
+                timing_status = "timing_clean" if float(wns_value) >= 0.0 else "timing_failed"
+
+            ranked.append(
+                {
+                    "candidate_id": candidate_id,
+                    "current_state": candidate["current_state"],
+                    "run_dir": str(run_dir),
+                    "run_id": latest_run["run_id"],
+                    "attempt_index": latest_run["attempt_index"],
+                    "vivado_result_path": str(vivado_result_path),
+                    "perf_result_path": str(perf_result_path),
+                    "timing_status": timing_status,
+                    "stage_failed": stage_failed,
+                    "score": score,
+                }
+            )
+
+        ranked.sort(key=lambda item: item["score"]["total_score"], reverse=True)
+        for index, item in enumerate(ranked, start=1):
+            item["rank"] = index
+
+        best_numeric_score = ranked[0]["candidate_id"] if ranked else None
+        best_timing_clean = next(
+            (item["candidate_id"] for item in ranked if item["timing_status"] == "timing_clean"),
+            None,
+        )
+
+        report = {
+            "generated_at": utc_now(),
+            "score_weights_path": str(DEFAULT_SCORE_WEIGHTS_PATH),
+            "current_best_candidates": self.get_best_candidates(),
+            "best_under_numeric_score": best_numeric_score,
+            "best_timing_clean": best_timing_clean,
+            "ranked_candidates": ranked,
+            "disqualified_candidates": disqualified,
+            "markdown_report_path": None,
+        }
+
+        if markdown_out is not None:
+            markdown_out.parent.mkdir(parents=True, exist_ok=True)
+            markdown_out.write_text(self._render_ranking_markdown(report))
+            report["markdown_report_path"] = str(markdown_out)
+
+        return report
+
+    def set_best_candidates(
+        self,
+        best_numeric_score: str,
+        best_timing_clean: str,
+    ) -> dict[str, Any]:
+        self.store.init_db()
+        for candidate_id in (best_numeric_score, best_timing_clean):
+            if self.store.get_candidate(candidate_id) is None:
+                raise ValidationError(f"Candidate {candidate_id!r} is not registered")
+
+        payload = {
+            "updated_at": utc_now(),
+            "best_numeric_score": {
+                "candidate_id": best_numeric_score,
+            },
+            "best_timing_clean": {
+                "candidate_id": best_timing_clean,
+            },
+        }
+        VAR_DIR.mkdir(parents=True, exist_ok=True)
+        BEST_CANDIDATES_PATH.write_text(json.dumps(payload, indent=2) + "\n")
+        return payload
+
+    def get_best_candidates(self) -> dict[str, Any]:
+        if not BEST_CANDIDATES_PATH.exists():
+            return {
+                "updated_at": None,
+                "best_numeric_score": None,
+                "best_timing_clean": None,
+                "note": "No best-candidate pointer has been recorded yet.",
+            }
+        return load_json(BEST_CANDIDATES_PATH)
+
     def _run_stage(self, stage_name: str, manifest_path: Path, run_dir: Path, result_relpath: str) -> StageResult:
         script_map = {
             "fast_verify": SCRIPTS_DIR / "fast_verify.sh",
@@ -274,3 +410,47 @@ class Controller:
         vivado_metrics = stage_outputs.get("vivado", {}).get("metrics")
         perf_metrics = stage_outputs.get("verilator_perf", {}).get("metrics")
         return score_candidate(self.score_weights, vivado_metrics, perf_metrics, stage_failed=stage_failed)
+
+    def _render_ranking_markdown(self, report: dict[str, Any]) -> str:
+        lines = [
+            "# Candidate Ranking",
+            "",
+            f"Generated at: `{report['generated_at']}`",
+            "",
+            f"- Best under numeric score: `{report['best_under_numeric_score']}`",
+            f"- Best timing-clean candidate: `{report['best_timing_clean']}`",
+            "",
+            "| Rank | Candidate | Timing | Score | WNS (ns) | Latency (cycles) | LUT | DSP |",
+            "| --- | --- | --- | ---: | ---: | ---: | ---: | ---: |",
+        ]
+
+        for item in report["ranked_candidates"]:
+            metrics = item["score"]["metrics"]
+            lines.append(
+                "| {rank} | `{candidate}` | {timing} | {score:.3f} | {wns} | {latency} | {lut} | {dsp} |".format(
+                    rank=item["rank"],
+                    candidate=item["candidate_id"],
+                    timing=item["timing_status"],
+                    score=item["score"]["total_score"],
+                    wns=metrics.get("wns_ns", "N/A"),
+                    latency=metrics.get("latency_cycles", "N/A"),
+                    lut=metrics.get("lut", "N/A"),
+                    dsp=metrics.get("dsp", "N/A"),
+                )
+            )
+
+        if report["disqualified_candidates"]:
+            lines.extend(
+                [
+                    "",
+                    "## Disqualified",
+                    "",
+                    "| Candidate | Reason |",
+                    "| --- | --- |",
+                ]
+            )
+            for item in report["disqualified_candidates"]:
+                lines.append(f"| `{item['candidate_id']}` | {item['reason']} |")
+
+        lines.append("")
+        return "\n".join(lines)

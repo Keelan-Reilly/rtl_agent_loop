@@ -79,7 +79,12 @@ result_path = Path(sys.argv[6])
 external_repo_arg = sys.argv[7]
 
 config = json.loads((repo_root / "config" / "search_space.json").read_text())
-manifest_path = Path(manifest_arg) if manifest_arg else repo_root / "runs" / candidate_id_arg / "candidate_manifest.json"
+if manifest_arg:
+    manifest_path = Path(manifest_arg)
+else:
+    source_manifest = repo_root / "candidates" / f"{candidate_id_arg}.json"
+    copied_manifest = repo_root / "runs" / candidate_id_arg / "candidate_manifest.json"
+    manifest_path = source_manifest if source_manifest.exists() else copied_manifest
 manifest = json.loads(manifest_path.read_text())
 external_root = Path(
     external_repo_arg

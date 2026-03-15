@@ -1,6 +1,5 @@
 {
   "weights": {
-    "throughput_inferences_per_sec": 1.0,
     "latency_cycles": -0.001,
     "lut": -0.01,
     "ff": -0.002,
@@ -11,8 +10,7 @@
   "penalties": {
     "missing_metric": -5.0,
     "timing_missing": -10.0,
-    "timing_negative_wns": -25.0,
+    "timing_negative_wns": -75.0,
     "stage_failed": -100.0
   }
 }
-

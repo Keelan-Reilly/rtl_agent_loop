@@ -1,0 +1,16 @@
+{
+  "candidate_id": "dense2_dw16_fb7_base",
+  "source": "manual",
+  "created_at": "2026-03-15T00:00:00Z",
+  "parameters": {
+    "DENSE_OUT_PAR": 2,
+    "DATA_WIDTH": 16,
+    "FRAC_BITS": 7,
+    "CONV_VARIANT": "baseline"
+  },
+  "notes": "Baseline architecture point for controller bring-up.",
+  "tags": [
+    "baseline",
+    "manual"
+  ]
+}

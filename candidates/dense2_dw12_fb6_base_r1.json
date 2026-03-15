@@ -1,0 +1,19 @@
+{
+  "candidate_id": "dense2_dw12_fb6_base_r1",
+  "source": "timing_doctor",
+  "created_at": "2026-03-15T00:00:00Z",
+  "parameters": {
+    "DENSE_OUT_PAR": 2,
+    "DATA_WIDTH": 12,
+    "FRAC_BITS": 6,
+    "CONV_VARIANT": "baseline"
+  },
+  "notes": "Repair hypothesis: the dense-stage timing cliff at DENSE_OUT_PAR=2 is likely caused by the multiply-plus-accumulate path in dense.sv, where each lane computes in_q * w_reg and adds it into acc in the same cycle. This repair splits that work into a registered product stage followed by a separate accumulate stage, preserving top-level behavior while shortening the per-cycle arithmetic path. Expected latency impact: dense layer latency increases by roughly one cycle per input tap because each MAC now uses two FSM stages instead of one. Expected LUT/FF/DSP/BRAM impact: FF should increase modestly for the new product registers; LUT and DSP should stay near the current dense2_dw12_fb6_base point; BRAM should be unchanged. Expected timing impact: improved WNS margin at DENSE_OUT_PAR=2 due to reduced DSP-plus-adder depth in a single cycle.",
+  "tags": [
+    "timing_doctor",
+    "parameter_only",
+    "rtl_local_fix",
+    "dense_mac_split",
+    "baseline"
+  ]
+}

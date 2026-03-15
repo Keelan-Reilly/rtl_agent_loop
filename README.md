@@ -32,10 +32,27 @@ Execution is single-process and fail-fast. Each candidate moves through:
 7. `perf_passed` or `perf_failed`
 8. `scored`
 
+## First Case Study
+
+The current measured results already show a useful timing/performance boundary for the dense stage search space.
+
+| candidate_id | DENSE_OUT_PAR | DATA_WIDTH | FRAC_BITS | LUT | FF | DSP | BRAM | WNS (ns) | est. Fmax (MHz) | latency_cycles | throughput_inf_per_sec |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `dense1_dw12_fb6_base` | 1 | 12 | 6 | 2654 | 907 | 5 | 5.0 | 0.076 | 100.766 | 465732 | 214.716 |
+| `dense2_dw12_fb6_base` | 2 | 12 | 6 | 4397 | 981 | 7 | 5 | -1.431 | 87.481 | 434367 | 230.220 |
+| `dense2_dw12_fb6_base_r1` | 2 | 12 | 6 | 4418 | 955 | 9 | 5 | -1.805 | 84.710 | 442207 | 226.138 |
+| `dense2_dw16_fb7_base` | 2 | 16 | 7 | 4467 | 1093 | 7 | 6.0 | -1.146 | 89.718 | N/A | N/A |
+
+- `dense1_dw12_fb6_base` is the best timing-clean baseline. It is the only measured point here with positive post-route slack at the 100 MHz target, and it also has the smallest measured area footprint.
+- `dense2_dw12_fb6_base` is the best raw performance point in the measured set. It improves latency and throughput over `dense1_dw12_fb6_base`, but it is timing-limited with `WNS = -1.431 ns`.
+- `dense2_dw12_fb6_base_r1` was a localized dense MAC split repair attempt. It was not successful: timing worsened, latency increased, throughput dropped, and DSP usage increased relative to the unrepaired `dense2_dw12_fb6_base`.
+- This is already a useful outcome for the framework: it separates deployable points from attractive-but-non-closing points, preserves failed repair attempts as evidence, and makes the tradeoff visible from measured artifacts instead of intuition.
+
 ## Repository Layout
 
 ```text
 .
+├─ candidates/
 ├─ config/
 │  ├─ score_weights.json
 │  └─ search_space.json
@@ -118,6 +135,27 @@ Candidate manifests are JSON files with this shape:
 
 See [`schemas/candidate_manifest.example.json`](./schemas/candidate_manifest.example.json).
 
+Source candidate manifests should live under [`candidates/`](./candidates) and use the naming convention:
+
+- `candidates/<candidate_id>.json`
+
+Example:
+
+- [`dense1_dw12_fb6_base.json`](./candidates/dense1_dw12_fb6_base.json)
+
+## Manifest And Artifact Conventions
+
+There are three different manifest/artifact locations in the v1 flow:
+
+- Source manifests:
+  - human-authored candidate definitions under `candidates/<candidate_id>.json`
+- Copied manifests:
+  - immutable copies stored under `runs/<candidate_id>/candidate_manifest.json` at registration time
+- Run artifacts:
+  - stage outputs, logs, and parsed metrics under a run directory such as `runs/<candidate_id>/attempt_0001/`
+
+Temporary external run directories under `/tmp/...` are still supported for bounded local execution and experimentation, but repo-managed `runs/` paths are preferred for long-term project presentation and inspection.
+
 ## SQLite Layout
 
 The controller stores state in `var/rtl_agent_loop.db`.
@@ -169,7 +207,7 @@ python3 -m rtl_agent_loop init-db
 Register a candidate:
 
 ```bash
-python3 -m rtl_agent_loop register --manifest schemas/candidate_manifest.example.json
+python3 -m rtl_agent_loop register --manifest candidates/dense1_dw12_fb6_base.json
 ```
 
 Inspect candidates:
@@ -195,6 +233,23 @@ Compute a candidate score from its latest run:
 
 ```bash
 python3 -m rtl_agent_loop score --candidate-id dense2_dw16_fb7_base
+```
+
+Rank all candidates that have measured implementation and performance artifacts:
+
+```bash
+python3 -m rtl_agent_loop rank-candidates
+python3 -m rtl_agent_loop rank-candidates --markdown-out docs/latest_ranking.md
+```
+
+Record and inspect the current preferred candidates:
+
+```bash
+python3 -m rtl_agent_loop set-best-candidates \
+  --best-numeric-score dense2_dw12_fb6_base \
+  --best-timing-clean dense1_dw12_fb6_base
+
+python3 -m rtl_agent_loop show-best-candidates
 ```
 
 ## Stable Task Commands
@@ -231,6 +286,13 @@ Compute and print a candidate score:
 make score_candidate CANDIDATE_ID=dense2_dw16_fb7_base
 ```
 
+The current preferred-candidate pointer is stored in `var/best_candidates.json` and can distinguish:
+
+- best candidate under the configured numeric score
+- best timing-clean candidate
+
+`rank-candidates` recomputes scores from the latest measured artifacts for each registered candidate, ranks only candidates with both implementation and performance data, and marks each ranked entry as `timing_clean` or `timing_failed`.
+
 All task commands also accept explicit path overrides:
 
 ```bash
@@ -240,6 +302,11 @@ make verify_candidate \
   RUN_DIR=/abs/path/to/run_dir \
   EXTERNAL_REPO=/abs/path/to/CNN_FPGA
 ```
+
+If `MANIFEST_PATH` is not provided, `make` now prefers:
+
+1. `candidates/<candidate_id>.json`
+2. `runs/<candidate_id>/candidate_manifest.json` as a backward-compatible fallback
 
 ## Wrapper Workflow
 

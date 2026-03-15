@@ -1,0 +1,19 @@
+{
+  "candidate_id": "dense1_dw12_fb6_base",
+  "source": "explorer",
+  "created_at": "2026-03-15T00:00:00Z",
+  "parameters": {
+    "DENSE_OUT_PAR": 1,
+    "DATA_WIDTH": 12,
+    "FRAC_BITS": 6,
+    "CONV_VARIANT": "baseline"
+  },
+  "notes": "Hypothesis: a conservative baseline point with minimum allowed dense parallelism and lower precision can improve weighted score by materially reducing LUT/DSP/FF pressure and improving timing slack relative to dense2_dw16_fb7_base, while avoiding the current uncertainty around the pipelined conv variant. Expected latency impact: slower dense stage than dense2/dense5 candidates, so inference latency should increase versus higher DENSE_OUT_PAR points. Expected LUT/DSP/BRAM impact: LUT, FF, and DSP use should decrease from the 16-bit baseline; BRAM is expected to stay similar or unchanged because tensor sizes are not changing. Expected timing impact: best chance among current legal points to reduce critical-path pressure and move WNS toward non-negative slack at the same 100MHz target.",
+  "tags": [
+    "explorer",
+    "parameter_only",
+    "timing_recovery",
+    "resource_reduction",
+    "baseline"
+  ]
+}

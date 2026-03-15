@@ -30,6 +30,15 @@ def build_parser() -> argparse.ArgumentParser:
     score_parser.add_argument("--candidate-id", required=True)
     score_parser.add_argument("--run-dir", type=Path)
 
+    rank_parser = subparsers.add_parser("rank-candidates", help="Rank candidates with measured implementation and performance data")
+    rank_parser.add_argument("--markdown-out", type=Path)
+
+    set_best_parser = subparsers.add_parser("set-best-candidates", help="Record the current preferred candidates")
+    set_best_parser.add_argument("--best-numeric-score", required=True)
+    set_best_parser.add_argument("--best-timing-clean", required=True)
+
+    subparsers.add_parser("show-best-candidates", help="Show the current best-candidate pointer")
+
     subparsers.add_parser("list-candidates", help="List registered candidates")
     return parser
 
@@ -62,6 +71,21 @@ def main() -> int:
             return 0
         if args.command == "score":
             result = controller.compute_candidate_score(args.candidate_id, run_dir=args.run_dir)
+            print(json.dumps(result, indent=2))
+            return 0
+        if args.command == "rank-candidates":
+            result = controller.rank_candidates(markdown_out=args.markdown_out)
+            print(json.dumps(result, indent=2))
+            return 0
+        if args.command == "set-best-candidates":
+            result = controller.set_best_candidates(
+                best_numeric_score=args.best_numeric_score,
+                best_timing_clean=args.best_timing_clean,
+            )
+            print(json.dumps(result, indent=2))
+            return 0
+        if args.command == "show-best-candidates":
+            result = controller.get_best_candidates()
             print(json.dumps(result, indent=2))
             return 0
         if args.command == "list-candidates":

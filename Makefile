@@ -6,7 +6,11 @@ RUN_DIR ?=
 VIVADO_BIN ?= vivado
 
 ifeq ($(strip $(MANIFEST_PATH)),)
+ifneq ($(wildcard $(CURDIR)/candidates/$(CANDIDATE_ID).json),)
+RESOLVED_MANIFEST_PATH = $(CURDIR)/candidates/$(CANDIDATE_ID).json
+else
 RESOLVED_MANIFEST_PATH = $(CURDIR)/runs/$(CANDIDATE_ID)/candidate_manifest.json
+endif
 else
 RESOLVED_MANIFEST_PATH = $(MANIFEST_PATH)
 endif

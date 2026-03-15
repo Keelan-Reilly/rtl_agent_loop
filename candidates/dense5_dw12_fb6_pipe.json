@@ -1,0 +1,16 @@
+{
+  "candidate_id": "dense5_dw12_fb6_pipe",
+  "source": "manual",
+  "created_at": "2026-03-15T00:00:00Z",
+  "parameters": {
+    "DENSE_OUT_PAR": 5,
+    "DATA_WIDTH": 12,
+    "FRAC_BITS": 6,
+    "CONV_VARIANT": "pipelined"
+  },
+  "notes": "Fast-fail verification candidate.",
+  "tags": [
+    "baseline",
+    "manual"
+  ]
+}
