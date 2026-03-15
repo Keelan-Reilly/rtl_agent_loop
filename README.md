@@ -71,6 +71,7 @@ The current measured results already show a useful timing/performance boundary f
 ├─ docs/
 │  └─ integration_notes.md
 ├─ logs/
+├─ prompts/
 ├─ runs/
 ├─ schemas/
 │  └─ candidate_manifest.example.json
@@ -400,3 +401,5 @@ When you add agents later, they should:
 - use controller outputs as grounded evidence
 
 That keeps the orchestration layer stable whether an experiment is launched by a script, a human, or an agent.
+
+For disciplined parallel worktree usage, see [worktree_operations.md](./docs/worktree_operations.md) and the role prompts under [`prompts/`](./prompts).

@@ -22,6 +22,7 @@ Treat the following as authoritative:
 
 - `Makefile`: stable automation interface for worktrees and agents
 - `candidates/`: source candidate manifests
+- `prompts/`: role prompts for disciplined multi-agent work
 - `scripts/bootstrap_env.sh`: local environment/bootstrap contract
 - `scripts/fast_verify.sh`: fast verification contract
 - `scripts/run_vivado_batch.sh`: Vivado batch contract
@@ -138,9 +139,31 @@ The following actions are forbidden unless explicitly requested by the project o
 - inventing unimplemented pipeline stages, agent loops, schedulers, or mutation workflows
 - bypassing `config/search_space.json` validation for v1 parameters
 - changing candidate IDs after a candidate has been registered
+- mutating an existing source manifest in `candidates/` to represent a repaired or revised design
+- bypassing lineage when a repaired candidate is derived from an existing candidate
+- reusing another agent's `RUN_DIR`, controller run directory, or manual stage directory
 - force-passing validation by suppressing non-zero wrapper exit codes
 
 Do not represent incomplete or speculative integration as complete.
+
+## Parallel Worktrees
+
+For parallel Codex or human worktrees, use these operational rules:
+
+- One worktree owns one task at a time.
+- Canonical controller-managed runs are created only through:
+  - `python -m rtl_agent_loop run --candidate-id <id> ... --worktree-ref <label>`
+- Controller-managed runs own:
+  - `runs/<candidate_id>/attempt_<n>/`
+- Stable `make` stage commands are allowed for bounded manual checks, but in parallel use they must always set an explicit unique `RUN_DIR`.
+- Do not rely on the default `runs/<candidate_id>/manual_verify`, `manual_implement`, or `manual_perf` paths in parallel work. Those defaults are not safe for concurrent agents.
+- Recommended manual stage `RUN_DIR` pattern:
+  - `/tmp/rtl_agent_loop/<worktree>/<candidate_id>/<stage>`
+- If you use `/tmp/...` artifacts for a decision, say so explicitly in the handoff and do not present them as canonical controller-owned runs.
+- If a repaired design is created from an existing candidate, register it as a new child candidate with:
+  - `register --parent-candidate-id ... --revision-kind ...`
+  - or attach known historical lineage with `link-lineage`
+- Never overwrite another candidate’s manifest or artifacts to “upgrade” it in place.
 
 ## Required Validation Before Handoff
 
