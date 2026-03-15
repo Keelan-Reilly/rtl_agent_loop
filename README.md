@@ -8,9 +8,21 @@ The baseline architecture is useful without AI agents:
 - run explicit verification and implementation gates
 - collect artifacts and metrics
 - score and rank candidates
+- track candidate lineage and per-run stage ownership
 - log experiments and state transitions in SQLite
 
 Future agent workflows can sit on top of this controller by generating manifests, proposing new candidates, or interpreting results. The controller remains the source of truth for execution.
+
+## v2 Orchestrator Extensions
+
+The current controller extends the original v1 flow with a minimal v2 orchestration layer:
+
+- revised designs are modeled as child candidates linked to a parent candidate
+- every controller invocation creates a fresh owned run under `runs/<candidate_id>/attempt_XXXX/`
+- per-run stage status is tracked explicitly in SQLite through `run_stages`
+- partial stage execution is supported without mutating older run artifacts
+
+This remains a local deterministic orchestrator. It does not add a scheduler, dashboard, or distributed execution model.
 
 ## v1 Scope
 
@@ -165,11 +177,12 @@ Tables:
 - `candidates`
 - `candidate_params`
 - `runs`
+- `run_stages`
 - `state_transitions`
 - `artifacts`
 - `scores`
 
-This keeps candidate registration separate from per-run execution history.
+`candidates` now also stores lineage metadata such as `parent_candidate_id`, `lineage_root_candidate_id`, and `revision_kind`. `run_stages` is the authoritative per-run stage snapshot; `candidates.current_state` remains a backward-compatible summary of the latest run.
 
 ## Local Setup
 
@@ -210,6 +223,15 @@ Register a candidate:
 python3 -m rtl_agent_loop register --manifest candidates/dense1_dw12_fb6_base.json
 ```
 
+Register a child candidate revision:
+
+```bash
+python3 -m rtl_agent_loop register \
+  --manifest candidates/dense2_dw12_fb6_base_r1.json \
+  --parent-candidate-id dense2_dw12_fb6_base \
+  --revision-kind timing_repair
+```
+
 Inspect candidates:
 
 ```bash
@@ -217,10 +239,27 @@ python3 -m rtl_agent_loop list-candidates
 python3 -m rtl_agent_loop status --candidate-id dense2_dw16_fb7_base
 ```
 
+Inspect lineage and run-stage history:
+
+```bash
+python3 -m rtl_agent_loop status --candidate-id dense2_dw12_fb6_base_r1 --lineage --runs
+python3 -m rtl_agent_loop list-candidates --lineage-root dense2_dw12_fb6_base
+```
+
 Run one candidate:
 
 ```bash
 python3 -m rtl_agent_loop run --candidate-id dense2_dw16_fb7_base
+```
+
+Run only one stage range as a fresh owned run:
+
+```bash
+python3 -m rtl_agent_loop run \
+  --candidate-id dense1_dw12_fb6_base \
+  --start-stage fast_verify \
+  --end-stage fast_verify \
+  --worktree-ref local_debug
 ```
 
 Run pending candidates:
@@ -240,6 +279,16 @@ Rank all candidates that have measured implementation and performance artifacts:
 ```bash
 python3 -m rtl_agent_loop rank-candidates
 python3 -m rtl_agent_loop rank-candidates --markdown-out docs/latest_ranking.md
+python3 -m rtl_agent_loop rank-candidates --lineage-root dense2_dw12_fb6_base --leaf-only
+```
+
+Attach known historical lineage without re-registering:
+
+```bash
+python3 -m rtl_agent_loop link-lineage \
+  --parent-candidate-id dense2_dw12_fb6_base \
+  --child-candidate-id dense2_dw12_fb6_base_r1 \
+  --revision-kind timing_repair
 ```
 
 Record and inspect the current preferred candidates:

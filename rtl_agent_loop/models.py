@@ -32,6 +32,11 @@ class CandidateRecord:
     notes: str
     tags_json: str
     manifest_json: str
+    parent_candidate_id: str | None = None
+    lineage_root_candidate_id: str | None = None
+    revision_kind: str | None = None
+    derived_from_run_id: int | None = None
+    supersedes_candidate_id: str | None = None
 
 
 @dataclass(slots=True)
@@ -40,4 +45,3 @@ class StageResult:
     passed: bool
     result_path: Path
     payload: dict[str, Any]
-

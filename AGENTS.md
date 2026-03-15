@@ -194,13 +194,14 @@ Supported direct wrapper arguments:
 Supported controller CLI subcommands:
 
 - `init-db`
-- `register --manifest <path>`
-- `run --candidate-id <id>`
+- `register --manifest <path> [--parent-candidate-id <id>] [--revision-kind <kind>]`
+- `run --candidate-id <id> [--start-stage <stage>] [--end-stage <stage>] [--worktree-ref <label>]`
 - `run-pending --limit <n>`
-- `status --candidate-id <id>`
+- `status --candidate-id <id> [--lineage] [--runs]`
 - `score --candidate-id <id> [--run-dir <dir>]`
-- `rank-candidates [--markdown-out <path>]`
-- `list-candidates`
+- `rank-candidates [--markdown-out <path>] [--lineage-root <id>] [--latest-only-per-root] [--leaf-only]`
+- `list-candidates [--parent-candidate-id <id>] [--lineage-root <id>] [--leaf-only]`
+- `link-lineage --parent-candidate-id <id> --child-candidate-id <id> --revision-kind <kind>`
 
 Do not invent additional public commands without updating all source-of-truth references.
 
@@ -214,6 +215,7 @@ Use these conventions consistently:
 - docs: `snake_case.md` except top-level `README.md` and `AGENTS.md`
 - source candidate manifests: `candidates/<candidate_id>.json`
 - copied registered manifests: `runs/<candidate_id>/candidate_manifest.json`
+- controller-owned run directories: `runs/<candidate_id>/attempt_<n>/`
 - generated stage result files:
   - `fast_verify/fast_verify.json`
   - `vivado/vivado_result.json`

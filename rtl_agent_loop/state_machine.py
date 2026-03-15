@@ -14,6 +14,7 @@ PERF_PENDING = "perf_pending"
 PERF_PASSED = "perf_passed"
 PERF_FAILED = "perf_failed"
 SCORED = "scored"
+SCORING = "scoring"
 
 TERMINAL_FAILURE_STATES = {FAST_VERIFY_FAILED, VIVADO_FAILED, PERF_FAILED}
 
@@ -51,3 +52,19 @@ STAGES = (
     ),
 )
 
+SCORING_STAGE_NAME = "scoring"
+EXECUTABLE_STAGE_NAMES = tuple(stage.name for stage in STAGES)
+ALL_STAGE_NAMES = EXECUTABLE_STAGE_NAMES + (SCORING_STAGE_NAME,)
+STAGE_ORDER = {stage_name: index for index, stage_name in enumerate(ALL_STAGE_NAMES)}
+
+
+def normalize_stage_range(start_stage: str | None, end_stage: str | None) -> tuple[str, str]:
+    resolved_start = start_stage or ALL_STAGE_NAMES[0]
+    resolved_end = end_stage or ALL_STAGE_NAMES[-1]
+    if resolved_start not in STAGE_ORDER:
+        raise ValueError(f"Unknown start stage {resolved_start!r}")
+    if resolved_end not in STAGE_ORDER:
+        raise ValueError(f"Unknown end stage {resolved_end!r}")
+    if STAGE_ORDER[resolved_start] > STAGE_ORDER[resolved_end]:
+        raise ValueError("start_stage must be at or before end_stage")
+    return resolved_start, resolved_end
