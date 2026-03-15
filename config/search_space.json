@@ -1,0 +1,42 @@
+{
+  "external_repo": {
+    "path": "external/CNN_FPGA"
+  },
+  "search_space": {
+    "DENSE_OUT_PAR": {
+      "type": "int",
+      "allowed": [1, 2, 5, 10]
+    },
+    "DATA_WIDTH": {
+      "type": "int",
+      "allowed": [12, 16]
+    },
+    "FRAC_BITS": {
+      "type": "int",
+      "allowed": [6, 7]
+    },
+    "CONV_VARIANT": {
+      "type": "enum",
+      "allowed": ["baseline", "pipelined"]
+    }
+  },
+  "defaults": {
+    "clock_hz": 100000000,
+    "vivado": {
+      "part": "xc7a35tcpg236-1",
+      "top": "top_level",
+      "xdc": "CNN_constraints.xdc",
+      "jobs": 4,
+      "clock_period_ns": 10.0
+    },
+    "verilator": {
+      "top": "top_level",
+      "images_path": "data/MNIST/raw/t10k-images-idx3-ubyte",
+      "labels_path": "data/MNIST/raw/t10k-labels-idx1-ubyte"
+    },
+    "fast_verify": {
+      "mode": "verilator_lint",
+      "todo": "TODO: Decide whether CONV_VARIANT should map to a real RTL hook or remain orchestration-only."
+    }
+  }
+}

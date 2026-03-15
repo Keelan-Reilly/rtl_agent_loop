@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+
+logs/*
+!logs/.gitkeep
+
+runs/*
+!runs/.gitkeep
+
+var/*
+!var/.gitkeep
+
+vivado.jou
+vivado.log
