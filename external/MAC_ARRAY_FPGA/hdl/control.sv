@@ -14,9 +14,11 @@ module control #(
   output logic clear_acc,
   output logic compute_en,
   output logic write_en,
+  output logic [31:0] write_index,
   output logic [types_pkg::safe_clog2((TILE_K < 1) ? 1 : TILE_K)-1:0] k_index,
   output logic [types_pkg::safe_clog2((SHARE_FACTOR < 1) ? 1 : SHARE_FACTOR)-1:0] shared_phase,
-  output logic [31:0] cycle_count
+  output logic [31:0] cycle_count,
+  output logic [31:0] total_compute_steps
 );
   import types_pkg::*;
 
@@ -32,6 +34,7 @@ module control #(
   localparam int SAFE_SHARE_FACTOR = max_int(1, SHARE_FACTOR);
   localparam int SHARED_MULTIPLIER = (ARCH_VARIANT == 1) ? SAFE_SHARE_FACTOR : 1;
   localparam int TOTAL_COMPUTE_STEPS = TILE_K * SHARED_MULTIPLIER;
+  localparam int OUTPUT_COUNT = ARRAY_M * ARRAY_N;
   // PIPE_STAGES currently stretches drain latency instead of inserting a fully
   // retimed MAC datapath. That keeps the semantics deterministic and honest.
   localparam int DRAIN_STEPS = max_int(1, PIPE_STAGES);
@@ -41,12 +44,14 @@ module control #(
   state_t state_q, state_d;
   logic [31:0] compute_iter_q, compute_iter_d;
   logic [31:0] drain_iter_q, drain_iter_d;
+  logic [31:0] write_iter_q, write_iter_d;
   logic [31:0] cycle_count_d;
 
   always_comb begin
     state_d        = state_q;
     compute_iter_d = compute_iter_q;
     drain_iter_d   = drain_iter_q;
+    write_iter_d   = write_iter_q;
     cycle_count_d  = cycle_count;
 
     busy      = 1'b1;
@@ -54,8 +59,10 @@ module control #(
     clear_acc = 1'b0;
     compute_en = 1'b0;
     write_en  = 1'b0;
+    write_index = write_iter_q;
     k_index   = '0;
     shared_phase = '0;
+    total_compute_steps = TOTAL_COMPUTE_STEPS;
 
     case (state_q)
       ST_IDLE: begin
@@ -70,6 +77,7 @@ module control #(
         cycle_count_d = cycle_count + 1;
         compute_iter_d = 32'd0;
         drain_iter_d = 32'd0;
+        write_iter_d = 32'd0;
         state_d = ST_COMPUTE;
       end
       ST_COMPUTE: begin
@@ -96,7 +104,12 @@ module control #(
       ST_WRITE: begin
         write_en = 1'b1;
         cycle_count_d = cycle_count + 1;
-        state_d = ST_DONE;
+        if (write_iter_q + 1 >= OUTPUT_COUNT) begin
+          write_iter_d = 32'd0;
+          state_d = ST_DONE;
+        end else begin
+          write_iter_d = write_iter_q + 1;
+        end
       end
       ST_DONE: begin
         done = 1'b1;
@@ -116,11 +129,13 @@ module control #(
       state_q       <= ST_IDLE;
       compute_iter_q <= 32'd0;
       drain_iter_q  <= 32'd0;
+      write_iter_q  <= 32'd0;
       cycle_count   <= 32'd0;
     end else begin
       state_q       <= state_d;
       compute_iter_q <= compute_iter_d;
       drain_iter_q  <= drain_iter_d;
+      write_iter_q  <= write_iter_d;
       cycle_count   <= cycle_count_d;
     end
   end

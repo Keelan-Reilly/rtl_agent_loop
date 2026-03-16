@@ -16,9 +16,15 @@
     "TILE_K": "4"
   },
   "arch_variant_name": "shared",
-  "latency_cycles": 11,
-  "latency_time_ms": 0.00011,
-  "throughput_ops_per_sec": 581818181.8181818,
+  "logical_lane_count": 16,
+  "cluster_count": 4,
+  "physical_pe_count": 8,
+  "shadow_pe_count": 0,
+  "output_count": 16,
+  "total_compute_steps": 8,
+  "latency_cycles": 26,
+  "latency_time_ms": 0.00026,
+  "throughput_ops_per_sec": 246153846.15384614,
   "command": [
     "/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/experiments/results/runs/shared_4x4_sf2/verilator_perf/obj_dir/Vtop_level",
     "--expected",

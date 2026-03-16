@@ -1,9 +1,12 @@
 {
-  "description": "Deterministic fixed-point 4x4x4 GEMM vectors for MAC_ARRAY_FPGA.",
+  "description": "Deterministic fixed-point bounded-study vectors for MAC_ARRAY_FPGA.",
   "array_m": 4,
   "array_n": 4,
   "tile_k": 4,
   "data_width": 16,
   "frac_bits": 8,
-  "acc_width": 32
+  "acc_width": 32,
+  "input_mem_depth": 16,
+  "output_mem_depth": 16,
+  "note": "The active ARRAY_M x TILE_K and TILE_K x ARRAY_N regions are fully populated with deterministic nonzero values. Padding is applied only after generating the full active workload."
 }

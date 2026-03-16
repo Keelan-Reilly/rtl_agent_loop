@@ -112,5 +112,7 @@ The repository also provides the contract points commonly expected by external w
 - The replicated variant increases instantiated compute without changing the functional result.
 - `PIPE_STAGES` currently acts as a deterministic latency/drain knob rather than a fully retimed MAC pipeline.
 - Vivado flow is a serious first-pass wrapper, but still assumes a standard local `vivado` installation and a single-clock design.
+- Larger `ARRAY_M` / `ARRAY_N` study points now generate fully nonzero active operand regions rather than reusing a padded `4x4` sub-problem.
+- Replicated mode intentionally preserves shadow compute through a checksum-carrying shadow state path so implementation reports reflect the extra bank.
 
 See [`docs/variant_definitions.md`](/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/docs/variant_definitions.md) and [`docs/measurement_plan.md`](/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/docs/measurement_plan.md) for the research framing.

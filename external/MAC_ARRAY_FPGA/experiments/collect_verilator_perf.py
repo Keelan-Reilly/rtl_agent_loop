@@ -19,6 +19,30 @@ def parse_key_value(items: list[str]) -> dict[str, str]:
     return parsed
 
 
+def compute_arch_summary(parameters: dict[str, str]) -> dict[str, int | str]:
+    arch_variant = int(parameters.get("ARCH_VARIANT", 0))
+    array_m = int(parameters.get("ARRAY_M", 4))
+    array_n = int(parameters.get("ARRAY_N", 4))
+    cluster_size = int(parameters.get("CLUSTER_SIZE", 4))
+    share_factor = max(1, int(parameters.get("SHARE_FACTOR", 1)))
+    tile_k = int(parameters.get("TILE_K", 4))
+    logical_lane_count = array_m * array_n
+    cluster_count = (logical_lane_count + cluster_size - 1) // cluster_size
+    physical_pes_per_cluster = ((cluster_size + share_factor - 1) // share_factor) if arch_variant == 1 else cluster_size
+    physical_pe_count = cluster_count * physical_pes_per_cluster
+    shadow_pe_count = physical_pe_count if arch_variant == 2 else 0
+    total_compute_steps = tile_k * (share_factor if arch_variant == 1 else 1)
+    return {
+        "arch_variant_name": {0: "baseline", 1: "shared", 2: "replicated"}.get(arch_variant, "unknown"),
+        "logical_lane_count": logical_lane_count,
+        "cluster_count": cluster_count,
+        "physical_pe_count": physical_pe_count,
+        "shadow_pe_count": shadow_pe_count,
+        "output_count": logical_lane_count,
+        "total_compute_steps": total_compute_steps,
+    }
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--run-dir", type=Path, required=True)
@@ -43,6 +67,7 @@ def main() -> int:
     data_dir.mkdir(parents=True, exist_ok=True)
 
     parameters = parse_key_value(args.parameter + args.generic)
+    arch_summary = compute_arch_summary(parameters)
     hdl_dir = repo_root / "hdl"
     tb_path = repo_root / "tb" / "tb_full_pipeline.cpp"
     generator_path = repo_root / "python" / "generate_test_vectors.py"
@@ -189,11 +214,7 @@ def main() -> int:
         "success": True,
         "top": args.top,
         "parameters": parameters,
-        "arch_variant_name": {
-            "0": "baseline",
-            "1": "shared",
-            "2": "replicated",
-        }.get(parameters.get("ARCH_VARIANT", "0"), "unknown"),
+        **arch_summary,
         "latency_cycles": cycles,
         "latency_time_ms": seconds * 1_000.0,
         "throughput_ops_per_sec": throughput,

@@ -47,3 +47,4 @@ Suggested bounded sweeps:
 - shared mode models datapath sharing within a cluster rather than a global crossbar design
 - `PIPE_STAGES` is currently an honest latency-modeling knob, not a complete MAC retiming implementation
 - Vivado memory initialization still depends on repository-local `.mem` files rather than board/software loaders
+- replicated-mode resource growth is intentionally preserved through a shadow-state checksum path; this is a study-platform technique, not a production recommendation

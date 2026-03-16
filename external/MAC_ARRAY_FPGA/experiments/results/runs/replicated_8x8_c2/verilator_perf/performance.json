@@ -16,9 +16,15 @@
     "TILE_K": "4"
   },
   "arch_variant_name": "replicated",
-  "latency_cycles": 7,
-  "latency_time_ms": 7.000000000000001e-05,
-  "throughput_ops_per_sec": 3657142857.142857,
+  "logical_lane_count": 64,
+  "cluster_count": 32,
+  "physical_pe_count": 64,
+  "shadow_pe_count": 64,
+  "output_count": 64,
+  "total_compute_steps": 4,
+  "latency_cycles": 70,
+  "latency_time_ms": 0.0007,
+  "throughput_ops_per_sec": 365714285.71428573,
   "command": [
     "/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/experiments/results/runs/replicated_8x8_c2/verilator_perf/obj_dir/Vtop_level",
     "--expected",

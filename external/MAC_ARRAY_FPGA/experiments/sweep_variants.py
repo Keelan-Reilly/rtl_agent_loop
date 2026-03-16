@@ -108,6 +108,7 @@ def derive_note(rows: list[dict[str, object]]) -> None:
 
     fastest = min(successful, key=lambda row: float(row.get("latency_cycles") or 1e18))
     area_light = min(successful, key=lambda row: float(row.get("lut") or 1e18))
+    densest = max(successful, key=lambda row: float(row.get("shadow_pe_count") or 0.0))
     timing_clean = [row for row in successful if row.get("wns_ns") is not None and float(row["wns_ns"]) >= 0.0]
     timing_best = min(timing_clean, key=lambda row: float(row.get("latency_cycles") or 1e18)) if timing_clean else None
 
@@ -119,6 +120,8 @@ def derive_note(rows: list[dict[str, object]]) -> None:
             notes.append("area-light")
         if timing_best and row["case_name"] == timing_best["case_name"]:
             notes.append("timing-clean best")
+        if row["case_name"] == densest["case_name"]:
+            notes.append("most replicated")
         row["ranking_note"] = ", ".join(notes) if notes else ""
 
 
@@ -130,6 +133,9 @@ def write_markdown(rows: list[dict[str, object]], output_path: Path, perf_only: 
         "ARRAY_N",
         "CLUSTER_SIZE",
         "SHARE_FACTOR",
+        "physical_pe_count",
+        "shadow_pe_count",
+        "total_compute_steps",
         "latency_cycles",
         "latency_time_ms",
         "lut",
@@ -212,6 +218,7 @@ def main() -> int:
 
         vivado_json: dict[str, object] = {}
         vivado_rc = 0
+        vivado_reports_dir = run_dir / "vivado" / "reports"
         if not args.perf_only and perf_rc == 0:
             vivado_cmd = [
                 str(vivado_script),
@@ -232,23 +239,41 @@ def main() -> int:
                 vivado_cmd.extend(["--generic", f"{key}={case_params[key]}"])
             vivado_log = run_dir / "logs" / "sweep_vivado.log"
             vivado_rc = run_command(vivado_cmd, repo_root, vivado_log)
-            if vivado_rc == 0:
+            have_vivado_reports = any(
+                path.exists()
+                for path in (
+                    vivado_reports_dir / "utilization_impl.rpt",
+                    vivado_reports_dir / "timing_impl.rpt",
+                    vivado_reports_dir / "utilization_synth.rpt",
+                    vivado_reports_dir / "timing_synth.rpt",
+                )
+            )
+            if have_vivado_reports:
                 parse_cmd = [
                     "python3",
                     str(parse_script),
                     "--reports-dir",
-                    str(run_dir / "vivado" / "reports"),
+                    str(vivado_reports_dir),
                     "--clock-period-ns",
                     "10.0",
                     "--output",
-                    str(run_dir / "vivado" / "reports" / "metrics.json"),
+                    str(vivado_reports_dir / "metrics.json"),
                 ]
-                vivado_rc = run_command(parse_cmd, repo_root, run_dir / "logs" / "sweep_parse.log")
-            vivado_json = load_json_if_exists(run_dir / "vivado" / "reports" / "metrics.json")
+                parse_rc = run_command(parse_cmd, repo_root, run_dir / "logs" / "sweep_parse.log")
+                if vivado_rc == 0:
+                    vivado_rc = parse_rc
+            vivado_json = load_json_if_exists(vivado_reports_dir / "metrics.json")
 
         status = "passed_perf" if perf_rc == 0 else "failed_perf"
         if not args.perf_only:
-            status = "passed_all" if perf_rc == 0 and vivado_rc == 0 else "failed"
+            if perf_rc != 0:
+                status = "failed_perf"
+            elif vivado_rc == 0:
+                status = "passed_all"
+            elif vivado_json.get("success"):
+                status = "passed_perf_synth_only"
+            else:
+                status = "failed"
 
         rows.append(
             {
@@ -263,6 +288,9 @@ def main() -> int:
                 "ARRAY_N": case["ARRAY_N"],
                 "CLUSTER_SIZE": case["CLUSTER_SIZE"],
                 "SHARE_FACTOR": case["SHARE_FACTOR"],
+                "physical_pe_count": perf_json.get("physical_pe_count"),
+                "shadow_pe_count": perf_json.get("shadow_pe_count"),
+                "total_compute_steps": perf_json.get("total_compute_steps"),
                 "latency_cycles": perf_json.get("latency_cycles"),
                 "latency_time_ms": perf_json.get("latency_time_ms"),
                 "lut": vivado_json.get("lut"),
@@ -273,7 +301,7 @@ def main() -> int:
                 "fmax_mhz_est": vivado_json.get("fmax_mhz_est"),
                 "status": status,
                 "perf_json": str(run_dir / "verilator_perf" / "performance.json"),
-                "vivado_metrics_json": str(run_dir / "vivado" / "reports" / "metrics.json"),
+                "vivado_metrics_json": str(vivado_reports_dir / "metrics.json"),
                 "ranking_note": "",
             }
         )
@@ -288,6 +316,9 @@ def main() -> int:
         "ARRAY_N",
         "CLUSTER_SIZE",
         "SHARE_FACTOR",
+        "physical_pe_count",
+        "shadow_pe_count",
+        "total_compute_steps",
         "latency_cycles",
         "latency_time_ms",
         "lut",

@@ -29,6 +29,7 @@ Defaults:
 - baseline should be the cleanest reference for functional equivalence
 - shared should reduce active compute duplication but increase latency and mux/control pressure
 - replicated should preserve straightforward scheduling while increasing area and routing pressure
+- larger `ARRAY_M` / `ARRAY_N` points should now do genuinely larger nonzero work and pay a longer output-commit schedule
 
 ## Metrics
 
@@ -70,3 +71,4 @@ Outputs:
 - shared mode models local cluster sharing rather than a larger fabric
 - Vivado uses repository-local `.mem` files; no board-level load path is modeled
 - the first sweep is intentionally small and deterministic, not an exhaustive DSE campaign
+- replicated-mode preservation uses a local shadow-state checksum path to keep extra compute visible to synthesis

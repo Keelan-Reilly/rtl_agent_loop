@@ -60,11 +60,40 @@ Vtop_level::~Vtop_level() {
     VL_DO_CLEAR(delete __VlSymsp, __VlSymsp = NULL);
 }
 
-void Vtop_level::_settle__TOP__1(Vtop_level__Syms* __restrict vlSymsp) {
-    VL_DEBUG_IF(VL_DBG_MSGF("+    Vtop_level::_settle__TOP__1\n"); );
+void Vtop_level::_initial__TOP__1(Vtop_level__Syms* __restrict vlSymsp) {
+    VL_DEBUG_IF(VL_DBG_MSGF("+    Vtop_level::_initial__TOP__1\n"); );
     Vtop_level* const __restrict vlTOPp VL_ATTR_UNUSED = vlSymsp->TOPp;
+    // Variables
+    IData/*31:0*/ __Vilp;
     // Body
+    vlTOPp->debug_output_count = 0x40U;
+    __Vilp = 0U;
+    while ((__Vilp <= 0x3fU)) {
+        vlTOPp->top_level__DOT__u_a_buffer__DOT__mem[__Vilp] = 0U;
+        __Vilp = ((IData)(1U) + __Vilp);
+    }
+    VL_READMEM_N(true, 16, 64, 0, std::string("data/input_a.mem")
+                 , vlTOPp->top_level__DOT__u_a_buffer__DOT__mem
+                 , 0, ~0ULL);
+    __Vilp = 0U;
+    while ((__Vilp <= 0x3fU)) {
+        vlTOPp->top_level__DOT__u_b_buffer__DOT__mem[__Vilp] = 0U;
+        __Vilp = ((IData)(1U) + __Vilp);
+    }
+    VL_READMEM_N(true, 16, 64, 0, std::string("data/input_b.mem")
+                 , vlTOPp->top_level__DOT__u_b_buffer__DOT__mem
+                 , 0, ~0ULL);
+}
+
+void Vtop_level::_settle__TOP__2(Vtop_level__Syms* __restrict vlSymsp) {
+    VL_DEBUG_IF(VL_DBG_MSGF("+    Vtop_level::_settle__TOP__2\n"); );
+    Vtop_level* const __restrict vlTOPp VL_ATTR_UNUSED = vlSymsp->TOPp;
+    // Variables
+    IData/*31:0*/ __Vilp;
+    // Body
+    vlTOPp->debug_total_compute_steps = 4U;
     vlTOPp->debug_cycle_count = vlTOPp->top_level__DOT__cycle_count;
+    vlTOPp->debug_shadow_checksum = vlTOPp->top_level__DOT__shadow_checksum_q;
     vlTOPp->top_level__DOT__write_en = 0U;
     if ((4U & (IData)(vlTOPp->top_level__DOT__u_control__DOT__state_q))) {
         if ((1U & (~ ((IData)(vlTOPp->top_level__DOT__u_control__DOT__state_q) 
@@ -155,6 +184,44 @@ void Vtop_level::_settle__TOP__1(Vtop_level__Syms* __restrict vlSymsp) {
             }
         }
     }
+    vlTOPp->top_level__DOT__compute_en = 0U;
+    if ((1U & (~ ((IData)(vlTOPp->top_level__DOT__u_control__DOT__state_q) 
+                  >> 2U)))) {
+        if ((2U & (IData)(vlTOPp->top_level__DOT__u_control__DOT__state_q))) {
+            if ((1U & (~ (IData)(vlTOPp->top_level__DOT__u_control__DOT__state_q)))) {
+                vlTOPp->top_level__DOT__compute_en = 1U;
+            }
+        }
+    }
+    vlTOPp->top_level__DOT__current_k = 0U;
+    if ((1U & (~ ((IData)(vlTOPp->top_level__DOT__u_control__DOT__state_q) 
+                  >> 2U)))) {
+        if ((2U & (IData)(vlTOPp->top_level__DOT__u_control__DOT__state_q))) {
+            if ((1U & (~ (IData)(vlTOPp->top_level__DOT__u_control__DOT__state_q)))) {
+                vlTOPp->top_level__DOT__current_k = 
+                    (3U & vlTOPp->top_level__DOT__u_control__DOT__compute_iter_q);
+            }
+        }
+    }
+    vlTOPp->top_level__DOT__u_control__DOT__write_iter_d 
+        = vlTOPp->top_level__DOT__u_control__DOT__write_iter_q;
+    if ((4U & (IData)(vlTOPp->top_level__DOT__u_control__DOT__state_q))) {
+        if ((1U & (~ ((IData)(vlTOPp->top_level__DOT__u_control__DOT__state_q) 
+                      >> 1U)))) {
+            if ((1U & (~ (IData)(vlTOPp->top_level__DOT__u_control__DOT__state_q)))) {
+                vlTOPp->top_level__DOT__u_control__DOT__write_iter_d 
+                    = ((0x40U <= ((IData)(1U) + vlTOPp->top_level__DOT__u_control__DOT__write_iter_q))
+                        ? 0U : ((IData)(1U) + vlTOPp->top_level__DOT__u_control__DOT__write_iter_q));
+            }
+        }
+    } else {
+        if ((1U & (~ ((IData)(vlTOPp->top_level__DOT__u_control__DOT__state_q) 
+                      >> 1U)))) {
+            if ((1U & (IData)(vlTOPp->top_level__DOT__u_control__DOT__state_q))) {
+                vlTOPp->top_level__DOT__u_control__DOT__write_iter_d = 0U;
+            }
+        }
+    }
     vlTOPp->top_level__DOT__u_control__DOT__state_d 
         = vlTOPp->top_level__DOT__u_control__DOT__state_q;
     if ((4U & (IData)(vlTOPp->top_level__DOT__u_control__DOT__state_q))) {
@@ -166,7 +233,9 @@ void Vtop_level::_settle__TOP__1(Vtop_level__Syms* __restrict vlSymsp) {
                     vlTOPp->top_level__DOT__u_control__DOT__state_d = 0U;
                 }
             } else {
-                vlTOPp->top_level__DOT__u_control__DOT__state_d = 5U;
+                if ((0x40U <= ((IData)(1U) + vlTOPp->top_level__DOT__u_control__DOT__write_iter_q))) {
+                    vlTOPp->top_level__DOT__u_control__DOT__state_d = 5U;
+                }
             }
         }
     } else {
@@ -190,217 +259,6 @@ void Vtop_level::_settle__TOP__1(Vtop_level__Syms* __restrict vlSymsp) {
             }
         }
     }
-    vlTOPp->top_level__DOT__compute_en = 0U;
-    if ((1U & (~ ((IData)(vlTOPp->top_level__DOT__u_control__DOT__state_q) 
-                  >> 2U)))) {
-        if ((2U & (IData)(vlTOPp->top_level__DOT__u_control__DOT__state_q))) {
-            if ((1U & (~ (IData)(vlTOPp->top_level__DOT__u_control__DOT__state_q)))) {
-                vlTOPp->top_level__DOT__compute_en = 1U;
-            }
-        }
-    }
-    vlTOPp->top_level__DOT__current_k = 0U;
-    if ((1U & (~ ((IData)(vlTOPp->top_level__DOT__u_control__DOT__state_q) 
-                  >> 2U)))) {
-        if ((2U & (IData)(vlTOPp->top_level__DOT__u_control__DOT__state_q))) {
-            if ((1U & (~ (IData)(vlTOPp->top_level__DOT__u_control__DOT__state_q)))) {
-                vlTOPp->top_level__DOT__current_k = 
-                    (3U & vlTOPp->top_level__DOT__u_control__DOT__compute_iter_q);
-            }
-        }
-    }
-    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__0__KET____DOT__u_cluster__accum_out[0U] 
-        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster.accum_out
-        [0U];
-    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__0__KET____DOT__u_cluster__accum_out[1U] 
-        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster.accum_out
-        [1U];
-    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__1__KET____DOT__u_cluster__accum_out[0U] 
-        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster.accum_out
-        [0U];
-    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__1__KET____DOT__u_cluster__accum_out[1U] 
-        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster.accum_out
-        [1U];
-    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__2__KET____DOT__u_cluster__accum_out[0U] 
-        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster.accum_out
-        [0U];
-    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__2__KET____DOT__u_cluster__accum_out[1U] 
-        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster.accum_out
-        [1U];
-    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__3__KET____DOT__u_cluster__accum_out[0U] 
-        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster.accum_out
-        [0U];
-    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__3__KET____DOT__u_cluster__accum_out[1U] 
-        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster.accum_out
-        [1U];
-    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__4__KET____DOT__u_cluster__accum_out[0U] 
-        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster.accum_out
-        [0U];
-    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__4__KET____DOT__u_cluster__accum_out[1U] 
-        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster.accum_out
-        [1U];
-    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__5__KET____DOT__u_cluster__accum_out[0U] 
-        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster.accum_out
-        [0U];
-    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__5__KET____DOT__u_cluster__accum_out[1U] 
-        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster.accum_out
-        [1U];
-    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__6__KET____DOT__u_cluster__accum_out[0U] 
-        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster.accum_out
-        [0U];
-    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__6__KET____DOT__u_cluster__accum_out[1U] 
-        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster.accum_out
-        [1U];
-    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__7__KET____DOT__u_cluster__accum_out[0U] 
-        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster.accum_out
-        [0U];
-    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__7__KET____DOT__u_cluster__accum_out[1U] 
-        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster.accum_out
-        [1U];
-    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__8__KET____DOT__u_cluster__accum_out[0U] 
-        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__8__KET____DOT__u_cluster.accum_out
-        [0U];
-    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__8__KET____DOT__u_cluster__accum_out[1U] 
-        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__8__KET____DOT__u_cluster.accum_out
-        [1U];
-    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__9__KET____DOT__u_cluster__accum_out[0U] 
-        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__9__KET____DOT__u_cluster.accum_out
-        [0U];
-    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__9__KET____DOT__u_cluster__accum_out[1U] 
-        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__9__KET____DOT__u_cluster.accum_out
-        [1U];
-    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__10__KET____DOT__u_cluster__accum_out[0U] 
-        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__10__KET____DOT__u_cluster.accum_out
-        [0U];
-    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__10__KET____DOT__u_cluster__accum_out[1U] 
-        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__10__KET____DOT__u_cluster.accum_out
-        [1U];
-    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__11__KET____DOT__u_cluster__accum_out[0U] 
-        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__11__KET____DOT__u_cluster.accum_out
-        [0U];
-    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__11__KET____DOT__u_cluster__accum_out[1U] 
-        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__11__KET____DOT__u_cluster.accum_out
-        [1U];
-    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__12__KET____DOT__u_cluster__accum_out[0U] 
-        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__12__KET____DOT__u_cluster.accum_out
-        [0U];
-    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__12__KET____DOT__u_cluster__accum_out[1U] 
-        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__12__KET____DOT__u_cluster.accum_out
-        [1U];
-    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__13__KET____DOT__u_cluster__accum_out[0U] 
-        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__13__KET____DOT__u_cluster.accum_out
-        [0U];
-    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__13__KET____DOT__u_cluster__accum_out[1U] 
-        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__13__KET____DOT__u_cluster.accum_out
-        [1U];
-    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__14__KET____DOT__u_cluster__accum_out[0U] 
-        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__14__KET____DOT__u_cluster.accum_out
-        [0U];
-    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__14__KET____DOT__u_cluster__accum_out[1U] 
-        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__14__KET____DOT__u_cluster.accum_out
-        [1U];
-    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__15__KET____DOT__u_cluster__accum_out[0U] 
-        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__15__KET____DOT__u_cluster.accum_out
-        [0U];
-    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__15__KET____DOT__u_cluster__accum_out[1U] 
-        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__15__KET____DOT__u_cluster.accum_out
-        [1U];
-    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__16__KET____DOT__u_cluster__accum_out[0U] 
-        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__16__KET____DOT__u_cluster.accum_out
-        [0U];
-    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__16__KET____DOT__u_cluster__accum_out[1U] 
-        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__16__KET____DOT__u_cluster.accum_out
-        [1U];
-    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__17__KET____DOT__u_cluster__accum_out[0U] 
-        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__17__KET____DOT__u_cluster.accum_out
-        [0U];
-    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__17__KET____DOT__u_cluster__accum_out[1U] 
-        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__17__KET____DOT__u_cluster.accum_out
-        [1U];
-    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__18__KET____DOT__u_cluster__accum_out[0U] 
-        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__18__KET____DOT__u_cluster.accum_out
-        [0U];
-    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__18__KET____DOT__u_cluster__accum_out[1U] 
-        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__18__KET____DOT__u_cluster.accum_out
-        [1U];
-    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__19__KET____DOT__u_cluster__accum_out[0U] 
-        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__19__KET____DOT__u_cluster.accum_out
-        [0U];
-    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__19__KET____DOT__u_cluster__accum_out[1U] 
-        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__19__KET____DOT__u_cluster.accum_out
-        [1U];
-    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__20__KET____DOT__u_cluster__accum_out[0U] 
-        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__20__KET____DOT__u_cluster.accum_out
-        [0U];
-    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__20__KET____DOT__u_cluster__accum_out[1U] 
-        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__20__KET____DOT__u_cluster.accum_out
-        [1U];
-    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__21__KET____DOT__u_cluster__accum_out[0U] 
-        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__21__KET____DOT__u_cluster.accum_out
-        [0U];
-    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__21__KET____DOT__u_cluster__accum_out[1U] 
-        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__21__KET____DOT__u_cluster.accum_out
-        [1U];
-    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__22__KET____DOT__u_cluster__accum_out[0U] 
-        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__22__KET____DOT__u_cluster.accum_out
-        [0U];
-    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__22__KET____DOT__u_cluster__accum_out[1U] 
-        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__22__KET____DOT__u_cluster.accum_out
-        [1U];
-    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__23__KET____DOT__u_cluster__accum_out[0U] 
-        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__23__KET____DOT__u_cluster.accum_out
-        [0U];
-    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__23__KET____DOT__u_cluster__accum_out[1U] 
-        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__23__KET____DOT__u_cluster.accum_out
-        [1U];
-    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__24__KET____DOT__u_cluster__accum_out[0U] 
-        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__24__KET____DOT__u_cluster.accum_out
-        [0U];
-    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__24__KET____DOT__u_cluster__accum_out[1U] 
-        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__24__KET____DOT__u_cluster.accum_out
-        [1U];
-    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__25__KET____DOT__u_cluster__accum_out[0U] 
-        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__25__KET____DOT__u_cluster.accum_out
-        [0U];
-    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__25__KET____DOT__u_cluster__accum_out[1U] 
-        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__25__KET____DOT__u_cluster.accum_out
-        [1U];
-    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__26__KET____DOT__u_cluster__accum_out[0U] 
-        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__26__KET____DOT__u_cluster.accum_out
-        [0U];
-    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__26__KET____DOT__u_cluster__accum_out[1U] 
-        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__26__KET____DOT__u_cluster.accum_out
-        [1U];
-    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__27__KET____DOT__u_cluster__accum_out[0U] 
-        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__27__KET____DOT__u_cluster.accum_out
-        [0U];
-    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__27__KET____DOT__u_cluster__accum_out[1U] 
-        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__27__KET____DOT__u_cluster.accum_out
-        [1U];
-    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__28__KET____DOT__u_cluster__accum_out[0U] 
-        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__28__KET____DOT__u_cluster.accum_out
-        [0U];
-    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__28__KET____DOT__u_cluster__accum_out[1U] 
-        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__28__KET____DOT__u_cluster.accum_out
-        [1U];
-    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__29__KET____DOT__u_cluster__accum_out[0U] 
-        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__29__KET____DOT__u_cluster.accum_out
-        [0U];
-    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__29__KET____DOT__u_cluster__accum_out[1U] 
-        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__29__KET____DOT__u_cluster.accum_out
-        [1U];
-    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__30__KET____DOT__u_cluster__accum_out[0U] 
-        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__30__KET____DOT__u_cluster.accum_out
-        [0U];
-    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__30__KET____DOT__u_cluster__accum_out[1U] 
-        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__30__KET____DOT__u_cluster.accum_out
-        [1U];
-    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__31__KET____DOT__u_cluster__accum_out[0U] 
-        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__31__KET____DOT__u_cluster.accum_out
-        [0U];
-    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__31__KET____DOT__u_cluster__accum_out[1U] 
-        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__31__KET____DOT__u_cluster.accum_out
-        [1U];
     vlTOPp->top_level__DOT__u_interconnect__DOT__a_addr_calc 
         = vlTOPp->top_level__DOT__current_k;
     vlTOPp->top_level__DOT____Vcellout__u_interconnect__a_read_addr[0U] 
@@ -465,198 +323,6 @@ void Vtop_level::_settle__TOP__1(Vtop_level__Syms* __restrict vlSymsp) {
         = ((IData)(7U) + VL_MULS_III(32,32,32, (IData)(8U), (IData)(vlTOPp->top_level__DOT__current_k)));
     vlTOPp->top_level__DOT____Vcellout__u_interconnect__b_read_addr[7U] 
         = (0x3fU & vlTOPp->top_level__DOT__u_interconnect__DOT__b_addr_calc);
-    vlTOPp->top_level__DOT__cluster_accum[0U][0U] = 
-        vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__0__KET____DOT__u_cluster__accum_out
-        [0U];
-    vlTOPp->top_level__DOT__cluster_accum[0U][1U] = 
-        vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__0__KET____DOT__u_cluster__accum_out
-        [1U];
-    vlTOPp->top_level__DOT__cluster_accum[1U][0U] = 
-        vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__1__KET____DOT__u_cluster__accum_out
-        [0U];
-    vlTOPp->top_level__DOT__cluster_accum[1U][1U] = 
-        vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__1__KET____DOT__u_cluster__accum_out
-        [1U];
-    vlTOPp->top_level__DOT__cluster_accum[2U][0U] = 
-        vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__2__KET____DOT__u_cluster__accum_out
-        [0U];
-    vlTOPp->top_level__DOT__cluster_accum[2U][1U] = 
-        vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__2__KET____DOT__u_cluster__accum_out
-        [1U];
-    vlTOPp->top_level__DOT__cluster_accum[3U][0U] = 
-        vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__3__KET____DOT__u_cluster__accum_out
-        [0U];
-    vlTOPp->top_level__DOT__cluster_accum[3U][1U] = 
-        vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__3__KET____DOT__u_cluster__accum_out
-        [1U];
-    vlTOPp->top_level__DOT__cluster_accum[4U][0U] = 
-        vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__4__KET____DOT__u_cluster__accum_out
-        [0U];
-    vlTOPp->top_level__DOT__cluster_accum[4U][1U] = 
-        vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__4__KET____DOT__u_cluster__accum_out
-        [1U];
-    vlTOPp->top_level__DOT__cluster_accum[5U][0U] = 
-        vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__5__KET____DOT__u_cluster__accum_out
-        [0U];
-    vlTOPp->top_level__DOT__cluster_accum[5U][1U] = 
-        vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__5__KET____DOT__u_cluster__accum_out
-        [1U];
-    vlTOPp->top_level__DOT__cluster_accum[6U][0U] = 
-        vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__6__KET____DOT__u_cluster__accum_out
-        [0U];
-    vlTOPp->top_level__DOT__cluster_accum[6U][1U] = 
-        vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__6__KET____DOT__u_cluster__accum_out
-        [1U];
-    vlTOPp->top_level__DOT__cluster_accum[7U][0U] = 
-        vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__7__KET____DOT__u_cluster__accum_out
-        [0U];
-    vlTOPp->top_level__DOT__cluster_accum[7U][1U] = 
-        vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__7__KET____DOT__u_cluster__accum_out
-        [1U];
-    vlTOPp->top_level__DOT__cluster_accum[8U][0U] = 
-        vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__8__KET____DOT__u_cluster__accum_out
-        [0U];
-    vlTOPp->top_level__DOT__cluster_accum[8U][1U] = 
-        vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__8__KET____DOT__u_cluster__accum_out
-        [1U];
-    vlTOPp->top_level__DOT__cluster_accum[9U][0U] = 
-        vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__9__KET____DOT__u_cluster__accum_out
-        [0U];
-    vlTOPp->top_level__DOT__cluster_accum[9U][1U] = 
-        vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__9__KET____DOT__u_cluster__accum_out
-        [1U];
-    vlTOPp->top_level__DOT__cluster_accum[0xaU][0U] 
-        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__10__KET____DOT__u_cluster__accum_out
-        [0U];
-    vlTOPp->top_level__DOT__cluster_accum[0xaU][1U] 
-        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__10__KET____DOT__u_cluster__accum_out
-        [1U];
-    vlTOPp->top_level__DOT__cluster_accum[0xbU][0U] 
-        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__11__KET____DOT__u_cluster__accum_out
-        [0U];
-    vlTOPp->top_level__DOT__cluster_accum[0xbU][1U] 
-        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__11__KET____DOT__u_cluster__accum_out
-        [1U];
-    vlTOPp->top_level__DOT__cluster_accum[0xcU][0U] 
-        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__12__KET____DOT__u_cluster__accum_out
-        [0U];
-    vlTOPp->top_level__DOT__cluster_accum[0xcU][1U] 
-        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__12__KET____DOT__u_cluster__accum_out
-        [1U];
-    vlTOPp->top_level__DOT__cluster_accum[0xdU][0U] 
-        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__13__KET____DOT__u_cluster__accum_out
-        [0U];
-    vlTOPp->top_level__DOT__cluster_accum[0xdU][1U] 
-        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__13__KET____DOT__u_cluster__accum_out
-        [1U];
-    vlTOPp->top_level__DOT__cluster_accum[0xeU][0U] 
-        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__14__KET____DOT__u_cluster__accum_out
-        [0U];
-    vlTOPp->top_level__DOT__cluster_accum[0xeU][1U] 
-        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__14__KET____DOT__u_cluster__accum_out
-        [1U];
-    vlTOPp->top_level__DOT__cluster_accum[0xfU][0U] 
-        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__15__KET____DOT__u_cluster__accum_out
-        [0U];
-    vlTOPp->top_level__DOT__cluster_accum[0xfU][1U] 
-        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__15__KET____DOT__u_cluster__accum_out
-        [1U];
-    vlTOPp->top_level__DOT__cluster_accum[0x10U][0U] 
-        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__16__KET____DOT__u_cluster__accum_out
-        [0U];
-    vlTOPp->top_level__DOT__cluster_accum[0x10U][1U] 
-        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__16__KET____DOT__u_cluster__accum_out
-        [1U];
-    vlTOPp->top_level__DOT__cluster_accum[0x11U][0U] 
-        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__17__KET____DOT__u_cluster__accum_out
-        [0U];
-    vlTOPp->top_level__DOT__cluster_accum[0x11U][1U] 
-        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__17__KET____DOT__u_cluster__accum_out
-        [1U];
-    vlTOPp->top_level__DOT__cluster_accum[0x12U][0U] 
-        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__18__KET____DOT__u_cluster__accum_out
-        [0U];
-    vlTOPp->top_level__DOT__cluster_accum[0x12U][1U] 
-        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__18__KET____DOT__u_cluster__accum_out
-        [1U];
-    vlTOPp->top_level__DOT__cluster_accum[0x13U][0U] 
-        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__19__KET____DOT__u_cluster__accum_out
-        [0U];
-    vlTOPp->top_level__DOT__cluster_accum[0x13U][1U] 
-        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__19__KET____DOT__u_cluster__accum_out
-        [1U];
-    vlTOPp->top_level__DOT__cluster_accum[0x14U][0U] 
-        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__20__KET____DOT__u_cluster__accum_out
-        [0U];
-    vlTOPp->top_level__DOT__cluster_accum[0x14U][1U] 
-        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__20__KET____DOT__u_cluster__accum_out
-        [1U];
-    vlTOPp->top_level__DOT__cluster_accum[0x15U][0U] 
-        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__21__KET____DOT__u_cluster__accum_out
-        [0U];
-    vlTOPp->top_level__DOT__cluster_accum[0x15U][1U] 
-        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__21__KET____DOT__u_cluster__accum_out
-        [1U];
-    vlTOPp->top_level__DOT__cluster_accum[0x16U][0U] 
-        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__22__KET____DOT__u_cluster__accum_out
-        [0U];
-    vlTOPp->top_level__DOT__cluster_accum[0x16U][1U] 
-        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__22__KET____DOT__u_cluster__accum_out
-        [1U];
-    vlTOPp->top_level__DOT__cluster_accum[0x17U][0U] 
-        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__23__KET____DOT__u_cluster__accum_out
-        [0U];
-    vlTOPp->top_level__DOT__cluster_accum[0x17U][1U] 
-        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__23__KET____DOT__u_cluster__accum_out
-        [1U];
-    vlTOPp->top_level__DOT__cluster_accum[0x18U][0U] 
-        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__24__KET____DOT__u_cluster__accum_out
-        [0U];
-    vlTOPp->top_level__DOT__cluster_accum[0x18U][1U] 
-        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__24__KET____DOT__u_cluster__accum_out
-        [1U];
-    vlTOPp->top_level__DOT__cluster_accum[0x19U][0U] 
-        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__25__KET____DOT__u_cluster__accum_out
-        [0U];
-    vlTOPp->top_level__DOT__cluster_accum[0x19U][1U] 
-        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__25__KET____DOT__u_cluster__accum_out
-        [1U];
-    vlTOPp->top_level__DOT__cluster_accum[0x1aU][0U] 
-        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__26__KET____DOT__u_cluster__accum_out
-        [0U];
-    vlTOPp->top_level__DOT__cluster_accum[0x1aU][1U] 
-        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__26__KET____DOT__u_cluster__accum_out
-        [1U];
-    vlTOPp->top_level__DOT__cluster_accum[0x1bU][0U] 
-        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__27__KET____DOT__u_cluster__accum_out
-        [0U];
-    vlTOPp->top_level__DOT__cluster_accum[0x1bU][1U] 
-        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__27__KET____DOT__u_cluster__accum_out
-        [1U];
-    vlTOPp->top_level__DOT__cluster_accum[0x1cU][0U] 
-        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__28__KET____DOT__u_cluster__accum_out
-        [0U];
-    vlTOPp->top_level__DOT__cluster_accum[0x1cU][1U] 
-        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__28__KET____DOT__u_cluster__accum_out
-        [1U];
-    vlTOPp->top_level__DOT__cluster_accum[0x1dU][0U] 
-        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__29__KET____DOT__u_cluster__accum_out
-        [0U];
-    vlTOPp->top_level__DOT__cluster_accum[0x1dU][1U] 
-        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__29__KET____DOT__u_cluster__accum_out
-        [1U];
-    vlTOPp->top_level__DOT__cluster_accum[0x1eU][0U] 
-        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__30__KET____DOT__u_cluster__accum_out
-        [0U];
-    vlTOPp->top_level__DOT__cluster_accum[0x1eU][1U] 
-        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__30__KET____DOT__u_cluster__accum_out
-        [1U];
-    vlTOPp->top_level__DOT__cluster_accum[0x1fU][0U] 
-        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__31__KET____DOT__u_cluster__accum_out
-        [0U];
-    vlTOPp->top_level__DOT__cluster_accum[0x1fU][1U] 
-        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__31__KET____DOT__u_cluster__accum_out
-        [1U];
     vlTOPp->top_level__DOT__a_read_addr[0U] = vlTOPp->top_level__DOT____Vcellout__u_interconnect__a_read_addr
         [0U];
     vlTOPp->top_level__DOT__a_read_addr[1U] = vlTOPp->top_level__DOT____Vcellout__u_interconnect__a_read_addr
@@ -721,38 +387,6 @@ void Vtop_level::_settle__TOP__1(Vtop_level__Syms* __restrict vlSymsp) {
         = vlTOPp->top_level__DOT__b_read_addr[6U];
     vlTOPp->top_level__DOT____Vcellinp__u_b_buffer__read_addr[7U] 
         = vlTOPp->top_level__DOT__b_read_addr[7U];
-}
-
-void Vtop_level::_initial__TOP__2(Vtop_level__Syms* __restrict vlSymsp) {
-    VL_DEBUG_IF(VL_DBG_MSGF("+    Vtop_level::_initial__TOP__2\n"); );
-    Vtop_level* const __restrict vlTOPp VL_ATTR_UNUSED = vlSymsp->TOPp;
-    // Variables
-    IData/*31:0*/ __Vilp;
-    // Body
-    __Vilp = 0U;
-    while ((__Vilp <= 0x3fU)) {
-        vlTOPp->top_level__DOT__u_a_buffer__DOT__mem[__Vilp] = 0U;
-        __Vilp = ((IData)(1U) + __Vilp);
-    }
-    VL_READMEM_N(true, 16, 64, 0, std::string("data/input_a.mem")
-                 , vlTOPp->top_level__DOT__u_a_buffer__DOT__mem
-                 , 0, ~0ULL);
-    __Vilp = 0U;
-    while ((__Vilp <= 0x3fU)) {
-        vlTOPp->top_level__DOT__u_b_buffer__DOT__mem[__Vilp] = 0U;
-        __Vilp = ((IData)(1U) + __Vilp);
-    }
-    VL_READMEM_N(true, 16, 64, 0, std::string("data/input_b.mem")
-                 , vlTOPp->top_level__DOT__u_b_buffer__DOT__mem
-                 , 0, ~0ULL);
-}
-
-void Vtop_level::_settle__TOP__5(Vtop_level__Syms* __restrict vlSymsp) {
-    VL_DEBUG_IF(VL_DBG_MSGF("+    Vtop_level::_settle__TOP__5\n"); );
-    Vtop_level* const __restrict vlTOPp VL_ATTR_UNUSED = vlSymsp->TOPp;
-    // Variables
-    IData/*31:0*/ __Vilp;
-    // Body
     vlTOPp->top_level__DOT____Vcellout__u_a_buffer__read_data[0U] 
         = vlTOPp->top_level__DOT__u_a_buffer__DOT__mem
         [vlTOPp->top_level__DOT____Vcellinp__u_a_buffer__read_addr
@@ -2303,11 +1937,1277 @@ void Vtop_level::_settle__TOP__5(Vtop_level__Syms* __restrict vlSymsp) {
         [1U];
 }
 
+void Vtop_level::_settle__TOP__3(Vtop_level__Syms* __restrict vlSymsp) {
+    VL_DEBUG_IF(VL_DBG_MSGF("+    Vtop_level::_settle__TOP__3\n"); );
+    Vtop_level* const __restrict vlTOPp VL_ATTR_UNUSED = vlSymsp->TOPp;
+    // Body
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__0__KET____DOT__u_cluster__accum_out[0U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster.accum_out
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__0__KET____DOT__u_cluster__accum_out[1U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster.accum_out
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__0__KET____DOT__u_cluster__shadow_accum_out[0U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster.shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__0__KET____DOT__u_cluster__shadow_accum_out[1U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster.shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__1__KET____DOT__u_cluster__accum_out[0U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster.accum_out
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__1__KET____DOT__u_cluster__accum_out[1U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster.accum_out
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__1__KET____DOT__u_cluster__shadow_accum_out[0U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster.shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__1__KET____DOT__u_cluster__shadow_accum_out[1U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster.shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__2__KET____DOT__u_cluster__accum_out[0U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster.accum_out
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__2__KET____DOT__u_cluster__accum_out[1U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster.accum_out
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__2__KET____DOT__u_cluster__shadow_accum_out[0U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster.shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__2__KET____DOT__u_cluster__shadow_accum_out[1U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster.shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__3__KET____DOT__u_cluster__accum_out[0U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster.accum_out
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__3__KET____DOT__u_cluster__accum_out[1U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster.accum_out
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__3__KET____DOT__u_cluster__shadow_accum_out[0U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster.shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__3__KET____DOT__u_cluster__shadow_accum_out[1U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster.shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__4__KET____DOT__u_cluster__accum_out[0U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster.accum_out
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__4__KET____DOT__u_cluster__accum_out[1U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster.accum_out
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__4__KET____DOT__u_cluster__shadow_accum_out[0U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster.shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__4__KET____DOT__u_cluster__shadow_accum_out[1U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster.shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__5__KET____DOT__u_cluster__accum_out[0U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster.accum_out
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__5__KET____DOT__u_cluster__accum_out[1U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster.accum_out
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__5__KET____DOT__u_cluster__shadow_accum_out[0U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster.shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__5__KET____DOT__u_cluster__shadow_accum_out[1U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster.shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__6__KET____DOT__u_cluster__accum_out[0U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster.accum_out
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__6__KET____DOT__u_cluster__accum_out[1U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster.accum_out
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__6__KET____DOT__u_cluster__shadow_accum_out[0U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster.shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__6__KET____DOT__u_cluster__shadow_accum_out[1U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster.shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__7__KET____DOT__u_cluster__accum_out[0U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster.accum_out
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__7__KET____DOT__u_cluster__accum_out[1U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster.accum_out
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__7__KET____DOT__u_cluster__shadow_accum_out[0U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster.shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__7__KET____DOT__u_cluster__shadow_accum_out[1U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster.shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__8__KET____DOT__u_cluster__accum_out[0U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__8__KET____DOT__u_cluster.accum_out
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__8__KET____DOT__u_cluster__accum_out[1U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__8__KET____DOT__u_cluster.accum_out
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__8__KET____DOT__u_cluster__shadow_accum_out[0U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__8__KET____DOT__u_cluster.shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__8__KET____DOT__u_cluster__shadow_accum_out[1U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__8__KET____DOT__u_cluster.shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__9__KET____DOT__u_cluster__accum_out[0U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__9__KET____DOT__u_cluster.accum_out
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__9__KET____DOT__u_cluster__accum_out[1U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__9__KET____DOT__u_cluster.accum_out
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__9__KET____DOT__u_cluster__shadow_accum_out[0U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__9__KET____DOT__u_cluster.shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__9__KET____DOT__u_cluster__shadow_accum_out[1U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__9__KET____DOT__u_cluster.shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__10__KET____DOT__u_cluster__accum_out[0U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__10__KET____DOT__u_cluster.accum_out
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__10__KET____DOT__u_cluster__accum_out[1U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__10__KET____DOT__u_cluster.accum_out
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__10__KET____DOT__u_cluster__shadow_accum_out[0U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__10__KET____DOT__u_cluster.shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__10__KET____DOT__u_cluster__shadow_accum_out[1U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__10__KET____DOT__u_cluster.shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__11__KET____DOT__u_cluster__accum_out[0U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__11__KET____DOT__u_cluster.accum_out
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__11__KET____DOT__u_cluster__accum_out[1U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__11__KET____DOT__u_cluster.accum_out
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__11__KET____DOT__u_cluster__shadow_accum_out[0U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__11__KET____DOT__u_cluster.shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__11__KET____DOT__u_cluster__shadow_accum_out[1U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__11__KET____DOT__u_cluster.shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__12__KET____DOT__u_cluster__accum_out[0U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__12__KET____DOT__u_cluster.accum_out
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__12__KET____DOT__u_cluster__accum_out[1U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__12__KET____DOT__u_cluster.accum_out
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__12__KET____DOT__u_cluster__shadow_accum_out[0U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__12__KET____DOT__u_cluster.shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__12__KET____DOT__u_cluster__shadow_accum_out[1U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__12__KET____DOT__u_cluster.shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__13__KET____DOT__u_cluster__accum_out[0U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__13__KET____DOT__u_cluster.accum_out
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__13__KET____DOT__u_cluster__accum_out[1U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__13__KET____DOT__u_cluster.accum_out
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__13__KET____DOT__u_cluster__shadow_accum_out[0U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__13__KET____DOT__u_cluster.shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__13__KET____DOT__u_cluster__shadow_accum_out[1U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__13__KET____DOT__u_cluster.shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__14__KET____DOT__u_cluster__accum_out[0U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__14__KET____DOT__u_cluster.accum_out
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__14__KET____DOT__u_cluster__accum_out[1U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__14__KET____DOT__u_cluster.accum_out
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__14__KET____DOT__u_cluster__shadow_accum_out[0U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__14__KET____DOT__u_cluster.shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__14__KET____DOT__u_cluster__shadow_accum_out[1U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__14__KET____DOT__u_cluster.shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__15__KET____DOT__u_cluster__accum_out[0U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__15__KET____DOT__u_cluster.accum_out
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__15__KET____DOT__u_cluster__accum_out[1U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__15__KET____DOT__u_cluster.accum_out
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__15__KET____DOT__u_cluster__shadow_accum_out[0U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__15__KET____DOT__u_cluster.shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__15__KET____DOT__u_cluster__shadow_accum_out[1U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__15__KET____DOT__u_cluster.shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__16__KET____DOT__u_cluster__accum_out[0U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__16__KET____DOT__u_cluster.accum_out
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__16__KET____DOT__u_cluster__accum_out[1U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__16__KET____DOT__u_cluster.accum_out
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__16__KET____DOT__u_cluster__shadow_accum_out[0U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__16__KET____DOT__u_cluster.shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__16__KET____DOT__u_cluster__shadow_accum_out[1U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__16__KET____DOT__u_cluster.shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__17__KET____DOT__u_cluster__accum_out[0U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__17__KET____DOT__u_cluster.accum_out
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__17__KET____DOT__u_cluster__accum_out[1U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__17__KET____DOT__u_cluster.accum_out
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__17__KET____DOT__u_cluster__shadow_accum_out[0U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__17__KET____DOT__u_cluster.shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__17__KET____DOT__u_cluster__shadow_accum_out[1U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__17__KET____DOT__u_cluster.shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__18__KET____DOT__u_cluster__accum_out[0U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__18__KET____DOT__u_cluster.accum_out
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__18__KET____DOT__u_cluster__accum_out[1U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__18__KET____DOT__u_cluster.accum_out
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__18__KET____DOT__u_cluster__shadow_accum_out[0U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__18__KET____DOT__u_cluster.shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__18__KET____DOT__u_cluster__shadow_accum_out[1U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__18__KET____DOT__u_cluster.shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__19__KET____DOT__u_cluster__accum_out[0U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__19__KET____DOT__u_cluster.accum_out
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__19__KET____DOT__u_cluster__accum_out[1U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__19__KET____DOT__u_cluster.accum_out
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__19__KET____DOT__u_cluster__shadow_accum_out[0U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__19__KET____DOT__u_cluster.shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__19__KET____DOT__u_cluster__shadow_accum_out[1U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__19__KET____DOT__u_cluster.shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__20__KET____DOT__u_cluster__accum_out[0U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__20__KET____DOT__u_cluster.accum_out
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__20__KET____DOT__u_cluster__accum_out[1U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__20__KET____DOT__u_cluster.accum_out
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__20__KET____DOT__u_cluster__shadow_accum_out[0U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__20__KET____DOT__u_cluster.shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__20__KET____DOT__u_cluster__shadow_accum_out[1U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__20__KET____DOT__u_cluster.shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__21__KET____DOT__u_cluster__accum_out[0U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__21__KET____DOT__u_cluster.accum_out
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__21__KET____DOT__u_cluster__accum_out[1U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__21__KET____DOT__u_cluster.accum_out
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__21__KET____DOT__u_cluster__shadow_accum_out[0U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__21__KET____DOT__u_cluster.shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__21__KET____DOT__u_cluster__shadow_accum_out[1U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__21__KET____DOT__u_cluster.shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__22__KET____DOT__u_cluster__accum_out[0U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__22__KET____DOT__u_cluster.accum_out
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__22__KET____DOT__u_cluster__accum_out[1U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__22__KET____DOT__u_cluster.accum_out
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__22__KET____DOT__u_cluster__shadow_accum_out[0U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__22__KET____DOT__u_cluster.shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__22__KET____DOT__u_cluster__shadow_accum_out[1U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__22__KET____DOT__u_cluster.shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__23__KET____DOT__u_cluster__accum_out[0U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__23__KET____DOT__u_cluster.accum_out
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__23__KET____DOT__u_cluster__accum_out[1U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__23__KET____DOT__u_cluster.accum_out
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__23__KET____DOT__u_cluster__shadow_accum_out[0U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__23__KET____DOT__u_cluster.shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__23__KET____DOT__u_cluster__shadow_accum_out[1U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__23__KET____DOT__u_cluster.shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__24__KET____DOT__u_cluster__accum_out[0U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__24__KET____DOT__u_cluster.accum_out
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__24__KET____DOT__u_cluster__accum_out[1U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__24__KET____DOT__u_cluster.accum_out
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__24__KET____DOT__u_cluster__shadow_accum_out[0U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__24__KET____DOT__u_cluster.shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__24__KET____DOT__u_cluster__shadow_accum_out[1U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__24__KET____DOT__u_cluster.shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__25__KET____DOT__u_cluster__accum_out[0U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__25__KET____DOT__u_cluster.accum_out
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__25__KET____DOT__u_cluster__accum_out[1U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__25__KET____DOT__u_cluster.accum_out
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__25__KET____DOT__u_cluster__shadow_accum_out[0U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__25__KET____DOT__u_cluster.shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__25__KET____DOT__u_cluster__shadow_accum_out[1U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__25__KET____DOT__u_cluster.shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__26__KET____DOT__u_cluster__accum_out[0U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__26__KET____DOT__u_cluster.accum_out
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__26__KET____DOT__u_cluster__accum_out[1U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__26__KET____DOT__u_cluster.accum_out
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__26__KET____DOT__u_cluster__shadow_accum_out[0U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__26__KET____DOT__u_cluster.shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__26__KET____DOT__u_cluster__shadow_accum_out[1U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__26__KET____DOT__u_cluster.shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__27__KET____DOT__u_cluster__accum_out[0U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__27__KET____DOT__u_cluster.accum_out
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__27__KET____DOT__u_cluster__accum_out[1U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__27__KET____DOT__u_cluster.accum_out
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__27__KET____DOT__u_cluster__shadow_accum_out[0U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__27__KET____DOT__u_cluster.shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__27__KET____DOT__u_cluster__shadow_accum_out[1U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__27__KET____DOT__u_cluster.shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__28__KET____DOT__u_cluster__accum_out[0U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__28__KET____DOT__u_cluster.accum_out
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__28__KET____DOT__u_cluster__accum_out[1U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__28__KET____DOT__u_cluster.accum_out
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__28__KET____DOT__u_cluster__shadow_accum_out[0U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__28__KET____DOT__u_cluster.shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__28__KET____DOT__u_cluster__shadow_accum_out[1U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__28__KET____DOT__u_cluster.shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__29__KET____DOT__u_cluster__accum_out[0U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__29__KET____DOT__u_cluster.accum_out
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__29__KET____DOT__u_cluster__accum_out[1U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__29__KET____DOT__u_cluster.accum_out
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__29__KET____DOT__u_cluster__shadow_accum_out[0U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__29__KET____DOT__u_cluster.shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__29__KET____DOT__u_cluster__shadow_accum_out[1U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__29__KET____DOT__u_cluster.shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__30__KET____DOT__u_cluster__accum_out[0U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__30__KET____DOT__u_cluster.accum_out
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__30__KET____DOT__u_cluster__accum_out[1U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__30__KET____DOT__u_cluster.accum_out
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__30__KET____DOT__u_cluster__shadow_accum_out[0U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__30__KET____DOT__u_cluster.shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__30__KET____DOT__u_cluster__shadow_accum_out[1U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__30__KET____DOT__u_cluster.shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__31__KET____DOT__u_cluster__accum_out[0U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__31__KET____DOT__u_cluster.accum_out
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__31__KET____DOT__u_cluster__accum_out[1U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__31__KET____DOT__u_cluster.accum_out
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__31__KET____DOT__u_cluster__shadow_accum_out[0U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__31__KET____DOT__u_cluster.shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__31__KET____DOT__u_cluster__shadow_accum_out[1U] 
+        = vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__31__KET____DOT__u_cluster.shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_accum[0U][0U] = 
+        vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__0__KET____DOT__u_cluster__accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_accum[0U][1U] = 
+        vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__0__KET____DOT__u_cluster__accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[0U][0U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__0__KET____DOT__u_cluster__shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[0U][1U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__0__KET____DOT__u_cluster__shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_accum[1U][0U] = 
+        vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__1__KET____DOT__u_cluster__accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_accum[1U][1U] = 
+        vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__1__KET____DOT__u_cluster__accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[1U][0U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__1__KET____DOT__u_cluster__shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[1U][1U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__1__KET____DOT__u_cluster__shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_accum[2U][0U] = 
+        vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__2__KET____DOT__u_cluster__accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_accum[2U][1U] = 
+        vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__2__KET____DOT__u_cluster__accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[2U][0U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__2__KET____DOT__u_cluster__shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[2U][1U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__2__KET____DOT__u_cluster__shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_accum[3U][0U] = 
+        vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__3__KET____DOT__u_cluster__accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_accum[3U][1U] = 
+        vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__3__KET____DOT__u_cluster__accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[3U][0U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__3__KET____DOT__u_cluster__shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[3U][1U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__3__KET____DOT__u_cluster__shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_accum[4U][0U] = 
+        vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__4__KET____DOT__u_cluster__accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_accum[4U][1U] = 
+        vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__4__KET____DOT__u_cluster__accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[4U][0U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__4__KET____DOT__u_cluster__shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[4U][1U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__4__KET____DOT__u_cluster__shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_accum[5U][0U] = 
+        vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__5__KET____DOT__u_cluster__accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_accum[5U][1U] = 
+        vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__5__KET____DOT__u_cluster__accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[5U][0U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__5__KET____DOT__u_cluster__shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[5U][1U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__5__KET____DOT__u_cluster__shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_accum[6U][0U] = 
+        vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__6__KET____DOT__u_cluster__accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_accum[6U][1U] = 
+        vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__6__KET____DOT__u_cluster__accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[6U][0U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__6__KET____DOT__u_cluster__shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[6U][1U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__6__KET____DOT__u_cluster__shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_accum[7U][0U] = 
+        vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__7__KET____DOT__u_cluster__accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_accum[7U][1U] = 
+        vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__7__KET____DOT__u_cluster__accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[7U][0U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__7__KET____DOT__u_cluster__shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[7U][1U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__7__KET____DOT__u_cluster__shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_accum[8U][0U] = 
+        vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__8__KET____DOT__u_cluster__accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_accum[8U][1U] = 
+        vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__8__KET____DOT__u_cluster__accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[8U][0U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__8__KET____DOT__u_cluster__shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[8U][1U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__8__KET____DOT__u_cluster__shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_accum[9U][0U] = 
+        vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__9__KET____DOT__u_cluster__accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_accum[9U][1U] = 
+        vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__9__KET____DOT__u_cluster__accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[9U][0U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__9__KET____DOT__u_cluster__shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[9U][1U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__9__KET____DOT__u_cluster__shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_accum[0xaU][0U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__10__KET____DOT__u_cluster__accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_accum[0xaU][1U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__10__KET____DOT__u_cluster__accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[0xaU][0U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__10__KET____DOT__u_cluster__shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[0xaU][1U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__10__KET____DOT__u_cluster__shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_accum[0xbU][0U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__11__KET____DOT__u_cluster__accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_accum[0xbU][1U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__11__KET____DOT__u_cluster__accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[0xbU][0U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__11__KET____DOT__u_cluster__shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[0xbU][1U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__11__KET____DOT__u_cluster__shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_accum[0xcU][0U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__12__KET____DOT__u_cluster__accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_accum[0xcU][1U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__12__KET____DOT__u_cluster__accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[0xcU][0U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__12__KET____DOT__u_cluster__shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[0xcU][1U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__12__KET____DOT__u_cluster__shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_accum[0xdU][0U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__13__KET____DOT__u_cluster__accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_accum[0xdU][1U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__13__KET____DOT__u_cluster__accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[0xdU][0U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__13__KET____DOT__u_cluster__shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[0xdU][1U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__13__KET____DOT__u_cluster__shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_accum[0xeU][0U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__14__KET____DOT__u_cluster__accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_accum[0xeU][1U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__14__KET____DOT__u_cluster__accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[0xeU][0U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__14__KET____DOT__u_cluster__shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[0xeU][1U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__14__KET____DOT__u_cluster__shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_accum[0xfU][0U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__15__KET____DOT__u_cluster__accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_accum[0xfU][1U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__15__KET____DOT__u_cluster__accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[0xfU][0U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__15__KET____DOT__u_cluster__shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[0xfU][1U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__15__KET____DOT__u_cluster__shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_accum[0x10U][0U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__16__KET____DOT__u_cluster__accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_accum[0x10U][1U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__16__KET____DOT__u_cluster__accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[0x10U][0U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__16__KET____DOT__u_cluster__shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[0x10U][1U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__16__KET____DOT__u_cluster__shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_accum[0x11U][0U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__17__KET____DOT__u_cluster__accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_accum[0x11U][1U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__17__KET____DOT__u_cluster__accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[0x11U][0U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__17__KET____DOT__u_cluster__shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[0x11U][1U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__17__KET____DOT__u_cluster__shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_accum[0x12U][0U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__18__KET____DOT__u_cluster__accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_accum[0x12U][1U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__18__KET____DOT__u_cluster__accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[0x12U][0U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__18__KET____DOT__u_cluster__shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[0x12U][1U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__18__KET____DOT__u_cluster__shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_accum[0x13U][0U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__19__KET____DOT__u_cluster__accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_accum[0x13U][1U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__19__KET____DOT__u_cluster__accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[0x13U][0U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__19__KET____DOT__u_cluster__shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[0x13U][1U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__19__KET____DOT__u_cluster__shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_accum[0x14U][0U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__20__KET____DOT__u_cluster__accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_accum[0x14U][1U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__20__KET____DOT__u_cluster__accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[0x14U][0U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__20__KET____DOT__u_cluster__shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[0x14U][1U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__20__KET____DOT__u_cluster__shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_accum[0x15U][0U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__21__KET____DOT__u_cluster__accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_accum[0x15U][1U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__21__KET____DOT__u_cluster__accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[0x15U][0U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__21__KET____DOT__u_cluster__shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[0x15U][1U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__21__KET____DOT__u_cluster__shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_accum[0x16U][0U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__22__KET____DOT__u_cluster__accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_accum[0x16U][1U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__22__KET____DOT__u_cluster__accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[0x16U][0U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__22__KET____DOT__u_cluster__shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[0x16U][1U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__22__KET____DOT__u_cluster__shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_accum[0x17U][0U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__23__KET____DOT__u_cluster__accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_accum[0x17U][1U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__23__KET____DOT__u_cluster__accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[0x17U][0U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__23__KET____DOT__u_cluster__shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[0x17U][1U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__23__KET____DOT__u_cluster__shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_accum[0x18U][0U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__24__KET____DOT__u_cluster__accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_accum[0x18U][1U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__24__KET____DOT__u_cluster__accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[0x18U][0U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__24__KET____DOT__u_cluster__shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[0x18U][1U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__24__KET____DOT__u_cluster__shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_accum[0x19U][0U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__25__KET____DOT__u_cluster__accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_accum[0x19U][1U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__25__KET____DOT__u_cluster__accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[0x19U][0U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__25__KET____DOT__u_cluster__shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[0x19U][1U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__25__KET____DOT__u_cluster__shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_accum[0x1aU][0U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__26__KET____DOT__u_cluster__accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_accum[0x1aU][1U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__26__KET____DOT__u_cluster__accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[0x1aU][0U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__26__KET____DOT__u_cluster__shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[0x1aU][1U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__26__KET____DOT__u_cluster__shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_accum[0x1bU][0U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__27__KET____DOT__u_cluster__accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_accum[0x1bU][1U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__27__KET____DOT__u_cluster__accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[0x1bU][0U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__27__KET____DOT__u_cluster__shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[0x1bU][1U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__27__KET____DOT__u_cluster__shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_accum[0x1cU][0U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__28__KET____DOT__u_cluster__accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_accum[0x1cU][1U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__28__KET____DOT__u_cluster__accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[0x1cU][0U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__28__KET____DOT__u_cluster__shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[0x1cU][1U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__28__KET____DOT__u_cluster__shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_accum[0x1dU][0U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__29__KET____DOT__u_cluster__accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_accum[0x1dU][1U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__29__KET____DOT__u_cluster__accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[0x1dU][0U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__29__KET____DOT__u_cluster__shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[0x1dU][1U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__29__KET____DOT__u_cluster__shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_accum[0x1eU][0U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__30__KET____DOT__u_cluster__accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_accum[0x1eU][1U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__30__KET____DOT__u_cluster__accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[0x1eU][0U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__30__KET____DOT__u_cluster__shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[0x1eU][1U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__30__KET____DOT__u_cluster__shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_accum[0x1fU][0U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__31__KET____DOT__u_cluster__accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_accum[0x1fU][1U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__31__KET____DOT__u_cluster__accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[0x1fU][0U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__31__KET____DOT__u_cluster__shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[0x1fU][1U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__31__KET____DOT__u_cluster__shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT__logical_accum[0U] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0U] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[1U] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[1U] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[2U] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[2U] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[3U] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[3U] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[4U] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[4U] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[5U] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[5U] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[6U] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[6U] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[7U] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[7U] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[8U] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[8U] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[9U] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[9U] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0xaU] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0xaU] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0xbU] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0xbU] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0xcU] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0xcU] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0xdU] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0xdU] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0xeU] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0xeU] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0xfU] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0xfU] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0x10U] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x10U] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0x11U] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x11U] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0x12U] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x12U] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0x13U] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x13U] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0x14U] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x14U] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0x15U] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x15U] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0x16U] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x16U] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0x17U] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x17U] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0x18U] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x18U] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0x19U] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x19U] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0x1aU] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x1aU] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0x1bU] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x1bU] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0x1cU] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x1cU] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0x1dU] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x1dU] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0x1eU] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x1eU] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0x1fU] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x1fU] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0x20U] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x20U] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0x21U] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x21U] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0x22U] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x22U] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0x23U] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x23U] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0x24U] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x24U] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0x25U] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x25U] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0x26U] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x26U] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0x27U] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x27U] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0x28U] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x28U] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0x29U] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x29U] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0x2aU] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x2aU] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0x2bU] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x2bU] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0x2cU] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x2cU] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0x2dU] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x2dU] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0x2eU] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x2eU] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0x2fU] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x2fU] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0x30U] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x30U] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0x31U] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x31U] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0x32U] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x32U] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0x33U] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x33U] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0x34U] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x34U] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0x35U] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x35U] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0x36U] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x36U] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0x37U] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x37U] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0x38U] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x38U] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0x39U] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x39U] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0x3aU] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x3aU] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0x3bU] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x3bU] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0x3cU] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x3cU] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0x3dU] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x3dU] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0x3eU] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x3eU] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0x3fU] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x3fU] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0U] = vlTOPp->top_level__DOT__cluster_accum
+        [0U][0U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0U] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [0U][0U];
+    vlTOPp->top_level__DOT__logical_accum[1U] = vlTOPp->top_level__DOT__cluster_accum
+        [0U][1U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[1U] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [0U][1U];
+    vlTOPp->top_level__DOT__logical_accum[2U] = vlTOPp->top_level__DOT__cluster_accum
+        [1U][0U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[2U] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [1U][0U];
+    vlTOPp->top_level__DOT__logical_accum[3U] = vlTOPp->top_level__DOT__cluster_accum
+        [1U][1U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[3U] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [1U][1U];
+    vlTOPp->top_level__DOT__logical_accum[4U] = vlTOPp->top_level__DOT__cluster_accum
+        [2U][0U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[4U] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [2U][0U];
+    vlTOPp->top_level__DOT__logical_accum[5U] = vlTOPp->top_level__DOT__cluster_accum
+        [2U][1U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[5U] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [2U][1U];
+    vlTOPp->top_level__DOT__logical_accum[6U] = vlTOPp->top_level__DOT__cluster_accum
+        [3U][0U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[6U] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [3U][0U];
+    vlTOPp->top_level__DOT__logical_accum[7U] = vlTOPp->top_level__DOT__cluster_accum
+        [3U][1U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[7U] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [3U][1U];
+    vlTOPp->top_level__DOT__logical_accum[8U] = vlTOPp->top_level__DOT__cluster_accum
+        [4U][0U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[8U] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [4U][0U];
+    vlTOPp->top_level__DOT__logical_accum[9U] = vlTOPp->top_level__DOT__cluster_accum
+        [4U][1U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[9U] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [4U][1U];
+    vlTOPp->top_level__DOT__logical_accum[0xaU] = vlTOPp->top_level__DOT__cluster_accum
+        [5U][0U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0xaU] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [5U][0U];
+    vlTOPp->top_level__DOT__logical_accum[0xbU] = vlTOPp->top_level__DOT__cluster_accum
+        [5U][1U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0xbU] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [5U][1U];
+    vlTOPp->top_level__DOT__logical_accum[0xcU] = vlTOPp->top_level__DOT__cluster_accum
+        [6U][0U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0xcU] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [6U][0U];
+    vlTOPp->top_level__DOT__logical_accum[0xdU] = vlTOPp->top_level__DOT__cluster_accum
+        [6U][1U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0xdU] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [6U][1U];
+    vlTOPp->top_level__DOT__logical_accum[0xeU] = vlTOPp->top_level__DOT__cluster_accum
+        [7U][0U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0xeU] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [7U][0U];
+    vlTOPp->top_level__DOT__logical_accum[0xfU] = vlTOPp->top_level__DOT__cluster_accum
+        [7U][1U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0xfU] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [7U][1U];
+    vlTOPp->top_level__DOT__logical_accum[0x10U] = 
+        vlTOPp->top_level__DOT__cluster_accum[8U][0U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x10U] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [8U][0U];
+    vlTOPp->top_level__DOT__logical_accum[0x11U] = 
+        vlTOPp->top_level__DOT__cluster_accum[8U][1U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x11U] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [8U][1U];
+    vlTOPp->top_level__DOT__logical_accum[0x12U] = 
+        vlTOPp->top_level__DOT__cluster_accum[9U][0U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x12U] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [9U][0U];
+    vlTOPp->top_level__DOT__logical_accum[0x13U] = 
+        vlTOPp->top_level__DOT__cluster_accum[9U][1U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x13U] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [9U][1U];
+    vlTOPp->top_level__DOT__logical_accum[0x14U] = 
+        vlTOPp->top_level__DOT__cluster_accum[0xaU]
+        [0U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x14U] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [0xaU][0U];
+    vlTOPp->top_level__DOT__logical_accum[0x15U] = 
+        vlTOPp->top_level__DOT__cluster_accum[0xaU]
+        [1U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x15U] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [0xaU][1U];
+    vlTOPp->top_level__DOT__logical_accum[0x16U] = 
+        vlTOPp->top_level__DOT__cluster_accum[0xbU]
+        [0U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x16U] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [0xbU][0U];
+    vlTOPp->top_level__DOT__logical_accum[0x17U] = 
+        vlTOPp->top_level__DOT__cluster_accum[0xbU]
+        [1U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x17U] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [0xbU][1U];
+    vlTOPp->top_level__DOT__logical_accum[0x18U] = 
+        vlTOPp->top_level__DOT__cluster_accum[0xcU]
+        [0U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x18U] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [0xcU][0U];
+    vlTOPp->top_level__DOT__logical_accum[0x19U] = 
+        vlTOPp->top_level__DOT__cluster_accum[0xcU]
+        [1U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x19U] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [0xcU][1U];
+    vlTOPp->top_level__DOT__logical_accum[0x1aU] = 
+        vlTOPp->top_level__DOT__cluster_accum[0xdU]
+        [0U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x1aU] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [0xdU][0U];
+    vlTOPp->top_level__DOT__logical_accum[0x1bU] = 
+        vlTOPp->top_level__DOT__cluster_accum[0xdU]
+        [1U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x1bU] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [0xdU][1U];
+    vlTOPp->top_level__DOT__logical_accum[0x1cU] = 
+        vlTOPp->top_level__DOT__cluster_accum[0xeU]
+        [0U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x1cU] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [0xeU][0U];
+    vlTOPp->top_level__DOT__logical_accum[0x1dU] = 
+        vlTOPp->top_level__DOT__cluster_accum[0xeU]
+        [1U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x1dU] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [0xeU][1U];
+    vlTOPp->top_level__DOT__logical_accum[0x1eU] = 
+        vlTOPp->top_level__DOT__cluster_accum[0xfU]
+        [0U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x1eU] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [0xfU][0U];
+    vlTOPp->top_level__DOT__logical_accum[0x1fU] = 
+        vlTOPp->top_level__DOT__cluster_accum[0xfU]
+        [1U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x1fU] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [0xfU][1U];
+    vlTOPp->top_level__DOT__logical_accum[0x20U] = 
+        vlTOPp->top_level__DOT__cluster_accum[0x10U]
+        [0U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x20U] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [0x10U][0U];
+    vlTOPp->top_level__DOT__logical_accum[0x21U] = 
+        vlTOPp->top_level__DOT__cluster_accum[0x10U]
+        [1U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x21U] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [0x10U][1U];
+    vlTOPp->top_level__DOT__logical_accum[0x22U] = 
+        vlTOPp->top_level__DOT__cluster_accum[0x11U]
+        [0U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x22U] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [0x11U][0U];
+    vlTOPp->top_level__DOT__logical_accum[0x23U] = 
+        vlTOPp->top_level__DOT__cluster_accum[0x11U]
+        [1U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x23U] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [0x11U][1U];
+    vlTOPp->top_level__DOT__logical_accum[0x24U] = 
+        vlTOPp->top_level__DOT__cluster_accum[0x12U]
+        [0U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x24U] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [0x12U][0U];
+    vlTOPp->top_level__DOT__logical_accum[0x25U] = 
+        vlTOPp->top_level__DOT__cluster_accum[0x12U]
+        [1U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x25U] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [0x12U][1U];
+    vlTOPp->top_level__DOT__logical_accum[0x26U] = 
+        vlTOPp->top_level__DOT__cluster_accum[0x13U]
+        [0U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x26U] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [0x13U][0U];
+    vlTOPp->top_level__DOT__logical_accum[0x27U] = 
+        vlTOPp->top_level__DOT__cluster_accum[0x13U]
+        [1U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x27U] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [0x13U][1U];
+    vlTOPp->top_level__DOT__logical_accum[0x28U] = 
+        vlTOPp->top_level__DOT__cluster_accum[0x14U]
+        [0U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x28U] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [0x14U][0U];
+    vlTOPp->top_level__DOT__logical_accum[0x29U] = 
+        vlTOPp->top_level__DOT__cluster_accum[0x14U]
+        [1U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x29U] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [0x14U][1U];
+    vlTOPp->top_level__DOT__logical_accum[0x2aU] = 
+        vlTOPp->top_level__DOT__cluster_accum[0x15U]
+        [0U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x2aU] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [0x15U][0U];
+    vlTOPp->top_level__DOT__logical_accum[0x2bU] = 
+        vlTOPp->top_level__DOT__cluster_accum[0x15U]
+        [1U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x2bU] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [0x15U][1U];
+    vlTOPp->top_level__DOT__logical_accum[0x2cU] = 
+        vlTOPp->top_level__DOT__cluster_accum[0x16U]
+        [0U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x2cU] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [0x16U][0U];
+    vlTOPp->top_level__DOT__logical_accum[0x2dU] = 
+        vlTOPp->top_level__DOT__cluster_accum[0x16U]
+        [1U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x2dU] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [0x16U][1U];
+    vlTOPp->top_level__DOT__logical_accum[0x2eU] = 
+        vlTOPp->top_level__DOT__cluster_accum[0x17U]
+        [0U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x2eU] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [0x17U][0U];
+    vlTOPp->top_level__DOT__logical_accum[0x2fU] = 
+        vlTOPp->top_level__DOT__cluster_accum[0x17U]
+        [1U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x2fU] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [0x17U][1U];
+    vlTOPp->top_level__DOT__logical_accum[0x30U] = 
+        vlTOPp->top_level__DOT__cluster_accum[0x18U]
+        [0U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x30U] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [0x18U][0U];
+    vlTOPp->top_level__DOT__logical_accum[0x31U] = 
+        vlTOPp->top_level__DOT__cluster_accum[0x18U]
+        [1U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x31U] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [0x18U][1U];
+    vlTOPp->top_level__DOT__logical_accum[0x32U] = 
+        vlTOPp->top_level__DOT__cluster_accum[0x19U]
+        [0U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x32U] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [0x19U][0U];
+    vlTOPp->top_level__DOT__logical_accum[0x33U] = 
+        vlTOPp->top_level__DOT__cluster_accum[0x19U]
+        [1U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x33U] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [0x19U][1U];
+    vlTOPp->top_level__DOT__logical_accum[0x34U] = 
+        vlTOPp->top_level__DOT__cluster_accum[0x1aU]
+        [0U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x34U] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [0x1aU][0U];
+    vlTOPp->top_level__DOT__logical_accum[0x35U] = 
+        vlTOPp->top_level__DOT__cluster_accum[0x1aU]
+        [1U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x35U] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [0x1aU][1U];
+    vlTOPp->top_level__DOT__logical_accum[0x36U] = 
+        vlTOPp->top_level__DOT__cluster_accum[0x1bU]
+        [0U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x36U] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [0x1bU][0U];
+    vlTOPp->top_level__DOT__logical_accum[0x37U] = 
+        vlTOPp->top_level__DOT__cluster_accum[0x1bU]
+        [1U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x37U] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [0x1bU][1U];
+    vlTOPp->top_level__DOT__logical_accum[0x38U] = 
+        vlTOPp->top_level__DOT__cluster_accum[0x1cU]
+        [0U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x38U] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [0x1cU][0U];
+    vlTOPp->top_level__DOT__logical_accum[0x39U] = 
+        vlTOPp->top_level__DOT__cluster_accum[0x1cU]
+        [1U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x39U] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [0x1cU][1U];
+    vlTOPp->top_level__DOT__logical_accum[0x3aU] = 
+        vlTOPp->top_level__DOT__cluster_accum[0x1dU]
+        [0U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x3aU] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [0x1dU][0U];
+    vlTOPp->top_level__DOT__logical_accum[0x3bU] = 
+        vlTOPp->top_level__DOT__cluster_accum[0x1dU]
+        [1U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x3bU] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [0x1dU][1U];
+    vlTOPp->top_level__DOT__logical_accum[0x3cU] = 
+        vlTOPp->top_level__DOT__cluster_accum[0x1eU]
+        [0U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x3cU] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [0x1eU][0U];
+    vlTOPp->top_level__DOT__logical_accum[0x3dU] = 
+        vlTOPp->top_level__DOT__cluster_accum[0x1eU]
+        [1U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x3dU] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [0x1eU][1U];
+    vlTOPp->top_level__DOT__logical_accum[0x3eU] = 
+        vlTOPp->top_level__DOT__cluster_accum[0x1fU]
+        [0U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x3eU] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [0x1fU][0U];
+    vlTOPp->top_level__DOT__logical_accum[0x3fU] = 
+        vlTOPp->top_level__DOT__cluster_accum[0x1fU]
+        [1U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x3fU] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [0x1fU][1U];
+}
+
 void Vtop_level::_eval_initial(Vtop_level__Syms* __restrict vlSymsp) {
     VL_DEBUG_IF(VL_DBG_MSGF("+    Vtop_level::_eval_initial\n"); );
     Vtop_level* const __restrict vlTOPp VL_ATTR_UNUSED = vlSymsp->TOPp;
     // Body
-    vlTOPp->_initial__TOP__2(vlSymsp);
+    vlTOPp->_initial__TOP__1(vlSymsp);
     vlTOPp->__Vclklast__TOP__clk = vlTOPp->clk;
 }
 
@@ -2322,6 +3222,7 @@ void Vtop_level::_eval_settle(Vtop_level__Syms* __restrict vlSymsp) {
     VL_DEBUG_IF(VL_DBG_MSGF("+    Vtop_level::_eval_settle\n"); );
     Vtop_level* const __restrict vlTOPp VL_ATTR_UNUSED = vlSymsp->TOPp;
     // Body
+    vlTOPp->_settle__TOP__2(vlSymsp);
     vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__1(vlSymsp);
     vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__1(vlSymsp);
     vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__1(vlSymsp);
@@ -2354,72 +3255,7 @@ void Vtop_level::_eval_settle(Vtop_level__Syms* __restrict vlSymsp) {
     vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__29__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__1(vlSymsp);
     vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__30__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__1(vlSymsp);
     vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__31__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__1(vlSymsp);
-    vlTOPp->_settle__TOP__1(vlSymsp);
-    vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__33(vlSymsp);
-    vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__33(vlSymsp);
-    vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__33(vlSymsp);
-    vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__33(vlSymsp);
-    vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__33(vlSymsp);
-    vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__33(vlSymsp);
-    vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__33(vlSymsp);
-    vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__33(vlSymsp);
-    vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__8__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__33(vlSymsp);
-    vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__9__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__33(vlSymsp);
-    vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__10__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__33(vlSymsp);
-    vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__11__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__33(vlSymsp);
-    vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__12__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__33(vlSymsp);
-    vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__13__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__33(vlSymsp);
-    vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__14__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__33(vlSymsp);
-    vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__15__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__33(vlSymsp);
-    vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__16__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__33(vlSymsp);
-    vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__17__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__33(vlSymsp);
-    vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__18__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__33(vlSymsp);
-    vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__19__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__33(vlSymsp);
-    vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__20__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__33(vlSymsp);
-    vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__21__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__33(vlSymsp);
-    vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__22__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__33(vlSymsp);
-    vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__23__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__33(vlSymsp);
-    vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__24__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__33(vlSymsp);
-    vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__25__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__33(vlSymsp);
-    vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__26__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__33(vlSymsp);
-    vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__27__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__33(vlSymsp);
-    vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__28__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__33(vlSymsp);
-    vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__29__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__33(vlSymsp);
-    vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__30__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__33(vlSymsp);
-    vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__31__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__33(vlSymsp);
-    vlTOPp->_settle__TOP__5(vlSymsp);
-    vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__97(vlSymsp);
-    vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__97(vlSymsp);
-    vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__97(vlSymsp);
-    vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__97(vlSymsp);
-    vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__97(vlSymsp);
-    vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__97(vlSymsp);
-    vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__97(vlSymsp);
-    vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__97(vlSymsp);
-    vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__8__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__97(vlSymsp);
-    vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__9__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__97(vlSymsp);
-    vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__10__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__97(vlSymsp);
-    vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__11__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__97(vlSymsp);
-    vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__12__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__97(vlSymsp);
-    vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__13__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__97(vlSymsp);
-    vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__14__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__97(vlSymsp);
-    vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__15__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__97(vlSymsp);
-    vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__16__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__97(vlSymsp);
-    vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__17__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__97(vlSymsp);
-    vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__18__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__97(vlSymsp);
-    vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__19__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__97(vlSymsp);
-    vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__20__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__97(vlSymsp);
-    vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__21__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__97(vlSymsp);
-    vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__22__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__97(vlSymsp);
-    vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__23__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__97(vlSymsp);
-    vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__24__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__97(vlSymsp);
-    vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__25__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__97(vlSymsp);
-    vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__26__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__97(vlSymsp);
-    vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__27__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__97(vlSymsp);
-    vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__28__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__97(vlSymsp);
-    vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__29__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__97(vlSymsp);
-    vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__30__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__97(vlSymsp);
-    vlSymsp->TOP__top_level__DOT__gen_clusters__BRA__31__KET____DOT__u_cluster._settle__TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__97(vlSymsp);
+    vlTOPp->_settle__TOP__3(vlSymsp);
 }
 
 void Vtop_level::_ctor_var_reset() {
@@ -2431,6 +3267,10 @@ void Vtop_level::_ctor_var_reset() {
     done = VL_RAND_RESET_I(1);
     busy = VL_RAND_RESET_I(1);
     debug_cycle_count = VL_RAND_RESET_I(32);
+    debug_output_count = VL_RAND_RESET_I(32);
+    debug_total_compute_steps = VL_RAND_RESET_I(32);
+    debug_primary_checksum = VL_RAND_RESET_I(32);
+    debug_shadow_checksum = VL_RAND_RESET_I(32);
     top_level__DOT__clear_acc = VL_RAND_RESET_I(1);
     top_level__DOT__compute_en = VL_RAND_RESET_I(1);
     top_level__DOT__write_en = VL_RAND_RESET_I(1);
@@ -2459,9 +3299,21 @@ void Vtop_level::_ctor_var_reset() {
                     top_level__DOT__cluster_accum[__Vi0][__Vi1] = VL_RAND_RESET_I(32);
             }}
     }}
+    { int __Vi0=0; for (; __Vi0<32; ++__Vi0) {
+            { int __Vi1=0; for (; __Vi1<2; ++__Vi1) {
+                    top_level__DOT__cluster_shadow_accum[__Vi0][__Vi1] = VL_RAND_RESET_I(32);
+            }}
+    }}
+    { int __Vi0=0; for (; __Vi0<64; ++__Vi0) {
+            top_level__DOT__logical_accum[__Vi0] = VL_RAND_RESET_I(32);
+    }}
+    { int __Vi0=0; for (; __Vi0<64; ++__Vi0) {
+            top_level__DOT__logical_shadow_accum[__Vi0] = VL_RAND_RESET_I(32);
+    }}
     { int __Vi0=0; for (; __Vi0<64; ++__Vi0) {
             top_level__DOT__output_mem[__Vi0] = VL_RAND_RESET_I(32);
     }}
+    top_level__DOT__shadow_checksum_q = VL_RAND_RESET_I(32);
     { int __Vi0=0; for (; __Vi0<8; ++__Vi0) {
             top_level__DOT____Vcellout__u_a_buffer__read_data[__Vi0] = VL_RAND_RESET_I(16);
     }}
@@ -2499,6 +3351,9 @@ void Vtop_level::_ctor_var_reset() {
             top_level__DOT__gen_clusters__BRA__0__KET____DOT__cluster_lane_b[__Vi0] = VL_RAND_RESET_I(16);
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
+            top_level__DOT____Vcellout__gen_clusters__BRA__0__KET____DOT__u_cluster__shadow_accum_out[__Vi0] = VL_RAND_RESET_I(32);
+    }}
+    { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
             top_level__DOT____Vcellout__gen_clusters__BRA__0__KET____DOT__u_cluster__accum_out[__Vi0] = VL_RAND_RESET_I(32);
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
@@ -2512,6 +3367,9 @@ void Vtop_level::_ctor_var_reset() {
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
             top_level__DOT__gen_clusters__BRA__1__KET____DOT__cluster_lane_b[__Vi0] = VL_RAND_RESET_I(16);
+    }}
+    { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
+            top_level__DOT____Vcellout__gen_clusters__BRA__1__KET____DOT__u_cluster__shadow_accum_out[__Vi0] = VL_RAND_RESET_I(32);
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
             top_level__DOT____Vcellout__gen_clusters__BRA__1__KET____DOT__u_cluster__accum_out[__Vi0] = VL_RAND_RESET_I(32);
@@ -2529,6 +3387,9 @@ void Vtop_level::_ctor_var_reset() {
             top_level__DOT__gen_clusters__BRA__2__KET____DOT__cluster_lane_b[__Vi0] = VL_RAND_RESET_I(16);
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
+            top_level__DOT____Vcellout__gen_clusters__BRA__2__KET____DOT__u_cluster__shadow_accum_out[__Vi0] = VL_RAND_RESET_I(32);
+    }}
+    { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
             top_level__DOT____Vcellout__gen_clusters__BRA__2__KET____DOT__u_cluster__accum_out[__Vi0] = VL_RAND_RESET_I(32);
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
@@ -2542,6 +3403,9 @@ void Vtop_level::_ctor_var_reset() {
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
             top_level__DOT__gen_clusters__BRA__3__KET____DOT__cluster_lane_b[__Vi0] = VL_RAND_RESET_I(16);
+    }}
+    { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
+            top_level__DOT____Vcellout__gen_clusters__BRA__3__KET____DOT__u_cluster__shadow_accum_out[__Vi0] = VL_RAND_RESET_I(32);
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
             top_level__DOT____Vcellout__gen_clusters__BRA__3__KET____DOT__u_cluster__accum_out[__Vi0] = VL_RAND_RESET_I(32);
@@ -2559,6 +3423,9 @@ void Vtop_level::_ctor_var_reset() {
             top_level__DOT__gen_clusters__BRA__4__KET____DOT__cluster_lane_b[__Vi0] = VL_RAND_RESET_I(16);
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
+            top_level__DOT____Vcellout__gen_clusters__BRA__4__KET____DOT__u_cluster__shadow_accum_out[__Vi0] = VL_RAND_RESET_I(32);
+    }}
+    { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
             top_level__DOT____Vcellout__gen_clusters__BRA__4__KET____DOT__u_cluster__accum_out[__Vi0] = VL_RAND_RESET_I(32);
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
@@ -2572,6 +3439,9 @@ void Vtop_level::_ctor_var_reset() {
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
             top_level__DOT__gen_clusters__BRA__5__KET____DOT__cluster_lane_b[__Vi0] = VL_RAND_RESET_I(16);
+    }}
+    { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
+            top_level__DOT____Vcellout__gen_clusters__BRA__5__KET____DOT__u_cluster__shadow_accum_out[__Vi0] = VL_RAND_RESET_I(32);
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
             top_level__DOT____Vcellout__gen_clusters__BRA__5__KET____DOT__u_cluster__accum_out[__Vi0] = VL_RAND_RESET_I(32);
@@ -2589,6 +3459,9 @@ void Vtop_level::_ctor_var_reset() {
             top_level__DOT__gen_clusters__BRA__6__KET____DOT__cluster_lane_b[__Vi0] = VL_RAND_RESET_I(16);
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
+            top_level__DOT____Vcellout__gen_clusters__BRA__6__KET____DOT__u_cluster__shadow_accum_out[__Vi0] = VL_RAND_RESET_I(32);
+    }}
+    { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
             top_level__DOT____Vcellout__gen_clusters__BRA__6__KET____DOT__u_cluster__accum_out[__Vi0] = VL_RAND_RESET_I(32);
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
@@ -2602,6 +3475,9 @@ void Vtop_level::_ctor_var_reset() {
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
             top_level__DOT__gen_clusters__BRA__7__KET____DOT__cluster_lane_b[__Vi0] = VL_RAND_RESET_I(16);
+    }}
+    { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
+            top_level__DOT____Vcellout__gen_clusters__BRA__7__KET____DOT__u_cluster__shadow_accum_out[__Vi0] = VL_RAND_RESET_I(32);
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
             top_level__DOT____Vcellout__gen_clusters__BRA__7__KET____DOT__u_cluster__accum_out[__Vi0] = VL_RAND_RESET_I(32);
@@ -2619,6 +3495,9 @@ void Vtop_level::_ctor_var_reset() {
             top_level__DOT__gen_clusters__BRA__8__KET____DOT__cluster_lane_b[__Vi0] = VL_RAND_RESET_I(16);
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
+            top_level__DOT____Vcellout__gen_clusters__BRA__8__KET____DOT__u_cluster__shadow_accum_out[__Vi0] = VL_RAND_RESET_I(32);
+    }}
+    { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
             top_level__DOT____Vcellout__gen_clusters__BRA__8__KET____DOT__u_cluster__accum_out[__Vi0] = VL_RAND_RESET_I(32);
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
@@ -2632,6 +3511,9 @@ void Vtop_level::_ctor_var_reset() {
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
             top_level__DOT__gen_clusters__BRA__9__KET____DOT__cluster_lane_b[__Vi0] = VL_RAND_RESET_I(16);
+    }}
+    { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
+            top_level__DOT____Vcellout__gen_clusters__BRA__9__KET____DOT__u_cluster__shadow_accum_out[__Vi0] = VL_RAND_RESET_I(32);
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
             top_level__DOT____Vcellout__gen_clusters__BRA__9__KET____DOT__u_cluster__accum_out[__Vi0] = VL_RAND_RESET_I(32);
@@ -2649,6 +3531,9 @@ void Vtop_level::_ctor_var_reset() {
             top_level__DOT__gen_clusters__BRA__10__KET____DOT__cluster_lane_b[__Vi0] = VL_RAND_RESET_I(16);
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
+            top_level__DOT____Vcellout__gen_clusters__BRA__10__KET____DOT__u_cluster__shadow_accum_out[__Vi0] = VL_RAND_RESET_I(32);
+    }}
+    { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
             top_level__DOT____Vcellout__gen_clusters__BRA__10__KET____DOT__u_cluster__accum_out[__Vi0] = VL_RAND_RESET_I(32);
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
@@ -2662,6 +3547,9 @@ void Vtop_level::_ctor_var_reset() {
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
             top_level__DOT__gen_clusters__BRA__11__KET____DOT__cluster_lane_b[__Vi0] = VL_RAND_RESET_I(16);
+    }}
+    { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
+            top_level__DOT____Vcellout__gen_clusters__BRA__11__KET____DOT__u_cluster__shadow_accum_out[__Vi0] = VL_RAND_RESET_I(32);
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
             top_level__DOT____Vcellout__gen_clusters__BRA__11__KET____DOT__u_cluster__accum_out[__Vi0] = VL_RAND_RESET_I(32);
@@ -2679,6 +3567,9 @@ void Vtop_level::_ctor_var_reset() {
             top_level__DOT__gen_clusters__BRA__12__KET____DOT__cluster_lane_b[__Vi0] = VL_RAND_RESET_I(16);
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
+            top_level__DOT____Vcellout__gen_clusters__BRA__12__KET____DOT__u_cluster__shadow_accum_out[__Vi0] = VL_RAND_RESET_I(32);
+    }}
+    { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
             top_level__DOT____Vcellout__gen_clusters__BRA__12__KET____DOT__u_cluster__accum_out[__Vi0] = VL_RAND_RESET_I(32);
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
@@ -2692,6 +3583,9 @@ void Vtop_level::_ctor_var_reset() {
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
             top_level__DOT__gen_clusters__BRA__13__KET____DOT__cluster_lane_b[__Vi0] = VL_RAND_RESET_I(16);
+    }}
+    { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
+            top_level__DOT____Vcellout__gen_clusters__BRA__13__KET____DOT__u_cluster__shadow_accum_out[__Vi0] = VL_RAND_RESET_I(32);
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
             top_level__DOT____Vcellout__gen_clusters__BRA__13__KET____DOT__u_cluster__accum_out[__Vi0] = VL_RAND_RESET_I(32);
@@ -2709,6 +3603,9 @@ void Vtop_level::_ctor_var_reset() {
             top_level__DOT__gen_clusters__BRA__14__KET____DOT__cluster_lane_b[__Vi0] = VL_RAND_RESET_I(16);
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
+            top_level__DOT____Vcellout__gen_clusters__BRA__14__KET____DOT__u_cluster__shadow_accum_out[__Vi0] = VL_RAND_RESET_I(32);
+    }}
+    { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
             top_level__DOT____Vcellout__gen_clusters__BRA__14__KET____DOT__u_cluster__accum_out[__Vi0] = VL_RAND_RESET_I(32);
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
@@ -2722,6 +3619,9 @@ void Vtop_level::_ctor_var_reset() {
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
             top_level__DOT__gen_clusters__BRA__15__KET____DOT__cluster_lane_b[__Vi0] = VL_RAND_RESET_I(16);
+    }}
+    { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
+            top_level__DOT____Vcellout__gen_clusters__BRA__15__KET____DOT__u_cluster__shadow_accum_out[__Vi0] = VL_RAND_RESET_I(32);
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
             top_level__DOT____Vcellout__gen_clusters__BRA__15__KET____DOT__u_cluster__accum_out[__Vi0] = VL_RAND_RESET_I(32);
@@ -2739,6 +3639,9 @@ void Vtop_level::_ctor_var_reset() {
             top_level__DOT__gen_clusters__BRA__16__KET____DOT__cluster_lane_b[__Vi0] = VL_RAND_RESET_I(16);
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
+            top_level__DOT____Vcellout__gen_clusters__BRA__16__KET____DOT__u_cluster__shadow_accum_out[__Vi0] = VL_RAND_RESET_I(32);
+    }}
+    { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
             top_level__DOT____Vcellout__gen_clusters__BRA__16__KET____DOT__u_cluster__accum_out[__Vi0] = VL_RAND_RESET_I(32);
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
@@ -2752,6 +3655,9 @@ void Vtop_level::_ctor_var_reset() {
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
             top_level__DOT__gen_clusters__BRA__17__KET____DOT__cluster_lane_b[__Vi0] = VL_RAND_RESET_I(16);
+    }}
+    { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
+            top_level__DOT____Vcellout__gen_clusters__BRA__17__KET____DOT__u_cluster__shadow_accum_out[__Vi0] = VL_RAND_RESET_I(32);
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
             top_level__DOT____Vcellout__gen_clusters__BRA__17__KET____DOT__u_cluster__accum_out[__Vi0] = VL_RAND_RESET_I(32);
@@ -2769,6 +3675,9 @@ void Vtop_level::_ctor_var_reset() {
             top_level__DOT__gen_clusters__BRA__18__KET____DOT__cluster_lane_b[__Vi0] = VL_RAND_RESET_I(16);
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
+            top_level__DOT____Vcellout__gen_clusters__BRA__18__KET____DOT__u_cluster__shadow_accum_out[__Vi0] = VL_RAND_RESET_I(32);
+    }}
+    { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
             top_level__DOT____Vcellout__gen_clusters__BRA__18__KET____DOT__u_cluster__accum_out[__Vi0] = VL_RAND_RESET_I(32);
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
@@ -2782,6 +3691,9 @@ void Vtop_level::_ctor_var_reset() {
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
             top_level__DOT__gen_clusters__BRA__19__KET____DOT__cluster_lane_b[__Vi0] = VL_RAND_RESET_I(16);
+    }}
+    { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
+            top_level__DOT____Vcellout__gen_clusters__BRA__19__KET____DOT__u_cluster__shadow_accum_out[__Vi0] = VL_RAND_RESET_I(32);
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
             top_level__DOT____Vcellout__gen_clusters__BRA__19__KET____DOT__u_cluster__accum_out[__Vi0] = VL_RAND_RESET_I(32);
@@ -2799,6 +3711,9 @@ void Vtop_level::_ctor_var_reset() {
             top_level__DOT__gen_clusters__BRA__20__KET____DOT__cluster_lane_b[__Vi0] = VL_RAND_RESET_I(16);
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
+            top_level__DOT____Vcellout__gen_clusters__BRA__20__KET____DOT__u_cluster__shadow_accum_out[__Vi0] = VL_RAND_RESET_I(32);
+    }}
+    { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
             top_level__DOT____Vcellout__gen_clusters__BRA__20__KET____DOT__u_cluster__accum_out[__Vi0] = VL_RAND_RESET_I(32);
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
@@ -2812,6 +3727,9 @@ void Vtop_level::_ctor_var_reset() {
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
             top_level__DOT__gen_clusters__BRA__21__KET____DOT__cluster_lane_b[__Vi0] = VL_RAND_RESET_I(16);
+    }}
+    { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
+            top_level__DOT____Vcellout__gen_clusters__BRA__21__KET____DOT__u_cluster__shadow_accum_out[__Vi0] = VL_RAND_RESET_I(32);
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
             top_level__DOT____Vcellout__gen_clusters__BRA__21__KET____DOT__u_cluster__accum_out[__Vi0] = VL_RAND_RESET_I(32);
@@ -2829,6 +3747,9 @@ void Vtop_level::_ctor_var_reset() {
             top_level__DOT__gen_clusters__BRA__22__KET____DOT__cluster_lane_b[__Vi0] = VL_RAND_RESET_I(16);
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
+            top_level__DOT____Vcellout__gen_clusters__BRA__22__KET____DOT__u_cluster__shadow_accum_out[__Vi0] = VL_RAND_RESET_I(32);
+    }}
+    { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
             top_level__DOT____Vcellout__gen_clusters__BRA__22__KET____DOT__u_cluster__accum_out[__Vi0] = VL_RAND_RESET_I(32);
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
@@ -2842,6 +3763,9 @@ void Vtop_level::_ctor_var_reset() {
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
             top_level__DOT__gen_clusters__BRA__23__KET____DOT__cluster_lane_b[__Vi0] = VL_RAND_RESET_I(16);
+    }}
+    { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
+            top_level__DOT____Vcellout__gen_clusters__BRA__23__KET____DOT__u_cluster__shadow_accum_out[__Vi0] = VL_RAND_RESET_I(32);
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
             top_level__DOT____Vcellout__gen_clusters__BRA__23__KET____DOT__u_cluster__accum_out[__Vi0] = VL_RAND_RESET_I(32);
@@ -2859,6 +3783,9 @@ void Vtop_level::_ctor_var_reset() {
             top_level__DOT__gen_clusters__BRA__24__KET____DOT__cluster_lane_b[__Vi0] = VL_RAND_RESET_I(16);
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
+            top_level__DOT____Vcellout__gen_clusters__BRA__24__KET____DOT__u_cluster__shadow_accum_out[__Vi0] = VL_RAND_RESET_I(32);
+    }}
+    { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
             top_level__DOT____Vcellout__gen_clusters__BRA__24__KET____DOT__u_cluster__accum_out[__Vi0] = VL_RAND_RESET_I(32);
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
@@ -2872,6 +3799,9 @@ void Vtop_level::_ctor_var_reset() {
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
             top_level__DOT__gen_clusters__BRA__25__KET____DOT__cluster_lane_b[__Vi0] = VL_RAND_RESET_I(16);
+    }}
+    { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
+            top_level__DOT____Vcellout__gen_clusters__BRA__25__KET____DOT__u_cluster__shadow_accum_out[__Vi0] = VL_RAND_RESET_I(32);
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
             top_level__DOT____Vcellout__gen_clusters__BRA__25__KET____DOT__u_cluster__accum_out[__Vi0] = VL_RAND_RESET_I(32);
@@ -2889,6 +3819,9 @@ void Vtop_level::_ctor_var_reset() {
             top_level__DOT__gen_clusters__BRA__26__KET____DOT__cluster_lane_b[__Vi0] = VL_RAND_RESET_I(16);
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
+            top_level__DOT____Vcellout__gen_clusters__BRA__26__KET____DOT__u_cluster__shadow_accum_out[__Vi0] = VL_RAND_RESET_I(32);
+    }}
+    { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
             top_level__DOT____Vcellout__gen_clusters__BRA__26__KET____DOT__u_cluster__accum_out[__Vi0] = VL_RAND_RESET_I(32);
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
@@ -2902,6 +3835,9 @@ void Vtop_level::_ctor_var_reset() {
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
             top_level__DOT__gen_clusters__BRA__27__KET____DOT__cluster_lane_b[__Vi0] = VL_RAND_RESET_I(16);
+    }}
+    { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
+            top_level__DOT____Vcellout__gen_clusters__BRA__27__KET____DOT__u_cluster__shadow_accum_out[__Vi0] = VL_RAND_RESET_I(32);
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
             top_level__DOT____Vcellout__gen_clusters__BRA__27__KET____DOT__u_cluster__accum_out[__Vi0] = VL_RAND_RESET_I(32);
@@ -2919,6 +3855,9 @@ void Vtop_level::_ctor_var_reset() {
             top_level__DOT__gen_clusters__BRA__28__KET____DOT__cluster_lane_b[__Vi0] = VL_RAND_RESET_I(16);
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
+            top_level__DOT____Vcellout__gen_clusters__BRA__28__KET____DOT__u_cluster__shadow_accum_out[__Vi0] = VL_RAND_RESET_I(32);
+    }}
+    { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
             top_level__DOT____Vcellout__gen_clusters__BRA__28__KET____DOT__u_cluster__accum_out[__Vi0] = VL_RAND_RESET_I(32);
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
@@ -2932,6 +3871,9 @@ void Vtop_level::_ctor_var_reset() {
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
             top_level__DOT__gen_clusters__BRA__29__KET____DOT__cluster_lane_b[__Vi0] = VL_RAND_RESET_I(16);
+    }}
+    { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
+            top_level__DOT____Vcellout__gen_clusters__BRA__29__KET____DOT__u_cluster__shadow_accum_out[__Vi0] = VL_RAND_RESET_I(32);
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
             top_level__DOT____Vcellout__gen_clusters__BRA__29__KET____DOT__u_cluster__accum_out[__Vi0] = VL_RAND_RESET_I(32);
@@ -2949,6 +3891,9 @@ void Vtop_level::_ctor_var_reset() {
             top_level__DOT__gen_clusters__BRA__30__KET____DOT__cluster_lane_b[__Vi0] = VL_RAND_RESET_I(16);
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
+            top_level__DOT____Vcellout__gen_clusters__BRA__30__KET____DOT__u_cluster__shadow_accum_out[__Vi0] = VL_RAND_RESET_I(32);
+    }}
+    { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
             top_level__DOT____Vcellout__gen_clusters__BRA__30__KET____DOT__u_cluster__accum_out[__Vi0] = VL_RAND_RESET_I(32);
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
@@ -2962,6 +3907,9 @@ void Vtop_level::_ctor_var_reset() {
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
             top_level__DOT__gen_clusters__BRA__31__KET____DOT__cluster_lane_b[__Vi0] = VL_RAND_RESET_I(16);
+    }}
+    { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
+            top_level__DOT____Vcellout__gen_clusters__BRA__31__KET____DOT__u_cluster__shadow_accum_out[__Vi0] = VL_RAND_RESET_I(32);
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
             top_level__DOT____Vcellout__gen_clusters__BRA__31__KET____DOT__u_cluster__accum_out[__Vi0] = VL_RAND_RESET_I(32);
@@ -2978,6 +3926,8 @@ void Vtop_level::_ctor_var_reset() {
     top_level__DOT__u_control__DOT__compute_iter_d = VL_RAND_RESET_I(32);
     top_level__DOT__u_control__DOT__drain_iter_q = VL_RAND_RESET_I(32);
     top_level__DOT__u_control__DOT__drain_iter_d = VL_RAND_RESET_I(32);
+    top_level__DOT__u_control__DOT__write_iter_q = VL_RAND_RESET_I(32);
+    top_level__DOT__u_control__DOT__write_iter_d = VL_RAND_RESET_I(32);
     top_level__DOT__u_control__DOT__cycle_count_d = VL_RAND_RESET_I(32);
     { int __Vi0=0; for (; __Vi0<64; ++__Vi0) {
             top_level__DOT__u_a_buffer__DOT__mem[__Vi0] = VL_RAND_RESET_I(16);

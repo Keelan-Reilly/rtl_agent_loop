@@ -16,10 +16,25 @@ module top_level #(
   input  logic rst,
   input  logic start,
   output logic done,
-  output logic busy,
-  output logic [31:0] debug_cycle_count
+  output logic busy
+`ifndef SYNTHESIS
+  ,
+  output logic [31:0] debug_cycle_count,
+  output logic [31:0] debug_output_count,
+  output logic [31:0] debug_total_compute_steps,
+  output logic [31:0] debug_primary_checksum,
+  output logic [31:0] debug_shadow_checksum
+`endif
 );
   import types_pkg::*;
+
+`ifdef SYNTHESIS
+  logic [31:0] debug_cycle_count;
+  logic [31:0] debug_output_count;
+  logic [31:0] debug_total_compute_steps;
+  logic [31:0] debug_primary_checksum;
+  logic [31:0] debug_shadow_checksum;
+`endif
 
   localparam int NUM_LANES     = ARRAY_M * ARRAY_N;
   localparam int NUM_CLUSTERS  = ceil_div(NUM_LANES, CLUSTER_SIZE);
@@ -32,9 +47,11 @@ module top_level #(
   logic clear_acc;
   logic compute_en;
   logic write_en;
+  logic [31:0] write_index;
   logic [K_W-1:0] current_k;
   logic [SHARE_W-1:0] shared_phase;
   logic [31:0] cycle_count;
+  logic [31:0] total_compute_steps;
 
   logic [A_ADDR_W-1:0] a_read_addr [0:ARRAY_M-1];
   logic [A_ADDR_W-1:0] b_read_addr [0:ARRAY_N-1];
@@ -43,10 +60,15 @@ module top_level #(
   logic signed [DATA_WIDTH-1:0] lane_a [0:NUM_LANES-1];
   logic signed [DATA_WIDTH-1:0] lane_b [0:NUM_LANES-1];
   logic signed [ACC_WIDTH-1:0]  cluster_accum [0:NUM_CLUSTERS-1][0:CLUSTER_SIZE-1];
+  logic signed [ACC_WIDTH-1:0]  cluster_shadow_accum [0:NUM_CLUSTERS-1][0:CLUSTER_SIZE-1];
+  logic signed [ACC_WIDTH-1:0]  logical_accum [0:NUM_LANES-1];
+  logic signed [ACC_WIDTH-1:0]  logical_shadow_accum [0:NUM_LANES-1];
   logic signed [ACC_WIDTH-1:0]  output_mem [0:OUTPUT_MEM_DEPTH-1];
+  (* DONT_TOUCH = "yes" *) logic [31:0] shadow_checksum_q;
   integer lane_idx;
   integer cluster_idx;
   integer local_idx;
+  integer checksum_idx;
 
   control #(
     .ARCH_VARIANT(ARCH_VARIANT),
@@ -64,9 +86,11 @@ module top_level #(
     .clear_acc(clear_acc),
     .compute_en(compute_en),
     .write_en(write_en),
+    .write_index(write_index),
     .k_index(current_k),
     .shared_phase(shared_phase),
-    .cycle_count(cycle_count)
+    .cycle_count(cycle_count),
+    .total_compute_steps(total_compute_steps)
   );
 
   global_buffer #(
@@ -114,6 +138,22 @@ module top_level #(
     .lane_b(lane_b)
   );
 
+  always_comb begin
+    for (lane_idx = 0; lane_idx < NUM_LANES; lane_idx++) begin
+      logical_accum[lane_idx] = '0;
+      logical_shadow_accum[lane_idx] = '0;
+    end
+    for (cluster_idx = 0; cluster_idx < NUM_CLUSTERS; cluster_idx++) begin
+      for (local_idx = 0; local_idx < CLUSTER_SIZE; local_idx++) begin
+        lane_idx = cluster_idx * CLUSTER_SIZE + local_idx;
+        if (lane_idx < NUM_LANES) begin
+          logical_accum[lane_idx] = cluster_accum[cluster_idx][local_idx];
+          logical_shadow_accum[lane_idx] = cluster_shadow_accum[cluster_idx][local_idx];
+        end
+      end
+    end
+  end
+
   genvar cg;
   genvar lg;
   generate
@@ -135,7 +175,7 @@ module top_level #(
         end
       end
 
-      cluster #(
+      (* DONT_TOUCH = "yes", KEEP_HIERARCHY = "yes" *) cluster #(
         .ARCH_VARIANT(ARCH_VARIANT),
         .NUM_PES(CLUSTER_SIZE),
         .SHARE_FACTOR(SHARE_FACTOR),
@@ -152,7 +192,8 @@ module top_level #(
         .shared_phase(shared_phase),
         .lane_a(cluster_lane_a),
         .lane_b(cluster_lane_b),
-        .accum_out(cluster_accum[cg])
+        .accum_out(cluster_accum[cg]),
+        .shadow_accum_out(cluster_shadow_accum[cg])
       );
     end
   endgenerate
@@ -162,14 +203,17 @@ module top_level #(
       for (lane_idx = 0; lane_idx < OUTPUT_MEM_DEPTH; lane_idx++) begin
         output_mem[lane_idx] <= '0;
       end
+      debug_primary_checksum <= '0;
+      shadow_checksum_q <= '0;
     end else if (write_en) begin
-      for (cluster_idx = 0; cluster_idx < NUM_CLUSTERS; cluster_idx++) begin
-        for (local_idx = 0; local_idx < CLUSTER_SIZE; local_idx++) begin
-          lane_idx = cluster_idx * CLUSTER_SIZE + local_idx;
-          if (lane_idx < OUTPUT_MEM_DEPTH && lane_idx < NUM_LANES) begin
-            output_mem[lane_idx] <= cluster_accum[cluster_idx][local_idx];
-          end
-        end
+      if (write_index < OUTPUT_MEM_DEPTH && write_index < NUM_LANES) begin
+        output_mem[write_index] <= logical_accum[write_index];
+      end
+      if (write_index < NUM_LANES) begin
+        // Serial output commit makes ARRAY_M*ARRAY_N a real schedule knob and
+        // also keeps all logical outputs visible to synthesis through a checksum.
+        debug_primary_checksum <= debug_primary_checksum ^ logical_accum[write_index][31:0] ^ write_index;
+        shadow_checksum_q <= shadow_checksum_q ^ logical_shadow_accum[write_index][31:0] ^ (write_index << 1);
       end
     end
   end
@@ -183,4 +227,7 @@ module top_level #(
 `endif
 
   assign debug_cycle_count = cycle_count;
+  assign debug_output_count = NUM_LANES;
+  assign debug_total_compute_steps = total_compute_steps;
+  assign debug_shadow_checksum = shadow_checksum_q;
 endmodule

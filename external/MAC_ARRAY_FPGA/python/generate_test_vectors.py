@@ -10,39 +10,32 @@ from pathlib import Path
 from golden_model import GemmConfig, fixed_point_gemm, flatten, mem_lines, quantize_signed
 
 
-def base_4x4_operands(cfg: GemmConfig) -> tuple[list[list[int]], list[list[int]]]:
-    # The values are hand-picked to exercise positive/negative products while
-    # staying comfortably within the default fixed-point range.
-    a = [
-        [quantize_signed(0.5, cfg.frac_bits, cfg.data_width), quantize_signed(-0.25, cfg.frac_bits, cfg.data_width), quantize_signed(0.75, cfg.frac_bits, cfg.data_width), quantize_signed(0.125, cfg.frac_bits, cfg.data_width)],
-        [quantize_signed(-0.5, cfg.frac_bits, cfg.data_width), quantize_signed(0.5, cfg.frac_bits, cfg.data_width), quantize_signed(0.25, cfg.frac_bits, cfg.data_width), quantize_signed(-0.125, cfg.frac_bits, cfg.data_width)],
-        [quantize_signed(0.25, cfg.frac_bits, cfg.data_width), quantize_signed(0.75, cfg.frac_bits, cfg.data_width), quantize_signed(-0.5, cfg.frac_bits, cfg.data_width), quantize_signed(0.5, cfg.frac_bits, cfg.data_width)],
-        [quantize_signed(1.0, cfg.frac_bits, cfg.data_width), quantize_signed(-0.5, cfg.frac_bits, cfg.data_width), quantize_signed(0.25, cfg.frac_bits, cfg.data_width), quantize_signed(-0.25, cfg.frac_bits, cfg.data_width)],
-    ]
-    b = [
-        [quantize_signed(0.5, cfg.frac_bits, cfg.data_width), quantize_signed(0.25, cfg.frac_bits, cfg.data_width), quantize_signed(-0.5, cfg.frac_bits, cfg.data_width), quantize_signed(1.0, cfg.frac_bits, cfg.data_width)],
-        [quantize_signed(-0.75, cfg.frac_bits, cfg.data_width), quantize_signed(0.5, cfg.frac_bits, cfg.data_width), quantize_signed(0.125, cfg.frac_bits, cfg.data_width), quantize_signed(-0.25, cfg.frac_bits, cfg.data_width)],
-        [quantize_signed(0.25, cfg.frac_bits, cfg.data_width), quantize_signed(-0.5, cfg.frac_bits, cfg.data_width), quantize_signed(0.75, cfg.frac_bits, cfg.data_width), quantize_signed(0.5, cfg.frac_bits, cfg.data_width)],
-        [quantize_signed(0.125, cfg.frac_bits, cfg.data_width), quantize_signed(0.25, cfg.frac_bits, cfg.data_width), quantize_signed(-0.25, cfg.frac_bits, cfg.data_width), quantize_signed(0.5, cfg.frac_bits, cfg.data_width)],
-    ]
-    return a, b
+NONZERO_LEVELS = [-0.875, -0.75, -0.625, -0.5, -0.375, -0.25, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875]
+
+
+def deterministic_level(row_idx: int, col_idx: int, stride_a: int, stride_b: int) -> float:
+    return NONZERO_LEVELS[(row_idx * stride_a + col_idx * stride_b) % len(NONZERO_LEVELS)]
 
 
 def build_study_matrices(cfg: GemmConfig) -> tuple[list[list[int]], list[list[int]]]:
     if cfg.tile_k != 4:
         raise ValueError("The bounded study vector generator currently supports TILE_K=4.")
 
-    base_a, base_b = base_4x4_operands(cfg)
-    matrix_a = [[0 for _ in range(cfg.tile_k)] for _ in range(cfg.array_m)]
-    matrix_b = [[0 for _ in range(cfg.array_n)] for _ in range(cfg.tile_k)]
+    matrix_a = []
+    for row_idx in range(cfg.array_m):
+        row = []
+        for k_idx in range(cfg.tile_k):
+            value = deterministic_level(row_idx, k_idx, 5, 3)
+            row.append(quantize_signed(value, cfg.frac_bits, cfg.data_width))
+        matrix_a.append(row)
 
-    for row in range(min(cfg.array_m, 4)):
-        for col in range(cfg.tile_k):
-            matrix_a[row][col] = base_a[row][col]
-
-    for row in range(cfg.tile_k):
-        for col in range(min(cfg.array_n, 4)):
-            matrix_b[row][col] = base_b[row][col]
+    matrix_b = []
+    for k_idx in range(cfg.tile_k):
+        row = []
+        for col_idx in range(cfg.array_n):
+            value = deterministic_level(k_idx, col_idx + 1, 7, 4)
+            row.append(quantize_signed(value, cfg.frac_bits, cfg.data_width))
+        matrix_b.append(row)
 
     return matrix_a, matrix_b
 
@@ -99,7 +92,7 @@ def main() -> int:
         "acc_width": cfg.acc_width,
         "input_mem_depth": input_mem_depth,
         "output_mem_depth": output_mem_depth,
-        "note": "Rows and columns beyond the base 4x4 active study region are zero-padded deterministically.",
+        "note": "The active ARRAY_M x TILE_K and TILE_K x ARRAY_N regions are fully populated with deterministic nonzero values. Padding is applied only after generating the full active workload.",
     }
     (output_dir / "metadata.json").write_text(json.dumps(metadata, indent=2) + "\n")
     return 0

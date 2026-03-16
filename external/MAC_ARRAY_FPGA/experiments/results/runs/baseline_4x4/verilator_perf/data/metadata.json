@@ -8,5 +8,5 @@
   "acc_width": 32,
   "input_mem_depth": 64,
   "output_mem_depth": 64,
-  "note": "Rows and columns beyond the base 4x4 active study region are zero-padded deterministically."
+  "note": "The active ARRAY_M x TILE_K and TILE_K x ARRAY_N regions are fully populated with deterministic nonzero values. Padding is applied only after generating the full active workload."
 }

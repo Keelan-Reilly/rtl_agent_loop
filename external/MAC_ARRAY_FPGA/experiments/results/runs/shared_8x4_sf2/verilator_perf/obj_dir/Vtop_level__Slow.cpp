@@ -28,11 +28,38 @@ Vtop_level::~Vtop_level() {
     VL_DO_CLEAR(delete __VlSymsp, __VlSymsp = NULL);
 }
 
-void Vtop_level::_settle__TOP__1(Vtop_level__Syms* __restrict vlSymsp) {
-    VL_DEBUG_IF(VL_DBG_MSGF("+    Vtop_level::_settle__TOP__1\n"); );
+void Vtop_level::_initial__TOP__1(Vtop_level__Syms* __restrict vlSymsp) {
+    VL_DEBUG_IF(VL_DBG_MSGF("+    Vtop_level::_initial__TOP__1\n"); );
+    Vtop_level* const __restrict vlTOPp VL_ATTR_UNUSED = vlSymsp->TOPp;
+    // Variables
+    IData/*31:0*/ __Vilp;
+    // Body
+    vlTOPp->debug_output_count = 0x20U;
+    __Vilp = 0U;
+    while ((__Vilp <= 0x3fU)) {
+        vlTOPp->top_level__DOT__u_b_buffer__DOT__mem[__Vilp] = 0U;
+        __Vilp = ((IData)(1U) + __Vilp);
+    }
+    VL_READMEM_N(true, 16, 64, 0, std::string("data/input_b.mem")
+                 , vlTOPp->top_level__DOT__u_b_buffer__DOT__mem
+                 , 0, ~0ULL);
+    __Vilp = 0U;
+    while ((__Vilp <= 0x3fU)) {
+        vlTOPp->top_level__DOT__u_a_buffer__DOT__mem[__Vilp] = 0U;
+        __Vilp = ((IData)(1U) + __Vilp);
+    }
+    VL_READMEM_N(true, 16, 64, 0, std::string("data/input_a.mem")
+                 , vlTOPp->top_level__DOT__u_a_buffer__DOT__mem
+                 , 0, ~0ULL);
+}
+
+void Vtop_level::_settle__TOP__2(Vtop_level__Syms* __restrict vlSymsp) {
+    VL_DEBUG_IF(VL_DBG_MSGF("+    Vtop_level::_settle__TOP__2\n"); );
     Vtop_level* const __restrict vlTOPp VL_ATTR_UNUSED = vlSymsp->TOPp;
     // Body
+    vlTOPp->debug_total_compute_steps = 8U;
     vlTOPp->debug_cycle_count = vlTOPp->top_level__DOT__cycle_count;
+    vlTOPp->debug_shadow_checksum = vlTOPp->top_level__DOT__shadow_checksum_q;
     vlTOPp->top_level__DOT__write_en = 0U;
     if ((4U & (IData)(vlTOPp->top_level__DOT__u_control__DOT__state_q))) {
         if ((1U & (~ ((IData)(vlTOPp->top_level__DOT__u_control__DOT__state_q) 
@@ -71,6 +98,102 @@ void Vtop_level::_settle__TOP__1(Vtop_level__Syms* __restrict vlSymsp) {
             }
         }
     }
+    vlTOPp->top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__shadow_accum_next[0U] 
+        = vlTOPp->top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__shadow_accum_bank
+        [0U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__shadow_accum_next[1U] 
+        = vlTOPp->top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__shadow_accum_bank
+        [1U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__shadow_accum_next[2U] 
+        = vlTOPp->top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__shadow_accum_bank
+        [2U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__shadow_accum_next[3U] 
+        = vlTOPp->top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__shadow_accum_bank
+        [3U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__shadow_accum_next[0U] 
+        = vlTOPp->top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__shadow_accum_bank
+        [0U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__shadow_accum_next[1U] 
+        = vlTOPp->top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__shadow_accum_bank
+        [1U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__shadow_accum_next[2U] 
+        = vlTOPp->top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__shadow_accum_bank
+        [2U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__shadow_accum_next[3U] 
+        = vlTOPp->top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__shadow_accum_bank
+        [3U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__shadow_accum_next[0U] 
+        = vlTOPp->top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__shadow_accum_bank
+        [0U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__shadow_accum_next[1U] 
+        = vlTOPp->top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__shadow_accum_bank
+        [1U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__shadow_accum_next[2U] 
+        = vlTOPp->top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__shadow_accum_bank
+        [2U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__shadow_accum_next[3U] 
+        = vlTOPp->top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__shadow_accum_bank
+        [3U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__shadow_accum_next[0U] 
+        = vlTOPp->top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__shadow_accum_bank
+        [0U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__shadow_accum_next[1U] 
+        = vlTOPp->top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__shadow_accum_bank
+        [1U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__shadow_accum_next[2U] 
+        = vlTOPp->top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__shadow_accum_bank
+        [2U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__shadow_accum_next[3U] 
+        = vlTOPp->top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__shadow_accum_bank
+        [3U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__shadow_accum_next[0U] 
+        = vlTOPp->top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__shadow_accum_bank
+        [0U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__shadow_accum_next[1U] 
+        = vlTOPp->top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__shadow_accum_bank
+        [1U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__shadow_accum_next[2U] 
+        = vlTOPp->top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__shadow_accum_bank
+        [2U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__shadow_accum_next[3U] 
+        = vlTOPp->top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__shadow_accum_bank
+        [3U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__shadow_accum_next[0U] 
+        = vlTOPp->top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__shadow_accum_bank
+        [0U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__shadow_accum_next[1U] 
+        = vlTOPp->top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__shadow_accum_bank
+        [1U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__shadow_accum_next[2U] 
+        = vlTOPp->top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__shadow_accum_bank
+        [2U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__shadow_accum_next[3U] 
+        = vlTOPp->top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__shadow_accum_bank
+        [3U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__shadow_accum_next[0U] 
+        = vlTOPp->top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__shadow_accum_bank
+        [0U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__shadow_accum_next[1U] 
+        = vlTOPp->top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__shadow_accum_bank
+        [1U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__shadow_accum_next[2U] 
+        = vlTOPp->top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__shadow_accum_bank
+        [2U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__shadow_accum_next[3U] 
+        = vlTOPp->top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__shadow_accum_bank
+        [3U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__shadow_accum_next[0U] 
+        = vlTOPp->top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__shadow_accum_bank
+        [0U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__shadow_accum_next[1U] 
+        = vlTOPp->top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__shadow_accum_bank
+        [1U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__shadow_accum_next[2U] 
+        = vlTOPp->top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__shadow_accum_bank
+        [2U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__shadow_accum_next[3U] 
+        = vlTOPp->top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__shadow_accum_bank
+        [3U];
     vlTOPp->top_level__DOT__u_control__DOT__cycle_count_d 
         = vlTOPp->top_level__DOT__cycle_count;
     if ((4U & (IData)(vlTOPp->top_level__DOT__u_control__DOT__state_q))) {
@@ -123,41 +246,6 @@ void Vtop_level::_settle__TOP__1(Vtop_level__Syms* __restrict vlSymsp) {
             }
         }
     }
-    vlTOPp->top_level__DOT__u_control__DOT__state_d 
-        = vlTOPp->top_level__DOT__u_control__DOT__state_q;
-    if ((4U & (IData)(vlTOPp->top_level__DOT__u_control__DOT__state_q))) {
-        if ((2U & (IData)(vlTOPp->top_level__DOT__u_control__DOT__state_q))) {
-            vlTOPp->top_level__DOT__u_control__DOT__state_d = 0U;
-        } else {
-            if ((1U & (IData)(vlTOPp->top_level__DOT__u_control__DOT__state_q))) {
-                if ((1U & (~ (IData)(vlTOPp->start)))) {
-                    vlTOPp->top_level__DOT__u_control__DOT__state_d = 0U;
-                }
-            } else {
-                vlTOPp->top_level__DOT__u_control__DOT__state_d = 5U;
-            }
-        }
-    } else {
-        if ((2U & (IData)(vlTOPp->top_level__DOT__u_control__DOT__state_q))) {
-            if ((1U & (IData)(vlTOPp->top_level__DOT__u_control__DOT__state_q))) {
-                if ((1U <= ((IData)(1U) + vlTOPp->top_level__DOT__u_control__DOT__drain_iter_q))) {
-                    vlTOPp->top_level__DOT__u_control__DOT__state_d = 4U;
-                }
-            } else {
-                if ((8U <= ((IData)(1U) + vlTOPp->top_level__DOT__u_control__DOT__compute_iter_q))) {
-                    vlTOPp->top_level__DOT__u_control__DOT__state_d = 3U;
-                }
-            }
-        } else {
-            if ((1U & (IData)(vlTOPp->top_level__DOT__u_control__DOT__state_q))) {
-                vlTOPp->top_level__DOT__u_control__DOT__state_d = 2U;
-            } else {
-                if (vlTOPp->start) {
-                    vlTOPp->top_level__DOT__u_control__DOT__state_d = 1U;
-                }
-            }
-        }
-    }
     vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__0__KET____DOT__u_cluster__accum_out[0U] 
         = vlTOPp->top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__accum_bank
         [0U];
@@ -169,6 +257,18 @@ void Vtop_level::_settle__TOP__1(Vtop_level__Syms* __restrict vlSymsp) {
         [2U];
     vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__0__KET____DOT__u_cluster__accum_out[3U] 
         = vlTOPp->top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__accum_bank
+        [3U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__0__KET____DOT__u_cluster__shadow_accum_out[0U] 
+        = vlTOPp->top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__shadow_accum_bank
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__0__KET____DOT__u_cluster__shadow_accum_out[1U] 
+        = vlTOPp->top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__shadow_accum_bank
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__0__KET____DOT__u_cluster__shadow_accum_out[2U] 
+        = vlTOPp->top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__shadow_accum_bank
+        [2U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__0__KET____DOT__u_cluster__shadow_accum_out[3U] 
+        = vlTOPp->top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__shadow_accum_bank
         [3U];
     vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__1__KET____DOT__u_cluster__accum_out[0U] 
         = vlTOPp->top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__accum_bank
@@ -182,6 +282,18 @@ void Vtop_level::_settle__TOP__1(Vtop_level__Syms* __restrict vlSymsp) {
     vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__1__KET____DOT__u_cluster__accum_out[3U] 
         = vlTOPp->top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__accum_bank
         [3U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__1__KET____DOT__u_cluster__shadow_accum_out[0U] 
+        = vlTOPp->top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__shadow_accum_bank
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__1__KET____DOT__u_cluster__shadow_accum_out[1U] 
+        = vlTOPp->top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__shadow_accum_bank
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__1__KET____DOT__u_cluster__shadow_accum_out[2U] 
+        = vlTOPp->top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__shadow_accum_bank
+        [2U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__1__KET____DOT__u_cluster__shadow_accum_out[3U] 
+        = vlTOPp->top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__shadow_accum_bank
+        [3U];
     vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__2__KET____DOT__u_cluster__accum_out[0U] 
         = vlTOPp->top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__accum_bank
         [0U];
@@ -193,6 +305,18 @@ void Vtop_level::_settle__TOP__1(Vtop_level__Syms* __restrict vlSymsp) {
         [2U];
     vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__2__KET____DOT__u_cluster__accum_out[3U] 
         = vlTOPp->top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__accum_bank
+        [3U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__2__KET____DOT__u_cluster__shadow_accum_out[0U] 
+        = vlTOPp->top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__shadow_accum_bank
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__2__KET____DOT__u_cluster__shadow_accum_out[1U] 
+        = vlTOPp->top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__shadow_accum_bank
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__2__KET____DOT__u_cluster__shadow_accum_out[2U] 
+        = vlTOPp->top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__shadow_accum_bank
+        [2U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__2__KET____DOT__u_cluster__shadow_accum_out[3U] 
+        = vlTOPp->top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__shadow_accum_bank
         [3U];
     vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__3__KET____DOT__u_cluster__accum_out[0U] 
         = vlTOPp->top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__accum_bank
@@ -206,6 +330,18 @@ void Vtop_level::_settle__TOP__1(Vtop_level__Syms* __restrict vlSymsp) {
     vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__3__KET____DOT__u_cluster__accum_out[3U] 
         = vlTOPp->top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__accum_bank
         [3U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__3__KET____DOT__u_cluster__shadow_accum_out[0U] 
+        = vlTOPp->top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__shadow_accum_bank
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__3__KET____DOT__u_cluster__shadow_accum_out[1U] 
+        = vlTOPp->top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__shadow_accum_bank
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__3__KET____DOT__u_cluster__shadow_accum_out[2U] 
+        = vlTOPp->top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__shadow_accum_bank
+        [2U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__3__KET____DOT__u_cluster__shadow_accum_out[3U] 
+        = vlTOPp->top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__shadow_accum_bank
+        [3U];
     vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__4__KET____DOT__u_cluster__accum_out[0U] 
         = vlTOPp->top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__accum_bank
         [0U];
@@ -217,6 +353,18 @@ void Vtop_level::_settle__TOP__1(Vtop_level__Syms* __restrict vlSymsp) {
         [2U];
     vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__4__KET____DOT__u_cluster__accum_out[3U] 
         = vlTOPp->top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__accum_bank
+        [3U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__4__KET____DOT__u_cluster__shadow_accum_out[0U] 
+        = vlTOPp->top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__shadow_accum_bank
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__4__KET____DOT__u_cluster__shadow_accum_out[1U] 
+        = vlTOPp->top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__shadow_accum_bank
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__4__KET____DOT__u_cluster__shadow_accum_out[2U] 
+        = vlTOPp->top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__shadow_accum_bank
+        [2U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__4__KET____DOT__u_cluster__shadow_accum_out[3U] 
+        = vlTOPp->top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__shadow_accum_bank
         [3U];
     vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__5__KET____DOT__u_cluster__accum_out[0U] 
         = vlTOPp->top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__accum_bank
@@ -230,6 +378,18 @@ void Vtop_level::_settle__TOP__1(Vtop_level__Syms* __restrict vlSymsp) {
     vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__5__KET____DOT__u_cluster__accum_out[3U] 
         = vlTOPp->top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__accum_bank
         [3U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__5__KET____DOT__u_cluster__shadow_accum_out[0U] 
+        = vlTOPp->top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__shadow_accum_bank
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__5__KET____DOT__u_cluster__shadow_accum_out[1U] 
+        = vlTOPp->top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__shadow_accum_bank
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__5__KET____DOT__u_cluster__shadow_accum_out[2U] 
+        = vlTOPp->top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__shadow_accum_bank
+        [2U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__5__KET____DOT__u_cluster__shadow_accum_out[3U] 
+        = vlTOPp->top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__shadow_accum_bank
+        [3U];
     vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__6__KET____DOT__u_cluster__accum_out[0U] 
         = vlTOPp->top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__accum_bank
         [0U];
@@ -242,6 +402,18 @@ void Vtop_level::_settle__TOP__1(Vtop_level__Syms* __restrict vlSymsp) {
     vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__6__KET____DOT__u_cluster__accum_out[3U] 
         = vlTOPp->top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__accum_bank
         [3U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__6__KET____DOT__u_cluster__shadow_accum_out[0U] 
+        = vlTOPp->top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__shadow_accum_bank
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__6__KET____DOT__u_cluster__shadow_accum_out[1U] 
+        = vlTOPp->top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__shadow_accum_bank
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__6__KET____DOT__u_cluster__shadow_accum_out[2U] 
+        = vlTOPp->top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__shadow_accum_bank
+        [2U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__6__KET____DOT__u_cluster__shadow_accum_out[3U] 
+        = vlTOPp->top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__shadow_accum_bank
+        [3U];
     vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__7__KET____DOT__u_cluster__accum_out[0U] 
         = vlTOPp->top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__accum_bank
         [0U];
@@ -253,6 +425,18 @@ void Vtop_level::_settle__TOP__1(Vtop_level__Syms* __restrict vlSymsp) {
         [2U];
     vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__7__KET____DOT__u_cluster__accum_out[3U] 
         = vlTOPp->top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__accum_bank
+        [3U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__7__KET____DOT__u_cluster__shadow_accum_out[0U] 
+        = vlTOPp->top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__shadow_accum_bank
+        [0U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__7__KET____DOT__u_cluster__shadow_accum_out[1U] 
+        = vlTOPp->top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__shadow_accum_bank
+        [1U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__7__KET____DOT__u_cluster__shadow_accum_out[2U] 
+        = vlTOPp->top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__shadow_accum_bank
+        [2U];
+    vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__7__KET____DOT__u_cluster__shadow_accum_out[3U] 
+        = vlTOPp->top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__shadow_accum_bank
         [3U];
     vlTOPp->top_level__DOT__compute_en = 0U;
     if ((1U & (~ ((IData)(vlTOPp->top_level__DOT__u_control__DOT__state_q) 
@@ -284,6 +468,62 @@ void Vtop_level::_settle__TOP__1(Vtop_level__Syms* __restrict vlSymsp) {
             }
         }
     }
+    vlTOPp->top_level__DOT__u_control__DOT__write_iter_d 
+        = vlTOPp->top_level__DOT__u_control__DOT__write_iter_q;
+    if ((4U & (IData)(vlTOPp->top_level__DOT__u_control__DOT__state_q))) {
+        if ((1U & (~ ((IData)(vlTOPp->top_level__DOT__u_control__DOT__state_q) 
+                      >> 1U)))) {
+            if ((1U & (~ (IData)(vlTOPp->top_level__DOT__u_control__DOT__state_q)))) {
+                vlTOPp->top_level__DOT__u_control__DOT__write_iter_d 
+                    = ((0x20U <= ((IData)(1U) + vlTOPp->top_level__DOT__u_control__DOT__write_iter_q))
+                        ? 0U : ((IData)(1U) + vlTOPp->top_level__DOT__u_control__DOT__write_iter_q));
+            }
+        }
+    } else {
+        if ((1U & (~ ((IData)(vlTOPp->top_level__DOT__u_control__DOT__state_q) 
+                      >> 1U)))) {
+            if ((1U & (IData)(vlTOPp->top_level__DOT__u_control__DOT__state_q))) {
+                vlTOPp->top_level__DOT__u_control__DOT__write_iter_d = 0U;
+            }
+        }
+    }
+    vlTOPp->top_level__DOT__u_control__DOT__state_d 
+        = vlTOPp->top_level__DOT__u_control__DOT__state_q;
+    if ((4U & (IData)(vlTOPp->top_level__DOT__u_control__DOT__state_q))) {
+        if ((2U & (IData)(vlTOPp->top_level__DOT__u_control__DOT__state_q))) {
+            vlTOPp->top_level__DOT__u_control__DOT__state_d = 0U;
+        } else {
+            if ((1U & (IData)(vlTOPp->top_level__DOT__u_control__DOT__state_q))) {
+                if ((1U & (~ (IData)(vlTOPp->start)))) {
+                    vlTOPp->top_level__DOT__u_control__DOT__state_d = 0U;
+                }
+            } else {
+                if ((0x20U <= ((IData)(1U) + vlTOPp->top_level__DOT__u_control__DOT__write_iter_q))) {
+                    vlTOPp->top_level__DOT__u_control__DOT__state_d = 5U;
+                }
+            }
+        }
+    } else {
+        if ((2U & (IData)(vlTOPp->top_level__DOT__u_control__DOT__state_q))) {
+            if ((1U & (IData)(vlTOPp->top_level__DOT__u_control__DOT__state_q))) {
+                if ((1U <= ((IData)(1U) + vlTOPp->top_level__DOT__u_control__DOT__drain_iter_q))) {
+                    vlTOPp->top_level__DOT__u_control__DOT__state_d = 4U;
+                }
+            } else {
+                if ((8U <= ((IData)(1U) + vlTOPp->top_level__DOT__u_control__DOT__compute_iter_q))) {
+                    vlTOPp->top_level__DOT__u_control__DOT__state_d = 3U;
+                }
+            }
+        } else {
+            if ((1U & (IData)(vlTOPp->top_level__DOT__u_control__DOT__state_q))) {
+                vlTOPp->top_level__DOT__u_control__DOT__state_d = 2U;
+            } else {
+                if (vlTOPp->start) {
+                    vlTOPp->top_level__DOT__u_control__DOT__state_d = 1U;
+                }
+            }
+        }
+    }
     vlTOPp->top_level__DOT__cluster_accum[0U][0U] = 
         vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__0__KET____DOT__u_cluster__accum_out
         [0U];
@@ -295,6 +535,18 @@ void Vtop_level::_settle__TOP__1(Vtop_level__Syms* __restrict vlSymsp) {
         [2U];
     vlTOPp->top_level__DOT__cluster_accum[0U][3U] = 
         vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__0__KET____DOT__u_cluster__accum_out
+        [3U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[0U][0U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__0__KET____DOT__u_cluster__shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[0U][1U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__0__KET____DOT__u_cluster__shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[0U][2U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__0__KET____DOT__u_cluster__shadow_accum_out
+        [2U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[0U][3U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__0__KET____DOT__u_cluster__shadow_accum_out
         [3U];
     vlTOPp->top_level__DOT__cluster_accum[1U][0U] = 
         vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__1__KET____DOT__u_cluster__accum_out
@@ -308,6 +560,18 @@ void Vtop_level::_settle__TOP__1(Vtop_level__Syms* __restrict vlSymsp) {
     vlTOPp->top_level__DOT__cluster_accum[1U][3U] = 
         vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__1__KET____DOT__u_cluster__accum_out
         [3U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[1U][0U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__1__KET____DOT__u_cluster__shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[1U][1U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__1__KET____DOT__u_cluster__shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[1U][2U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__1__KET____DOT__u_cluster__shadow_accum_out
+        [2U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[1U][3U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__1__KET____DOT__u_cluster__shadow_accum_out
+        [3U];
     vlTOPp->top_level__DOT__cluster_accum[2U][0U] = 
         vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__2__KET____DOT__u_cluster__accum_out
         [0U];
@@ -319,6 +583,18 @@ void Vtop_level::_settle__TOP__1(Vtop_level__Syms* __restrict vlSymsp) {
         [2U];
     vlTOPp->top_level__DOT__cluster_accum[2U][3U] = 
         vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__2__KET____DOT__u_cluster__accum_out
+        [3U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[2U][0U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__2__KET____DOT__u_cluster__shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[2U][1U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__2__KET____DOT__u_cluster__shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[2U][2U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__2__KET____DOT__u_cluster__shadow_accum_out
+        [2U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[2U][3U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__2__KET____DOT__u_cluster__shadow_accum_out
         [3U];
     vlTOPp->top_level__DOT__cluster_accum[3U][0U] = 
         vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__3__KET____DOT__u_cluster__accum_out
@@ -332,6 +608,18 @@ void Vtop_level::_settle__TOP__1(Vtop_level__Syms* __restrict vlSymsp) {
     vlTOPp->top_level__DOT__cluster_accum[3U][3U] = 
         vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__3__KET____DOT__u_cluster__accum_out
         [3U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[3U][0U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__3__KET____DOT__u_cluster__shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[3U][1U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__3__KET____DOT__u_cluster__shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[3U][2U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__3__KET____DOT__u_cluster__shadow_accum_out
+        [2U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[3U][3U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__3__KET____DOT__u_cluster__shadow_accum_out
+        [3U];
     vlTOPp->top_level__DOT__cluster_accum[4U][0U] = 
         vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__4__KET____DOT__u_cluster__accum_out
         [0U];
@@ -343,6 +631,18 @@ void Vtop_level::_settle__TOP__1(Vtop_level__Syms* __restrict vlSymsp) {
         [2U];
     vlTOPp->top_level__DOT__cluster_accum[4U][3U] = 
         vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__4__KET____DOT__u_cluster__accum_out
+        [3U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[4U][0U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__4__KET____DOT__u_cluster__shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[4U][1U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__4__KET____DOT__u_cluster__shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[4U][2U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__4__KET____DOT__u_cluster__shadow_accum_out
+        [2U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[4U][3U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__4__KET____DOT__u_cluster__shadow_accum_out
         [3U];
     vlTOPp->top_level__DOT__cluster_accum[5U][0U] = 
         vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__5__KET____DOT__u_cluster__accum_out
@@ -356,6 +656,18 @@ void Vtop_level::_settle__TOP__1(Vtop_level__Syms* __restrict vlSymsp) {
     vlTOPp->top_level__DOT__cluster_accum[5U][3U] = 
         vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__5__KET____DOT__u_cluster__accum_out
         [3U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[5U][0U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__5__KET____DOT__u_cluster__shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[5U][1U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__5__KET____DOT__u_cluster__shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[5U][2U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__5__KET____DOT__u_cluster__shadow_accum_out
+        [2U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[5U][3U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__5__KET____DOT__u_cluster__shadow_accum_out
+        [3U];
     vlTOPp->top_level__DOT__cluster_accum[6U][0U] = 
         vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__6__KET____DOT__u_cluster__accum_out
         [0U];
@@ -368,6 +680,18 @@ void Vtop_level::_settle__TOP__1(Vtop_level__Syms* __restrict vlSymsp) {
     vlTOPp->top_level__DOT__cluster_accum[6U][3U] = 
         vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__6__KET____DOT__u_cluster__accum_out
         [3U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[6U][0U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__6__KET____DOT__u_cluster__shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[6U][1U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__6__KET____DOT__u_cluster__shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[6U][2U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__6__KET____DOT__u_cluster__shadow_accum_out
+        [2U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[6U][3U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__6__KET____DOT__u_cluster__shadow_accum_out
+        [3U];
     vlTOPp->top_level__DOT__cluster_accum[7U][0U] = 
         vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__7__KET____DOT__u_cluster__accum_out
         [0U];
@@ -379,6 +703,18 @@ void Vtop_level::_settle__TOP__1(Vtop_level__Syms* __restrict vlSymsp) {
         [2U];
     vlTOPp->top_level__DOT__cluster_accum[7U][3U] = 
         vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__7__KET____DOT__u_cluster__accum_out
+        [3U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[7U][0U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__7__KET____DOT__u_cluster__shadow_accum_out
+        [0U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[7U][1U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__7__KET____DOT__u_cluster__shadow_accum_out
+        [1U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[7U][2U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__7__KET____DOT__u_cluster__shadow_accum_out
+        [2U];
+    vlTOPp->top_level__DOT__cluster_shadow_accum[7U][3U] 
+        = vlTOPp->top_level__DOT____Vcellout__gen_clusters__BRA__7__KET____DOT__u_cluster__shadow_accum_out
         [3U];
     vlTOPp->top_level__DOT__u_interconnect__DOT__b_addr_calc 
         = VL_MULS_III(32,32,32, (IData)(4U), (IData)(vlTOPp->top_level__DOT__current_k));
@@ -428,6 +764,230 @@ void Vtop_level::_settle__TOP__1(Vtop_level__Syms* __restrict vlSymsp) {
         = ((IData)(0x1cU) + (IData)(vlTOPp->top_level__DOT__current_k));
     vlTOPp->top_level__DOT____Vcellout__u_interconnect__a_read_addr[7U] 
         = (0x3fU & vlTOPp->top_level__DOT__u_interconnect__DOT__a_addr_calc);
+    vlTOPp->top_level__DOT__logical_accum[0U] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0U] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[1U] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[1U] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[2U] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[2U] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[3U] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[3U] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[4U] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[4U] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[5U] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[5U] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[6U] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[6U] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[7U] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[7U] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[8U] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[8U] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[9U] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[9U] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0xaU] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0xaU] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0xbU] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0xbU] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0xcU] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0xcU] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0xdU] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0xdU] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0xeU] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0xeU] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0xfU] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0xfU] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0x10U] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x10U] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0x11U] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x11U] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0x12U] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x12U] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0x13U] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x13U] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0x14U] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x14U] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0x15U] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x15U] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0x16U] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x16U] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0x17U] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x17U] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0x18U] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x18U] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0x19U] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x19U] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0x1aU] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x1aU] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0x1bU] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x1bU] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0x1cU] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x1cU] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0x1dU] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x1dU] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0x1eU] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x1eU] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0x1fU] = 0U;
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x1fU] = 0U;
+    vlTOPp->top_level__DOT__logical_accum[0U] = vlTOPp->top_level__DOT__cluster_accum
+        [0U][0U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0U] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [0U][0U];
+    vlTOPp->top_level__DOT__logical_accum[1U] = vlTOPp->top_level__DOT__cluster_accum
+        [0U][1U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[1U] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [0U][1U];
+    vlTOPp->top_level__DOT__logical_accum[2U] = vlTOPp->top_level__DOT__cluster_accum
+        [0U][2U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[2U] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [0U][2U];
+    vlTOPp->top_level__DOT__logical_accum[3U] = vlTOPp->top_level__DOT__cluster_accum
+        [0U][3U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[3U] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [0U][3U];
+    vlTOPp->top_level__DOT__logical_accum[4U] = vlTOPp->top_level__DOT__cluster_accum
+        [1U][0U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[4U] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [1U][0U];
+    vlTOPp->top_level__DOT__logical_accum[5U] = vlTOPp->top_level__DOT__cluster_accum
+        [1U][1U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[5U] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [1U][1U];
+    vlTOPp->top_level__DOT__logical_accum[6U] = vlTOPp->top_level__DOT__cluster_accum
+        [1U][2U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[6U] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [1U][2U];
+    vlTOPp->top_level__DOT__logical_accum[7U] = vlTOPp->top_level__DOT__cluster_accum
+        [1U][3U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[7U] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [1U][3U];
+    vlTOPp->top_level__DOT__logical_accum[8U] = vlTOPp->top_level__DOT__cluster_accum
+        [2U][0U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[8U] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [2U][0U];
+    vlTOPp->top_level__DOT__logical_accum[9U] = vlTOPp->top_level__DOT__cluster_accum
+        [2U][1U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[9U] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [2U][1U];
+    vlTOPp->top_level__DOT__logical_accum[0xaU] = vlTOPp->top_level__DOT__cluster_accum
+        [2U][2U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0xaU] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [2U][2U];
+    vlTOPp->top_level__DOT__logical_accum[0xbU] = vlTOPp->top_level__DOT__cluster_accum
+        [2U][3U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0xbU] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [2U][3U];
+    vlTOPp->top_level__DOT__logical_accum[0xcU] = vlTOPp->top_level__DOT__cluster_accum
+        [3U][0U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0xcU] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [3U][0U];
+    vlTOPp->top_level__DOT__logical_accum[0xdU] = vlTOPp->top_level__DOT__cluster_accum
+        [3U][1U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0xdU] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [3U][1U];
+    vlTOPp->top_level__DOT__logical_accum[0xeU] = vlTOPp->top_level__DOT__cluster_accum
+        [3U][2U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0xeU] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [3U][2U];
+    vlTOPp->top_level__DOT__logical_accum[0xfU] = vlTOPp->top_level__DOT__cluster_accum
+        [3U][3U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0xfU] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [3U][3U];
+    vlTOPp->top_level__DOT__logical_accum[0x10U] = 
+        vlTOPp->top_level__DOT__cluster_accum[4U][0U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x10U] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [4U][0U];
+    vlTOPp->top_level__DOT__logical_accum[0x11U] = 
+        vlTOPp->top_level__DOT__cluster_accum[4U][1U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x11U] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [4U][1U];
+    vlTOPp->top_level__DOT__logical_accum[0x12U] = 
+        vlTOPp->top_level__DOT__cluster_accum[4U][2U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x12U] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [4U][2U];
+    vlTOPp->top_level__DOT__logical_accum[0x13U] = 
+        vlTOPp->top_level__DOT__cluster_accum[4U][3U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x13U] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [4U][3U];
+    vlTOPp->top_level__DOT__logical_accum[0x14U] = 
+        vlTOPp->top_level__DOT__cluster_accum[5U][0U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x14U] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [5U][0U];
+    vlTOPp->top_level__DOT__logical_accum[0x15U] = 
+        vlTOPp->top_level__DOT__cluster_accum[5U][1U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x15U] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [5U][1U];
+    vlTOPp->top_level__DOT__logical_accum[0x16U] = 
+        vlTOPp->top_level__DOT__cluster_accum[5U][2U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x16U] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [5U][2U];
+    vlTOPp->top_level__DOT__logical_accum[0x17U] = 
+        vlTOPp->top_level__DOT__cluster_accum[5U][3U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x17U] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [5U][3U];
+    vlTOPp->top_level__DOT__logical_accum[0x18U] = 
+        vlTOPp->top_level__DOT__cluster_accum[6U][0U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x18U] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [6U][0U];
+    vlTOPp->top_level__DOT__logical_accum[0x19U] = 
+        vlTOPp->top_level__DOT__cluster_accum[6U][1U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x19U] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [6U][1U];
+    vlTOPp->top_level__DOT__logical_accum[0x1aU] = 
+        vlTOPp->top_level__DOT__cluster_accum[6U][2U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x1aU] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [6U][2U];
+    vlTOPp->top_level__DOT__logical_accum[0x1bU] = 
+        vlTOPp->top_level__DOT__cluster_accum[6U][3U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x1bU] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [6U][3U];
+    vlTOPp->top_level__DOT__logical_accum[0x1cU] = 
+        vlTOPp->top_level__DOT__cluster_accum[7U][0U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x1cU] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [7U][0U];
+    vlTOPp->top_level__DOT__logical_accum[0x1dU] = 
+        vlTOPp->top_level__DOT__cluster_accum[7U][1U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x1dU] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [7U][1U];
+    vlTOPp->top_level__DOT__logical_accum[0x1eU] = 
+        vlTOPp->top_level__DOT__cluster_accum[7U][2U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x1eU] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [7U][2U];
+    vlTOPp->top_level__DOT__logical_accum[0x1fU] = 
+        vlTOPp->top_level__DOT__cluster_accum[7U][3U];
+    vlTOPp->top_level__DOT__logical_shadow_accum[0x1fU] 
+        = vlTOPp->top_level__DOT__cluster_shadow_accum
+        [7U][3U];
     vlTOPp->top_level__DOT__b_read_addr[0U] = vlTOPp->top_level__DOT____Vcellout__u_interconnect__b_read_addr
         [0U];
     vlTOPp->top_level__DOT__b_read_addr[1U] = vlTOPp->top_level__DOT____Vcellout__u_interconnect__b_read_addr
@@ -476,36 +1036,6 @@ void Vtop_level::_settle__TOP__1(Vtop_level__Syms* __restrict vlSymsp) {
         = vlTOPp->top_level__DOT__a_read_addr[6U];
     vlTOPp->top_level__DOT____Vcellinp__u_a_buffer__read_addr[7U] 
         = vlTOPp->top_level__DOT__a_read_addr[7U];
-}
-
-void Vtop_level::_initial__TOP__2(Vtop_level__Syms* __restrict vlSymsp) {
-    VL_DEBUG_IF(VL_DBG_MSGF("+    Vtop_level::_initial__TOP__2\n"); );
-    Vtop_level* const __restrict vlTOPp VL_ATTR_UNUSED = vlSymsp->TOPp;
-    // Variables
-    IData/*31:0*/ __Vilp;
-    // Body
-    __Vilp = 0U;
-    while ((__Vilp <= 0x3fU)) {
-        vlTOPp->top_level__DOT__u_b_buffer__DOT__mem[__Vilp] = 0U;
-        __Vilp = ((IData)(1U) + __Vilp);
-    }
-    VL_READMEM_N(true, 16, 64, 0, std::string("data/input_b.mem")
-                 , vlTOPp->top_level__DOT__u_b_buffer__DOT__mem
-                 , 0, ~0ULL);
-    __Vilp = 0U;
-    while ((__Vilp <= 0x3fU)) {
-        vlTOPp->top_level__DOT__u_a_buffer__DOT__mem[__Vilp] = 0U;
-        __Vilp = ((IData)(1U) + __Vilp);
-    }
-    VL_READMEM_N(true, 16, 64, 0, std::string("data/input_a.mem")
-                 , vlTOPp->top_level__DOT__u_a_buffer__DOT__mem
-                 , 0, ~0ULL);
-}
-
-void Vtop_level::_settle__TOP__4(Vtop_level__Syms* __restrict vlSymsp) {
-    VL_DEBUG_IF(VL_DBG_MSGF("+    Vtop_level::_settle__TOP__4\n"); );
-    Vtop_level* const __restrict vlTOPp VL_ATTR_UNUSED = vlSymsp->TOPp;
-    // Body
     vlTOPp->top_level__DOT____Vcellout__u_b_buffer__read_data[0U] 
         = vlTOPp->top_level__DOT__u_b_buffer__DOT__mem
         [vlTOPp->top_level__DOT____Vcellinp__u_b_buffer__read_addr
@@ -1242,320 +1772,512 @@ void Vtop_level::_settle__TOP__4(Vtop_level__Syms* __restrict vlSymsp) {
     vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__7__KET____DOT__u_cluster__lane_a[3U] 
         = vlTOPp->top_level__DOT__gen_clusters__BRA__7__KET____DOT__cluster_lane_a
         [3U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__shared_lane_a[0U][0U] 
+        = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__0__KET____DOT__u_cluster__lane_a
+        [0U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__shared_lane_b[0U][0U] 
+        = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__0__KET____DOT__u_cluster__lane_b
+        [0U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__shared_lane_a[0U][1U] 
+        = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__0__KET____DOT__u_cluster__lane_a
+        [2U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__shared_lane_b[0U][1U] 
+        = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__0__KET____DOT__u_cluster__lane_b
+        [2U];
     vlTOPp->top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__logical_lane 
         = ((IData)(vlTOPp->top_level__DOT__shared_phase) 
            << 1U);
     if (VL_GTS_III(1,32,32, 4U, vlTOPp->top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__logical_lane)) {
         vlTOPp->top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__pe_valid[0U] = 1U;
-        vlTOPp->top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__pe_a[0U] 
-            = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__0__KET____DOT__u_cluster__lane_a
-            [(3U & vlTOPp->top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__logical_lane)];
-        vlTOPp->top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__pe_b[0U] 
-            = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__0__KET____DOT__u_cluster__lane_b
-            [(3U & vlTOPp->top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__logical_lane)];
         vlTOPp->top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__pe_seed[0U] 
             = vlTOPp->top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__accum_bank
             [(3U & vlTOPp->top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__logical_lane)];
+        vlTOPp->top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__pe_a[0U] 
+            = vlTOPp->top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__shared_lane_a
+            [0U][vlTOPp->top_level__DOT__shared_phase];
+        vlTOPp->top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__pe_b[0U] 
+            = vlTOPp->top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__shared_lane_b
+            [0U][vlTOPp->top_level__DOT__shared_phase];
     } else {
         vlTOPp->top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__pe_valid[0U] = 0U;
         vlTOPp->top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__pe_a[0U] = 0U;
         vlTOPp->top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__pe_b[0U] = 0U;
         vlTOPp->top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__pe_seed[0U] = 0U;
     }
+    vlTOPp->top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__shared_lane_a[1U][0U] 
+        = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__0__KET____DOT__u_cluster__lane_a
+        [1U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__shared_lane_b[1U][0U] 
+        = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__0__KET____DOT__u_cluster__lane_b
+        [1U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__shared_lane_a[1U][1U] 
+        = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__0__KET____DOT__u_cluster__lane_a
+        [3U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__shared_lane_b[1U][1U] 
+        = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__0__KET____DOT__u_cluster__lane_b
+        [3U];
     vlTOPp->top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__logical_lane 
         = ((IData)(1U) + ((IData)(vlTOPp->top_level__DOT__shared_phase) 
                           << 1U));
     if (VL_GTS_III(1,32,32, 4U, vlTOPp->top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__logical_lane)) {
         vlTOPp->top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__pe_valid[1U] = 1U;
-        vlTOPp->top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__pe_a[1U] 
-            = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__0__KET____DOT__u_cluster__lane_a
-            [(3U & vlTOPp->top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__logical_lane)];
-        vlTOPp->top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__pe_b[1U] 
-            = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__0__KET____DOT__u_cluster__lane_b
-            [(3U & vlTOPp->top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__logical_lane)];
         vlTOPp->top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__pe_seed[1U] 
             = vlTOPp->top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__accum_bank
             [(3U & vlTOPp->top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__logical_lane)];
+        vlTOPp->top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__pe_a[1U] 
+            = vlTOPp->top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__shared_lane_a
+            [1U][vlTOPp->top_level__DOT__shared_phase];
+        vlTOPp->top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__pe_b[1U] 
+            = vlTOPp->top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__shared_lane_b
+            [1U][vlTOPp->top_level__DOT__shared_phase];
     } else {
         vlTOPp->top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__pe_valid[1U] = 0U;
         vlTOPp->top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__pe_a[1U] = 0U;
         vlTOPp->top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__pe_b[1U] = 0U;
         vlTOPp->top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__pe_seed[1U] = 0U;
     }
+    vlTOPp->top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__shared_lane_a[0U][0U] 
+        = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__1__KET____DOT__u_cluster__lane_a
+        [0U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__shared_lane_b[0U][0U] 
+        = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__1__KET____DOT__u_cluster__lane_b
+        [0U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__shared_lane_a[0U][1U] 
+        = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__1__KET____DOT__u_cluster__lane_a
+        [2U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__shared_lane_b[0U][1U] 
+        = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__1__KET____DOT__u_cluster__lane_b
+        [2U];
     vlTOPp->top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__logical_lane 
         = ((IData)(vlTOPp->top_level__DOT__shared_phase) 
            << 1U);
     if (VL_GTS_III(1,32,32, 4U, vlTOPp->top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__logical_lane)) {
         vlTOPp->top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__pe_valid[0U] = 1U;
-        vlTOPp->top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__pe_a[0U] 
-            = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__1__KET____DOT__u_cluster__lane_a
-            [(3U & vlTOPp->top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__logical_lane)];
-        vlTOPp->top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__pe_b[0U] 
-            = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__1__KET____DOT__u_cluster__lane_b
-            [(3U & vlTOPp->top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__logical_lane)];
         vlTOPp->top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__pe_seed[0U] 
             = vlTOPp->top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__accum_bank
             [(3U & vlTOPp->top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__logical_lane)];
+        vlTOPp->top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__pe_a[0U] 
+            = vlTOPp->top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__shared_lane_a
+            [0U][vlTOPp->top_level__DOT__shared_phase];
+        vlTOPp->top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__pe_b[0U] 
+            = vlTOPp->top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__shared_lane_b
+            [0U][vlTOPp->top_level__DOT__shared_phase];
     } else {
         vlTOPp->top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__pe_valid[0U] = 0U;
         vlTOPp->top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__pe_a[0U] = 0U;
         vlTOPp->top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__pe_b[0U] = 0U;
         vlTOPp->top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__pe_seed[0U] = 0U;
     }
+    vlTOPp->top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__shared_lane_a[1U][0U] 
+        = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__1__KET____DOT__u_cluster__lane_a
+        [1U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__shared_lane_b[1U][0U] 
+        = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__1__KET____DOT__u_cluster__lane_b
+        [1U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__shared_lane_a[1U][1U] 
+        = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__1__KET____DOT__u_cluster__lane_a
+        [3U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__shared_lane_b[1U][1U] 
+        = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__1__KET____DOT__u_cluster__lane_b
+        [3U];
     vlTOPp->top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__logical_lane 
         = ((IData)(1U) + ((IData)(vlTOPp->top_level__DOT__shared_phase) 
                           << 1U));
     if (VL_GTS_III(1,32,32, 4U, vlTOPp->top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__logical_lane)) {
         vlTOPp->top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__pe_valid[1U] = 1U;
-        vlTOPp->top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__pe_a[1U] 
-            = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__1__KET____DOT__u_cluster__lane_a
-            [(3U & vlTOPp->top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__logical_lane)];
-        vlTOPp->top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__pe_b[1U] 
-            = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__1__KET____DOT__u_cluster__lane_b
-            [(3U & vlTOPp->top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__logical_lane)];
         vlTOPp->top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__pe_seed[1U] 
             = vlTOPp->top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__accum_bank
             [(3U & vlTOPp->top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__logical_lane)];
+        vlTOPp->top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__pe_a[1U] 
+            = vlTOPp->top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__shared_lane_a
+            [1U][vlTOPp->top_level__DOT__shared_phase];
+        vlTOPp->top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__pe_b[1U] 
+            = vlTOPp->top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__shared_lane_b
+            [1U][vlTOPp->top_level__DOT__shared_phase];
     } else {
         vlTOPp->top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__pe_valid[1U] = 0U;
         vlTOPp->top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__pe_a[1U] = 0U;
         vlTOPp->top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__pe_b[1U] = 0U;
         vlTOPp->top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__pe_seed[1U] = 0U;
     }
+    vlTOPp->top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__shared_lane_a[0U][0U] 
+        = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__2__KET____DOT__u_cluster__lane_a
+        [0U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__shared_lane_b[0U][0U] 
+        = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__2__KET____DOT__u_cluster__lane_b
+        [0U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__shared_lane_a[0U][1U] 
+        = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__2__KET____DOT__u_cluster__lane_a
+        [2U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__shared_lane_b[0U][1U] 
+        = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__2__KET____DOT__u_cluster__lane_b
+        [2U];
     vlTOPp->top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__logical_lane 
         = ((IData)(vlTOPp->top_level__DOT__shared_phase) 
            << 1U);
     if (VL_GTS_III(1,32,32, 4U, vlTOPp->top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__logical_lane)) {
         vlTOPp->top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__pe_valid[0U] = 1U;
-        vlTOPp->top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__pe_a[0U] 
-            = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__2__KET____DOT__u_cluster__lane_a
-            [(3U & vlTOPp->top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__logical_lane)];
-        vlTOPp->top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__pe_b[0U] 
-            = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__2__KET____DOT__u_cluster__lane_b
-            [(3U & vlTOPp->top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__logical_lane)];
         vlTOPp->top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__pe_seed[0U] 
             = vlTOPp->top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__accum_bank
             [(3U & vlTOPp->top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__logical_lane)];
+        vlTOPp->top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__pe_a[0U] 
+            = vlTOPp->top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__shared_lane_a
+            [0U][vlTOPp->top_level__DOT__shared_phase];
+        vlTOPp->top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__pe_b[0U] 
+            = vlTOPp->top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__shared_lane_b
+            [0U][vlTOPp->top_level__DOT__shared_phase];
     } else {
         vlTOPp->top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__pe_valid[0U] = 0U;
         vlTOPp->top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__pe_a[0U] = 0U;
         vlTOPp->top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__pe_b[0U] = 0U;
         vlTOPp->top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__pe_seed[0U] = 0U;
     }
+    vlTOPp->top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__shared_lane_a[1U][0U] 
+        = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__2__KET____DOT__u_cluster__lane_a
+        [1U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__shared_lane_b[1U][0U] 
+        = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__2__KET____DOT__u_cluster__lane_b
+        [1U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__shared_lane_a[1U][1U] 
+        = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__2__KET____DOT__u_cluster__lane_a
+        [3U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__shared_lane_b[1U][1U] 
+        = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__2__KET____DOT__u_cluster__lane_b
+        [3U];
     vlTOPp->top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__logical_lane 
         = ((IData)(1U) + ((IData)(vlTOPp->top_level__DOT__shared_phase) 
                           << 1U));
     if (VL_GTS_III(1,32,32, 4U, vlTOPp->top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__logical_lane)) {
         vlTOPp->top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__pe_valid[1U] = 1U;
-        vlTOPp->top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__pe_a[1U] 
-            = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__2__KET____DOT__u_cluster__lane_a
-            [(3U & vlTOPp->top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__logical_lane)];
-        vlTOPp->top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__pe_b[1U] 
-            = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__2__KET____DOT__u_cluster__lane_b
-            [(3U & vlTOPp->top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__logical_lane)];
         vlTOPp->top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__pe_seed[1U] 
             = vlTOPp->top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__accum_bank
             [(3U & vlTOPp->top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__logical_lane)];
+        vlTOPp->top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__pe_a[1U] 
+            = vlTOPp->top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__shared_lane_a
+            [1U][vlTOPp->top_level__DOT__shared_phase];
+        vlTOPp->top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__pe_b[1U] 
+            = vlTOPp->top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__shared_lane_b
+            [1U][vlTOPp->top_level__DOT__shared_phase];
     } else {
         vlTOPp->top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__pe_valid[1U] = 0U;
         vlTOPp->top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__pe_a[1U] = 0U;
         vlTOPp->top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__pe_b[1U] = 0U;
         vlTOPp->top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__pe_seed[1U] = 0U;
     }
+    vlTOPp->top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__shared_lane_a[0U][0U] 
+        = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__3__KET____DOT__u_cluster__lane_a
+        [0U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__shared_lane_b[0U][0U] 
+        = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__3__KET____DOT__u_cluster__lane_b
+        [0U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__shared_lane_a[0U][1U] 
+        = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__3__KET____DOT__u_cluster__lane_a
+        [2U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__shared_lane_b[0U][1U] 
+        = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__3__KET____DOT__u_cluster__lane_b
+        [2U];
     vlTOPp->top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__logical_lane 
         = ((IData)(vlTOPp->top_level__DOT__shared_phase) 
            << 1U);
     if (VL_GTS_III(1,32,32, 4U, vlTOPp->top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__logical_lane)) {
         vlTOPp->top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__pe_valid[0U] = 1U;
-        vlTOPp->top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__pe_a[0U] 
-            = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__3__KET____DOT__u_cluster__lane_a
-            [(3U & vlTOPp->top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__logical_lane)];
-        vlTOPp->top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__pe_b[0U] 
-            = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__3__KET____DOT__u_cluster__lane_b
-            [(3U & vlTOPp->top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__logical_lane)];
         vlTOPp->top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__pe_seed[0U] 
             = vlTOPp->top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__accum_bank
             [(3U & vlTOPp->top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__logical_lane)];
+        vlTOPp->top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__pe_a[0U] 
+            = vlTOPp->top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__shared_lane_a
+            [0U][vlTOPp->top_level__DOT__shared_phase];
+        vlTOPp->top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__pe_b[0U] 
+            = vlTOPp->top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__shared_lane_b
+            [0U][vlTOPp->top_level__DOT__shared_phase];
     } else {
         vlTOPp->top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__pe_valid[0U] = 0U;
         vlTOPp->top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__pe_a[0U] = 0U;
         vlTOPp->top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__pe_b[0U] = 0U;
         vlTOPp->top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__pe_seed[0U] = 0U;
     }
+    vlTOPp->top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__shared_lane_a[1U][0U] 
+        = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__3__KET____DOT__u_cluster__lane_a
+        [1U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__shared_lane_b[1U][0U] 
+        = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__3__KET____DOT__u_cluster__lane_b
+        [1U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__shared_lane_a[1U][1U] 
+        = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__3__KET____DOT__u_cluster__lane_a
+        [3U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__shared_lane_b[1U][1U] 
+        = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__3__KET____DOT__u_cluster__lane_b
+        [3U];
     vlTOPp->top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__logical_lane 
         = ((IData)(1U) + ((IData)(vlTOPp->top_level__DOT__shared_phase) 
                           << 1U));
     if (VL_GTS_III(1,32,32, 4U, vlTOPp->top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__logical_lane)) {
         vlTOPp->top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__pe_valid[1U] = 1U;
-        vlTOPp->top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__pe_a[1U] 
-            = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__3__KET____DOT__u_cluster__lane_a
-            [(3U & vlTOPp->top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__logical_lane)];
-        vlTOPp->top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__pe_b[1U] 
-            = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__3__KET____DOT__u_cluster__lane_b
-            [(3U & vlTOPp->top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__logical_lane)];
         vlTOPp->top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__pe_seed[1U] 
             = vlTOPp->top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__accum_bank
             [(3U & vlTOPp->top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__logical_lane)];
+        vlTOPp->top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__pe_a[1U] 
+            = vlTOPp->top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__shared_lane_a
+            [1U][vlTOPp->top_level__DOT__shared_phase];
+        vlTOPp->top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__pe_b[1U] 
+            = vlTOPp->top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__shared_lane_b
+            [1U][vlTOPp->top_level__DOT__shared_phase];
     } else {
         vlTOPp->top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__pe_valid[1U] = 0U;
         vlTOPp->top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__pe_a[1U] = 0U;
         vlTOPp->top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__pe_b[1U] = 0U;
         vlTOPp->top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__pe_seed[1U] = 0U;
     }
+    vlTOPp->top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__shared_lane_a[0U][0U] 
+        = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__4__KET____DOT__u_cluster__lane_a
+        [0U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__shared_lane_b[0U][0U] 
+        = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__4__KET____DOT__u_cluster__lane_b
+        [0U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__shared_lane_a[0U][1U] 
+        = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__4__KET____DOT__u_cluster__lane_a
+        [2U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__shared_lane_b[0U][1U] 
+        = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__4__KET____DOT__u_cluster__lane_b
+        [2U];
     vlTOPp->top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__logical_lane 
         = ((IData)(vlTOPp->top_level__DOT__shared_phase) 
            << 1U);
     if (VL_GTS_III(1,32,32, 4U, vlTOPp->top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__logical_lane)) {
         vlTOPp->top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__pe_valid[0U] = 1U;
-        vlTOPp->top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__pe_a[0U] 
-            = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__4__KET____DOT__u_cluster__lane_a
-            [(3U & vlTOPp->top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__logical_lane)];
-        vlTOPp->top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__pe_b[0U] 
-            = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__4__KET____DOT__u_cluster__lane_b
-            [(3U & vlTOPp->top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__logical_lane)];
         vlTOPp->top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__pe_seed[0U] 
             = vlTOPp->top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__accum_bank
             [(3U & vlTOPp->top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__logical_lane)];
+        vlTOPp->top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__pe_a[0U] 
+            = vlTOPp->top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__shared_lane_a
+            [0U][vlTOPp->top_level__DOT__shared_phase];
+        vlTOPp->top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__pe_b[0U] 
+            = vlTOPp->top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__shared_lane_b
+            [0U][vlTOPp->top_level__DOT__shared_phase];
     } else {
         vlTOPp->top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__pe_valid[0U] = 0U;
         vlTOPp->top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__pe_a[0U] = 0U;
         vlTOPp->top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__pe_b[0U] = 0U;
         vlTOPp->top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__pe_seed[0U] = 0U;
     }
+    vlTOPp->top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__shared_lane_a[1U][0U] 
+        = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__4__KET____DOT__u_cluster__lane_a
+        [1U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__shared_lane_b[1U][0U] 
+        = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__4__KET____DOT__u_cluster__lane_b
+        [1U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__shared_lane_a[1U][1U] 
+        = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__4__KET____DOT__u_cluster__lane_a
+        [3U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__shared_lane_b[1U][1U] 
+        = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__4__KET____DOT__u_cluster__lane_b
+        [3U];
     vlTOPp->top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__logical_lane 
         = ((IData)(1U) + ((IData)(vlTOPp->top_level__DOT__shared_phase) 
                           << 1U));
     if (VL_GTS_III(1,32,32, 4U, vlTOPp->top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__logical_lane)) {
         vlTOPp->top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__pe_valid[1U] = 1U;
-        vlTOPp->top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__pe_a[1U] 
-            = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__4__KET____DOT__u_cluster__lane_a
-            [(3U & vlTOPp->top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__logical_lane)];
-        vlTOPp->top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__pe_b[1U] 
-            = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__4__KET____DOT__u_cluster__lane_b
-            [(3U & vlTOPp->top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__logical_lane)];
         vlTOPp->top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__pe_seed[1U] 
             = vlTOPp->top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__accum_bank
             [(3U & vlTOPp->top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__logical_lane)];
+        vlTOPp->top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__pe_a[1U] 
+            = vlTOPp->top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__shared_lane_a
+            [1U][vlTOPp->top_level__DOT__shared_phase];
+        vlTOPp->top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__pe_b[1U] 
+            = vlTOPp->top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__shared_lane_b
+            [1U][vlTOPp->top_level__DOT__shared_phase];
     } else {
         vlTOPp->top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__pe_valid[1U] = 0U;
         vlTOPp->top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__pe_a[1U] = 0U;
         vlTOPp->top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__pe_b[1U] = 0U;
         vlTOPp->top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__pe_seed[1U] = 0U;
     }
+    vlTOPp->top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__shared_lane_a[0U][0U] 
+        = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__5__KET____DOT__u_cluster__lane_a
+        [0U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__shared_lane_b[0U][0U] 
+        = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__5__KET____DOT__u_cluster__lane_b
+        [0U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__shared_lane_a[0U][1U] 
+        = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__5__KET____DOT__u_cluster__lane_a
+        [2U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__shared_lane_b[0U][1U] 
+        = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__5__KET____DOT__u_cluster__lane_b
+        [2U];
     vlTOPp->top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__logical_lane 
         = ((IData)(vlTOPp->top_level__DOT__shared_phase) 
            << 1U);
     if (VL_GTS_III(1,32,32, 4U, vlTOPp->top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__logical_lane)) {
         vlTOPp->top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__pe_valid[0U] = 1U;
-        vlTOPp->top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__pe_a[0U] 
-            = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__5__KET____DOT__u_cluster__lane_a
-            [(3U & vlTOPp->top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__logical_lane)];
-        vlTOPp->top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__pe_b[0U] 
-            = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__5__KET____DOT__u_cluster__lane_b
-            [(3U & vlTOPp->top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__logical_lane)];
         vlTOPp->top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__pe_seed[0U] 
             = vlTOPp->top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__accum_bank
             [(3U & vlTOPp->top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__logical_lane)];
+        vlTOPp->top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__pe_a[0U] 
+            = vlTOPp->top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__shared_lane_a
+            [0U][vlTOPp->top_level__DOT__shared_phase];
+        vlTOPp->top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__pe_b[0U] 
+            = vlTOPp->top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__shared_lane_b
+            [0U][vlTOPp->top_level__DOT__shared_phase];
     } else {
         vlTOPp->top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__pe_valid[0U] = 0U;
         vlTOPp->top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__pe_a[0U] = 0U;
         vlTOPp->top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__pe_b[0U] = 0U;
         vlTOPp->top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__pe_seed[0U] = 0U;
     }
+    vlTOPp->top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__shared_lane_a[1U][0U] 
+        = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__5__KET____DOT__u_cluster__lane_a
+        [1U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__shared_lane_b[1U][0U] 
+        = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__5__KET____DOT__u_cluster__lane_b
+        [1U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__shared_lane_a[1U][1U] 
+        = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__5__KET____DOT__u_cluster__lane_a
+        [3U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__shared_lane_b[1U][1U] 
+        = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__5__KET____DOT__u_cluster__lane_b
+        [3U];
     vlTOPp->top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__logical_lane 
         = ((IData)(1U) + ((IData)(vlTOPp->top_level__DOT__shared_phase) 
                           << 1U));
     if (VL_GTS_III(1,32,32, 4U, vlTOPp->top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__logical_lane)) {
         vlTOPp->top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__pe_valid[1U] = 1U;
-        vlTOPp->top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__pe_a[1U] 
-            = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__5__KET____DOT__u_cluster__lane_a
-            [(3U & vlTOPp->top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__logical_lane)];
-        vlTOPp->top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__pe_b[1U] 
-            = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__5__KET____DOT__u_cluster__lane_b
-            [(3U & vlTOPp->top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__logical_lane)];
         vlTOPp->top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__pe_seed[1U] 
             = vlTOPp->top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__accum_bank
             [(3U & vlTOPp->top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__logical_lane)];
+        vlTOPp->top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__pe_a[1U] 
+            = vlTOPp->top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__shared_lane_a
+            [1U][vlTOPp->top_level__DOT__shared_phase];
+        vlTOPp->top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__pe_b[1U] 
+            = vlTOPp->top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__shared_lane_b
+            [1U][vlTOPp->top_level__DOT__shared_phase];
     } else {
         vlTOPp->top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__pe_valid[1U] = 0U;
         vlTOPp->top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__pe_a[1U] = 0U;
         vlTOPp->top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__pe_b[1U] = 0U;
         vlTOPp->top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__pe_seed[1U] = 0U;
     }
+    vlTOPp->top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__shared_lane_a[0U][0U] 
+        = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__6__KET____DOT__u_cluster__lane_a
+        [0U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__shared_lane_b[0U][0U] 
+        = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__6__KET____DOT__u_cluster__lane_b
+        [0U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__shared_lane_a[0U][1U] 
+        = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__6__KET____DOT__u_cluster__lane_a
+        [2U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__shared_lane_b[0U][1U] 
+        = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__6__KET____DOT__u_cluster__lane_b
+        [2U];
     vlTOPp->top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__logical_lane 
         = ((IData)(vlTOPp->top_level__DOT__shared_phase) 
            << 1U);
     if (VL_GTS_III(1,32,32, 4U, vlTOPp->top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__logical_lane)) {
         vlTOPp->top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__pe_valid[0U] = 1U;
-        vlTOPp->top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__pe_a[0U] 
-            = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__6__KET____DOT__u_cluster__lane_a
-            [(3U & vlTOPp->top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__logical_lane)];
-        vlTOPp->top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__pe_b[0U] 
-            = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__6__KET____DOT__u_cluster__lane_b
-            [(3U & vlTOPp->top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__logical_lane)];
         vlTOPp->top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__pe_seed[0U] 
             = vlTOPp->top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__accum_bank
             [(3U & vlTOPp->top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__logical_lane)];
+        vlTOPp->top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__pe_a[0U] 
+            = vlTOPp->top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__shared_lane_a
+            [0U][vlTOPp->top_level__DOT__shared_phase];
+        vlTOPp->top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__pe_b[0U] 
+            = vlTOPp->top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__shared_lane_b
+            [0U][vlTOPp->top_level__DOT__shared_phase];
     } else {
         vlTOPp->top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__pe_valid[0U] = 0U;
         vlTOPp->top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__pe_a[0U] = 0U;
         vlTOPp->top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__pe_b[0U] = 0U;
         vlTOPp->top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__pe_seed[0U] = 0U;
     }
+    vlTOPp->top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__shared_lane_a[1U][0U] 
+        = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__6__KET____DOT__u_cluster__lane_a
+        [1U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__shared_lane_b[1U][0U] 
+        = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__6__KET____DOT__u_cluster__lane_b
+        [1U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__shared_lane_a[1U][1U] 
+        = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__6__KET____DOT__u_cluster__lane_a
+        [3U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__shared_lane_b[1U][1U] 
+        = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__6__KET____DOT__u_cluster__lane_b
+        [3U];
     vlTOPp->top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__logical_lane 
         = ((IData)(1U) + ((IData)(vlTOPp->top_level__DOT__shared_phase) 
                           << 1U));
     if (VL_GTS_III(1,32,32, 4U, vlTOPp->top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__logical_lane)) {
         vlTOPp->top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__pe_valid[1U] = 1U;
-        vlTOPp->top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__pe_a[1U] 
-            = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__6__KET____DOT__u_cluster__lane_a
-            [(3U & vlTOPp->top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__logical_lane)];
-        vlTOPp->top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__pe_b[1U] 
-            = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__6__KET____DOT__u_cluster__lane_b
-            [(3U & vlTOPp->top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__logical_lane)];
         vlTOPp->top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__pe_seed[1U] 
             = vlTOPp->top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__accum_bank
             [(3U & vlTOPp->top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__logical_lane)];
+        vlTOPp->top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__pe_a[1U] 
+            = vlTOPp->top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__shared_lane_a
+            [1U][vlTOPp->top_level__DOT__shared_phase];
+        vlTOPp->top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__pe_b[1U] 
+            = vlTOPp->top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__shared_lane_b
+            [1U][vlTOPp->top_level__DOT__shared_phase];
     } else {
         vlTOPp->top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__pe_valid[1U] = 0U;
         vlTOPp->top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__pe_a[1U] = 0U;
         vlTOPp->top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__pe_b[1U] = 0U;
         vlTOPp->top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__pe_seed[1U] = 0U;
     }
+    vlTOPp->top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__shared_lane_a[0U][0U] 
+        = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__7__KET____DOT__u_cluster__lane_a
+        [0U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__shared_lane_b[0U][0U] 
+        = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__7__KET____DOT__u_cluster__lane_b
+        [0U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__shared_lane_a[0U][1U] 
+        = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__7__KET____DOT__u_cluster__lane_a
+        [2U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__shared_lane_b[0U][1U] 
+        = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__7__KET____DOT__u_cluster__lane_b
+        [2U];
     vlTOPp->top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__logical_lane 
         = ((IData)(vlTOPp->top_level__DOT__shared_phase) 
            << 1U);
     if (VL_GTS_III(1,32,32, 4U, vlTOPp->top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__logical_lane)) {
         vlTOPp->top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__pe_valid[0U] = 1U;
-        vlTOPp->top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__pe_a[0U] 
-            = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__7__KET____DOT__u_cluster__lane_a
-            [(3U & vlTOPp->top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__logical_lane)];
-        vlTOPp->top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__pe_b[0U] 
-            = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__7__KET____DOT__u_cluster__lane_b
-            [(3U & vlTOPp->top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__logical_lane)];
         vlTOPp->top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__pe_seed[0U] 
             = vlTOPp->top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__accum_bank
             [(3U & vlTOPp->top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__logical_lane)];
+        vlTOPp->top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__pe_a[0U] 
+            = vlTOPp->top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__shared_lane_a
+            [0U][vlTOPp->top_level__DOT__shared_phase];
+        vlTOPp->top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__pe_b[0U] 
+            = vlTOPp->top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__shared_lane_b
+            [0U][vlTOPp->top_level__DOT__shared_phase];
     } else {
         vlTOPp->top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__pe_valid[0U] = 0U;
         vlTOPp->top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__pe_a[0U] = 0U;
         vlTOPp->top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__pe_b[0U] = 0U;
         vlTOPp->top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__pe_seed[0U] = 0U;
     }
+    vlTOPp->top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__shared_lane_a[1U][0U] 
+        = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__7__KET____DOT__u_cluster__lane_a
+        [1U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__shared_lane_b[1U][0U] 
+        = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__7__KET____DOT__u_cluster__lane_b
+        [1U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__shared_lane_a[1U][1U] 
+        = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__7__KET____DOT__u_cluster__lane_a
+        [3U];
+    vlTOPp->top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__shared_lane_b[1U][1U] 
+        = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__7__KET____DOT__u_cluster__lane_b
+        [3U];
     vlTOPp->top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__logical_lane 
         = ((IData)(1U) + ((IData)(vlTOPp->top_level__DOT__shared_phase) 
                           << 1U));
     if (VL_GTS_III(1,32,32, 4U, vlTOPp->top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__logical_lane)) {
         vlTOPp->top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__pe_valid[1U] = 1U;
-        vlTOPp->top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__pe_a[1U] 
-            = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__7__KET____DOT__u_cluster__lane_a
-            [(3U & vlTOPp->top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__logical_lane)];
-        vlTOPp->top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__pe_b[1U] 
-            = vlTOPp->top_level__DOT____Vcellinp__gen_clusters__BRA__7__KET____DOT__u_cluster__lane_b
-            [(3U & vlTOPp->top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__logical_lane)];
         vlTOPp->top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__pe_seed[1U] 
             = vlTOPp->top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__accum_bank
             [(3U & vlTOPp->top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__logical_lane)];
+        vlTOPp->top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__pe_a[1U] 
+            = vlTOPp->top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__shared_lane_a
+            [1U][vlTOPp->top_level__DOT__shared_phase];
+        vlTOPp->top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__pe_b[1U] 
+            = vlTOPp->top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__shared_lane_b
+            [1U][vlTOPp->top_level__DOT__shared_phase];
     } else {
         vlTOPp->top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__pe_valid[1U] = 0U;
         vlTOPp->top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__pe_a[1U] = 0U;
@@ -2096,7 +2818,7 @@ void Vtop_level::_eval_initial(Vtop_level__Syms* __restrict vlSymsp) {
     VL_DEBUG_IF(VL_DBG_MSGF("+    Vtop_level::_eval_initial\n"); );
     Vtop_level* const __restrict vlTOPp VL_ATTR_UNUSED = vlSymsp->TOPp;
     // Body
-    vlTOPp->_initial__TOP__2(vlSymsp);
+    vlTOPp->_initial__TOP__1(vlSymsp);
     vlTOPp->__Vclklast__TOP__clk = vlTOPp->clk;
 }
 
@@ -2111,8 +2833,7 @@ void Vtop_level::_eval_settle(Vtop_level__Syms* __restrict vlSymsp) {
     VL_DEBUG_IF(VL_DBG_MSGF("+    Vtop_level::_eval_settle\n"); );
     Vtop_level* const __restrict vlTOPp VL_ATTR_UNUSED = vlSymsp->TOPp;
     // Body
-    vlTOPp->_settle__TOP__1(vlSymsp);
-    vlTOPp->_settle__TOP__4(vlSymsp);
+    vlTOPp->_settle__TOP__2(vlSymsp);
 }
 
 void Vtop_level::_ctor_var_reset() {
@@ -2124,6 +2845,10 @@ void Vtop_level::_ctor_var_reset() {
     done = VL_RAND_RESET_I(1);
     busy = VL_RAND_RESET_I(1);
     debug_cycle_count = VL_RAND_RESET_I(32);
+    debug_output_count = VL_RAND_RESET_I(32);
+    debug_total_compute_steps = VL_RAND_RESET_I(32);
+    debug_primary_checksum = VL_RAND_RESET_I(32);
+    debug_shadow_checksum = VL_RAND_RESET_I(32);
     top_level__DOT__clear_acc = VL_RAND_RESET_I(1);
     top_level__DOT__compute_en = VL_RAND_RESET_I(1);
     top_level__DOT__write_en = VL_RAND_RESET_I(1);
@@ -2153,9 +2878,21 @@ void Vtop_level::_ctor_var_reset() {
                     top_level__DOT__cluster_accum[__Vi0][__Vi1] = VL_RAND_RESET_I(32);
             }}
     }}
+    { int __Vi0=0; for (; __Vi0<8; ++__Vi0) {
+            { int __Vi1=0; for (; __Vi1<4; ++__Vi1) {
+                    top_level__DOT__cluster_shadow_accum[__Vi0][__Vi1] = VL_RAND_RESET_I(32);
+            }}
+    }}
+    { int __Vi0=0; for (; __Vi0<32; ++__Vi0) {
+            top_level__DOT__logical_accum[__Vi0] = VL_RAND_RESET_I(32);
+    }}
+    { int __Vi0=0; for (; __Vi0<32; ++__Vi0) {
+            top_level__DOT__logical_shadow_accum[__Vi0] = VL_RAND_RESET_I(32);
+    }}
     { int __Vi0=0; for (; __Vi0<64; ++__Vi0) {
             top_level__DOT__output_mem[__Vi0] = VL_RAND_RESET_I(32);
     }}
+    top_level__DOT__shadow_checksum_q = VL_RAND_RESET_I(32);
     { int __Vi0=0; for (; __Vi0<8; ++__Vi0) {
             top_level__DOT____Vcellout__u_a_buffer__read_data[__Vi0] = VL_RAND_RESET_I(16);
     }}
@@ -2193,6 +2930,9 @@ void Vtop_level::_ctor_var_reset() {
             top_level__DOT__gen_clusters__BRA__0__KET____DOT__cluster_lane_b[__Vi0] = VL_RAND_RESET_I(16);
     }}
     { int __Vi0=0; for (; __Vi0<4; ++__Vi0) {
+            top_level__DOT____Vcellout__gen_clusters__BRA__0__KET____DOT__u_cluster__shadow_accum_out[__Vi0] = VL_RAND_RESET_I(32);
+    }}
+    { int __Vi0=0; for (; __Vi0<4; ++__Vi0) {
             top_level__DOT____Vcellout__gen_clusters__BRA__0__KET____DOT__u_cluster__accum_out[__Vi0] = VL_RAND_RESET_I(32);
     }}
     { int __Vi0=0; for (; __Vi0<4; ++__Vi0) {
@@ -2206,6 +2946,9 @@ void Vtop_level::_ctor_var_reset() {
     }}
     { int __Vi0=0; for (; __Vi0<4; ++__Vi0) {
             top_level__DOT__gen_clusters__BRA__1__KET____DOT__cluster_lane_b[__Vi0] = VL_RAND_RESET_I(16);
+    }}
+    { int __Vi0=0; for (; __Vi0<4; ++__Vi0) {
+            top_level__DOT____Vcellout__gen_clusters__BRA__1__KET____DOT__u_cluster__shadow_accum_out[__Vi0] = VL_RAND_RESET_I(32);
     }}
     { int __Vi0=0; for (; __Vi0<4; ++__Vi0) {
             top_level__DOT____Vcellout__gen_clusters__BRA__1__KET____DOT__u_cluster__accum_out[__Vi0] = VL_RAND_RESET_I(32);
@@ -2223,6 +2966,9 @@ void Vtop_level::_ctor_var_reset() {
             top_level__DOT__gen_clusters__BRA__2__KET____DOT__cluster_lane_b[__Vi0] = VL_RAND_RESET_I(16);
     }}
     { int __Vi0=0; for (; __Vi0<4; ++__Vi0) {
+            top_level__DOT____Vcellout__gen_clusters__BRA__2__KET____DOT__u_cluster__shadow_accum_out[__Vi0] = VL_RAND_RESET_I(32);
+    }}
+    { int __Vi0=0; for (; __Vi0<4; ++__Vi0) {
             top_level__DOT____Vcellout__gen_clusters__BRA__2__KET____DOT__u_cluster__accum_out[__Vi0] = VL_RAND_RESET_I(32);
     }}
     { int __Vi0=0; for (; __Vi0<4; ++__Vi0) {
@@ -2236,6 +2982,9 @@ void Vtop_level::_ctor_var_reset() {
     }}
     { int __Vi0=0; for (; __Vi0<4; ++__Vi0) {
             top_level__DOT__gen_clusters__BRA__3__KET____DOT__cluster_lane_b[__Vi0] = VL_RAND_RESET_I(16);
+    }}
+    { int __Vi0=0; for (; __Vi0<4; ++__Vi0) {
+            top_level__DOT____Vcellout__gen_clusters__BRA__3__KET____DOT__u_cluster__shadow_accum_out[__Vi0] = VL_RAND_RESET_I(32);
     }}
     { int __Vi0=0; for (; __Vi0<4; ++__Vi0) {
             top_level__DOT____Vcellout__gen_clusters__BRA__3__KET____DOT__u_cluster__accum_out[__Vi0] = VL_RAND_RESET_I(32);
@@ -2253,6 +3002,9 @@ void Vtop_level::_ctor_var_reset() {
             top_level__DOT__gen_clusters__BRA__4__KET____DOT__cluster_lane_b[__Vi0] = VL_RAND_RESET_I(16);
     }}
     { int __Vi0=0; for (; __Vi0<4; ++__Vi0) {
+            top_level__DOT____Vcellout__gen_clusters__BRA__4__KET____DOT__u_cluster__shadow_accum_out[__Vi0] = VL_RAND_RESET_I(32);
+    }}
+    { int __Vi0=0; for (; __Vi0<4; ++__Vi0) {
             top_level__DOT____Vcellout__gen_clusters__BRA__4__KET____DOT__u_cluster__accum_out[__Vi0] = VL_RAND_RESET_I(32);
     }}
     { int __Vi0=0; for (; __Vi0<4; ++__Vi0) {
@@ -2266,6 +3018,9 @@ void Vtop_level::_ctor_var_reset() {
     }}
     { int __Vi0=0; for (; __Vi0<4; ++__Vi0) {
             top_level__DOT__gen_clusters__BRA__5__KET____DOT__cluster_lane_b[__Vi0] = VL_RAND_RESET_I(16);
+    }}
+    { int __Vi0=0; for (; __Vi0<4; ++__Vi0) {
+            top_level__DOT____Vcellout__gen_clusters__BRA__5__KET____DOT__u_cluster__shadow_accum_out[__Vi0] = VL_RAND_RESET_I(32);
     }}
     { int __Vi0=0; for (; __Vi0<4; ++__Vi0) {
             top_level__DOT____Vcellout__gen_clusters__BRA__5__KET____DOT__u_cluster__accum_out[__Vi0] = VL_RAND_RESET_I(32);
@@ -2283,6 +3038,9 @@ void Vtop_level::_ctor_var_reset() {
             top_level__DOT__gen_clusters__BRA__6__KET____DOT__cluster_lane_b[__Vi0] = VL_RAND_RESET_I(16);
     }}
     { int __Vi0=0; for (; __Vi0<4; ++__Vi0) {
+            top_level__DOT____Vcellout__gen_clusters__BRA__6__KET____DOT__u_cluster__shadow_accum_out[__Vi0] = VL_RAND_RESET_I(32);
+    }}
+    { int __Vi0=0; for (; __Vi0<4; ++__Vi0) {
             top_level__DOT____Vcellout__gen_clusters__BRA__6__KET____DOT__u_cluster__accum_out[__Vi0] = VL_RAND_RESET_I(32);
     }}
     { int __Vi0=0; for (; __Vi0<4; ++__Vi0) {
@@ -2296,6 +3054,9 @@ void Vtop_level::_ctor_var_reset() {
     }}
     { int __Vi0=0; for (; __Vi0<4; ++__Vi0) {
             top_level__DOT__gen_clusters__BRA__7__KET____DOT__cluster_lane_b[__Vi0] = VL_RAND_RESET_I(16);
+    }}
+    { int __Vi0=0; for (; __Vi0<4; ++__Vi0) {
+            top_level__DOT____Vcellout__gen_clusters__BRA__7__KET____DOT__u_cluster__shadow_accum_out[__Vi0] = VL_RAND_RESET_I(32);
     }}
     { int __Vi0=0; for (; __Vi0<4; ++__Vi0) {
             top_level__DOT____Vcellout__gen_clusters__BRA__7__KET____DOT__u_cluster__accum_out[__Vi0] = VL_RAND_RESET_I(32);
@@ -2312,6 +3073,8 @@ void Vtop_level::_ctor_var_reset() {
     top_level__DOT__u_control__DOT__compute_iter_d = VL_RAND_RESET_I(32);
     top_level__DOT__u_control__DOT__drain_iter_q = VL_RAND_RESET_I(32);
     top_level__DOT__u_control__DOT__drain_iter_d = VL_RAND_RESET_I(32);
+    top_level__DOT__u_control__DOT__write_iter_q = VL_RAND_RESET_I(32);
+    top_level__DOT__u_control__DOT__write_iter_d = VL_RAND_RESET_I(32);
     top_level__DOT__u_control__DOT__cycle_count_d = VL_RAND_RESET_I(32);
     { int __Vi0=0; for (; __Vi0<64; ++__Vi0) {
             top_level__DOT__u_a_buffer__DOT__mem[__Vi0] = VL_RAND_RESET_I(16);
@@ -2323,6 +3086,9 @@ void Vtop_level::_ctor_var_reset() {
     top_level__DOT__u_interconnect__DOT__b_addr_calc = VL_RAND_RESET_I(32);
     { int __Vi0=0; for (; __Vi0<4; ++__Vi0) {
             top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__accum_bank[__Vi0] = VL_RAND_RESET_I(32);
+    }}
+    { int __Vi0=0; for (; __Vi0<4; ++__Vi0) {
+            top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__shadow_accum_bank[__Vi0] = VL_RAND_RESET_I(32);
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
             top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__pe_a[__Vi0] = VL_RAND_RESET_I(16);
@@ -2345,6 +3111,19 @@ void Vtop_level::_ctor_var_reset() {
     { int __Vi0=0; for (; __Vi0<4; ++__Vi0) {
             top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__accum_next[__Vi0] = VL_RAND_RESET_I(32);
     }}
+    { int __Vi0=0; for (; __Vi0<4; ++__Vi0) {
+            top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__shadow_accum_next[__Vi0] = VL_RAND_RESET_I(32);
+    }}
+    { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
+            { int __Vi1=0; for (; __Vi1<2; ++__Vi1) {
+                    top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__shared_lane_a[__Vi0][__Vi1] = VL_RAND_RESET_I(16);
+            }}
+    }}
+    { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
+            { int __Vi1=0; for (; __Vi1<2; ++__Vi1) {
+                    top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__shared_lane_b[__Vi0][__Vi1] = VL_RAND_RESET_I(16);
+            }}
+    }}
     top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__logical_lane = VL_RAND_RESET_I(32);
     top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT____Vcellout__gen_main_pes__BRA__0__KET____DOT__u_pe__acc_result = VL_RAND_RESET_I(32);
     top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT____Vcellout__gen_main_pes__BRA__1__KET____DOT__u_pe__acc_result = VL_RAND_RESET_I(32);
@@ -2354,6 +3133,9 @@ void Vtop_level::_ctor_var_reset() {
     top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__gen_main_pes__BRA__1__KET____DOT__u_pe__DOT__product_scaled = VL_RAND_RESET_I(32);
     { int __Vi0=0; for (; __Vi0<4; ++__Vi0) {
             top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__accum_bank[__Vi0] = VL_RAND_RESET_I(32);
+    }}
+    { int __Vi0=0; for (; __Vi0<4; ++__Vi0) {
+            top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__shadow_accum_bank[__Vi0] = VL_RAND_RESET_I(32);
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
             top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__pe_a[__Vi0] = VL_RAND_RESET_I(16);
@@ -2376,6 +3158,19 @@ void Vtop_level::_ctor_var_reset() {
     { int __Vi0=0; for (; __Vi0<4; ++__Vi0) {
             top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__accum_next[__Vi0] = VL_RAND_RESET_I(32);
     }}
+    { int __Vi0=0; for (; __Vi0<4; ++__Vi0) {
+            top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__shadow_accum_next[__Vi0] = VL_RAND_RESET_I(32);
+    }}
+    { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
+            { int __Vi1=0; for (; __Vi1<2; ++__Vi1) {
+                    top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__shared_lane_a[__Vi0][__Vi1] = VL_RAND_RESET_I(16);
+            }}
+    }}
+    { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
+            { int __Vi1=0; for (; __Vi1<2; ++__Vi1) {
+                    top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__shared_lane_b[__Vi0][__Vi1] = VL_RAND_RESET_I(16);
+            }}
+    }}
     top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__logical_lane = VL_RAND_RESET_I(32);
     top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT____Vcellout__gen_main_pes__BRA__0__KET____DOT__u_pe__acc_result = VL_RAND_RESET_I(32);
     top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT____Vcellout__gen_main_pes__BRA__1__KET____DOT__u_pe__acc_result = VL_RAND_RESET_I(32);
@@ -2385,6 +3180,9 @@ void Vtop_level::_ctor_var_reset() {
     top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__gen_main_pes__BRA__1__KET____DOT__u_pe__DOT__product_scaled = VL_RAND_RESET_I(32);
     { int __Vi0=0; for (; __Vi0<4; ++__Vi0) {
             top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__accum_bank[__Vi0] = VL_RAND_RESET_I(32);
+    }}
+    { int __Vi0=0; for (; __Vi0<4; ++__Vi0) {
+            top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__shadow_accum_bank[__Vi0] = VL_RAND_RESET_I(32);
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
             top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__pe_a[__Vi0] = VL_RAND_RESET_I(16);
@@ -2407,6 +3205,19 @@ void Vtop_level::_ctor_var_reset() {
     { int __Vi0=0; for (; __Vi0<4; ++__Vi0) {
             top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__accum_next[__Vi0] = VL_RAND_RESET_I(32);
     }}
+    { int __Vi0=0; for (; __Vi0<4; ++__Vi0) {
+            top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__shadow_accum_next[__Vi0] = VL_RAND_RESET_I(32);
+    }}
+    { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
+            { int __Vi1=0; for (; __Vi1<2; ++__Vi1) {
+                    top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__shared_lane_a[__Vi0][__Vi1] = VL_RAND_RESET_I(16);
+            }}
+    }}
+    { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
+            { int __Vi1=0; for (; __Vi1<2; ++__Vi1) {
+                    top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__shared_lane_b[__Vi0][__Vi1] = VL_RAND_RESET_I(16);
+            }}
+    }}
     top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__logical_lane = VL_RAND_RESET_I(32);
     top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT____Vcellout__gen_main_pes__BRA__0__KET____DOT__u_pe__acc_result = VL_RAND_RESET_I(32);
     top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT____Vcellout__gen_main_pes__BRA__1__KET____DOT__u_pe__acc_result = VL_RAND_RESET_I(32);
@@ -2416,6 +3227,9 @@ void Vtop_level::_ctor_var_reset() {
     top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__gen_main_pes__BRA__1__KET____DOT__u_pe__DOT__product_scaled = VL_RAND_RESET_I(32);
     { int __Vi0=0; for (; __Vi0<4; ++__Vi0) {
             top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__accum_bank[__Vi0] = VL_RAND_RESET_I(32);
+    }}
+    { int __Vi0=0; for (; __Vi0<4; ++__Vi0) {
+            top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__shadow_accum_bank[__Vi0] = VL_RAND_RESET_I(32);
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
             top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__pe_a[__Vi0] = VL_RAND_RESET_I(16);
@@ -2438,6 +3252,19 @@ void Vtop_level::_ctor_var_reset() {
     { int __Vi0=0; for (; __Vi0<4; ++__Vi0) {
             top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__accum_next[__Vi0] = VL_RAND_RESET_I(32);
     }}
+    { int __Vi0=0; for (; __Vi0<4; ++__Vi0) {
+            top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__shadow_accum_next[__Vi0] = VL_RAND_RESET_I(32);
+    }}
+    { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
+            { int __Vi1=0; for (; __Vi1<2; ++__Vi1) {
+                    top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__shared_lane_a[__Vi0][__Vi1] = VL_RAND_RESET_I(16);
+            }}
+    }}
+    { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
+            { int __Vi1=0; for (; __Vi1<2; ++__Vi1) {
+                    top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__shared_lane_b[__Vi0][__Vi1] = VL_RAND_RESET_I(16);
+            }}
+    }}
     top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__logical_lane = VL_RAND_RESET_I(32);
     top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT____Vcellout__gen_main_pes__BRA__0__KET____DOT__u_pe__acc_result = VL_RAND_RESET_I(32);
     top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT____Vcellout__gen_main_pes__BRA__1__KET____DOT__u_pe__acc_result = VL_RAND_RESET_I(32);
@@ -2447,6 +3274,9 @@ void Vtop_level::_ctor_var_reset() {
     top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__gen_main_pes__BRA__1__KET____DOT__u_pe__DOT__product_scaled = VL_RAND_RESET_I(32);
     { int __Vi0=0; for (; __Vi0<4; ++__Vi0) {
             top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__accum_bank[__Vi0] = VL_RAND_RESET_I(32);
+    }}
+    { int __Vi0=0; for (; __Vi0<4; ++__Vi0) {
+            top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__shadow_accum_bank[__Vi0] = VL_RAND_RESET_I(32);
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
             top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__pe_a[__Vi0] = VL_RAND_RESET_I(16);
@@ -2469,6 +3299,19 @@ void Vtop_level::_ctor_var_reset() {
     { int __Vi0=0; for (; __Vi0<4; ++__Vi0) {
             top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__accum_next[__Vi0] = VL_RAND_RESET_I(32);
     }}
+    { int __Vi0=0; for (; __Vi0<4; ++__Vi0) {
+            top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__shadow_accum_next[__Vi0] = VL_RAND_RESET_I(32);
+    }}
+    { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
+            { int __Vi1=0; for (; __Vi1<2; ++__Vi1) {
+                    top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__shared_lane_a[__Vi0][__Vi1] = VL_RAND_RESET_I(16);
+            }}
+    }}
+    { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
+            { int __Vi1=0; for (; __Vi1<2; ++__Vi1) {
+                    top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__shared_lane_b[__Vi0][__Vi1] = VL_RAND_RESET_I(16);
+            }}
+    }}
     top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__logical_lane = VL_RAND_RESET_I(32);
     top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT____Vcellout__gen_main_pes__BRA__0__KET____DOT__u_pe__acc_result = VL_RAND_RESET_I(32);
     top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT____Vcellout__gen_main_pes__BRA__1__KET____DOT__u_pe__acc_result = VL_RAND_RESET_I(32);
@@ -2478,6 +3321,9 @@ void Vtop_level::_ctor_var_reset() {
     top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__gen_main_pes__BRA__1__KET____DOT__u_pe__DOT__product_scaled = VL_RAND_RESET_I(32);
     { int __Vi0=0; for (; __Vi0<4; ++__Vi0) {
             top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__accum_bank[__Vi0] = VL_RAND_RESET_I(32);
+    }}
+    { int __Vi0=0; for (; __Vi0<4; ++__Vi0) {
+            top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__shadow_accum_bank[__Vi0] = VL_RAND_RESET_I(32);
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
             top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__pe_a[__Vi0] = VL_RAND_RESET_I(16);
@@ -2500,6 +3346,19 @@ void Vtop_level::_ctor_var_reset() {
     { int __Vi0=0; for (; __Vi0<4; ++__Vi0) {
             top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__accum_next[__Vi0] = VL_RAND_RESET_I(32);
     }}
+    { int __Vi0=0; for (; __Vi0<4; ++__Vi0) {
+            top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__shadow_accum_next[__Vi0] = VL_RAND_RESET_I(32);
+    }}
+    { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
+            { int __Vi1=0; for (; __Vi1<2; ++__Vi1) {
+                    top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__shared_lane_a[__Vi0][__Vi1] = VL_RAND_RESET_I(16);
+            }}
+    }}
+    { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
+            { int __Vi1=0; for (; __Vi1<2; ++__Vi1) {
+                    top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__shared_lane_b[__Vi0][__Vi1] = VL_RAND_RESET_I(16);
+            }}
+    }}
     top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__logical_lane = VL_RAND_RESET_I(32);
     top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT____Vcellout__gen_main_pes__BRA__0__KET____DOT__u_pe__acc_result = VL_RAND_RESET_I(32);
     top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT____Vcellout__gen_main_pes__BRA__1__KET____DOT__u_pe__acc_result = VL_RAND_RESET_I(32);
@@ -2509,6 +3368,9 @@ void Vtop_level::_ctor_var_reset() {
     top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__gen_main_pes__BRA__1__KET____DOT__u_pe__DOT__product_scaled = VL_RAND_RESET_I(32);
     { int __Vi0=0; for (; __Vi0<4; ++__Vi0) {
             top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__accum_bank[__Vi0] = VL_RAND_RESET_I(32);
+    }}
+    { int __Vi0=0; for (; __Vi0<4; ++__Vi0) {
+            top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__shadow_accum_bank[__Vi0] = VL_RAND_RESET_I(32);
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
             top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__pe_a[__Vi0] = VL_RAND_RESET_I(16);
@@ -2531,6 +3393,19 @@ void Vtop_level::_ctor_var_reset() {
     { int __Vi0=0; for (; __Vi0<4; ++__Vi0) {
             top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__accum_next[__Vi0] = VL_RAND_RESET_I(32);
     }}
+    { int __Vi0=0; for (; __Vi0<4; ++__Vi0) {
+            top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__shadow_accum_next[__Vi0] = VL_RAND_RESET_I(32);
+    }}
+    { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
+            { int __Vi1=0; for (; __Vi1<2; ++__Vi1) {
+                    top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__shared_lane_a[__Vi0][__Vi1] = VL_RAND_RESET_I(16);
+            }}
+    }}
+    { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
+            { int __Vi1=0; for (; __Vi1<2; ++__Vi1) {
+                    top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__shared_lane_b[__Vi0][__Vi1] = VL_RAND_RESET_I(16);
+            }}
+    }}
     top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__logical_lane = VL_RAND_RESET_I(32);
     top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT____Vcellout__gen_main_pes__BRA__0__KET____DOT__u_pe__acc_result = VL_RAND_RESET_I(32);
     top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT____Vcellout__gen_main_pes__BRA__1__KET____DOT__u_pe__acc_result = VL_RAND_RESET_I(32);
@@ -2540,6 +3415,9 @@ void Vtop_level::_ctor_var_reset() {
     top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__gen_main_pes__BRA__1__KET____DOT__u_pe__DOT__product_scaled = VL_RAND_RESET_I(32);
     { int __Vi0=0; for (; __Vi0<4; ++__Vi0) {
             top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__accum_bank[__Vi0] = VL_RAND_RESET_I(32);
+    }}
+    { int __Vi0=0; for (; __Vi0<4; ++__Vi0) {
+            top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__shadow_accum_bank[__Vi0] = VL_RAND_RESET_I(32);
     }}
     { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
             top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__pe_a[__Vi0] = VL_RAND_RESET_I(16);
@@ -2561,6 +3439,19 @@ void Vtop_level::_ctor_var_reset() {
     }}
     { int __Vi0=0; for (; __Vi0<4; ++__Vi0) {
             top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__accum_next[__Vi0] = VL_RAND_RESET_I(32);
+    }}
+    { int __Vi0=0; for (; __Vi0<4; ++__Vi0) {
+            top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__shadow_accum_next[__Vi0] = VL_RAND_RESET_I(32);
+    }}
+    { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
+            { int __Vi1=0; for (; __Vi1<2; ++__Vi1) {
+                    top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__shared_lane_a[__Vi0][__Vi1] = VL_RAND_RESET_I(16);
+            }}
+    }}
+    { int __Vi0=0; for (; __Vi0<2; ++__Vi0) {
+            { int __Vi1=0; for (; __Vi1<2; ++__Vi1) {
+                    top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__shared_lane_b[__Vi0][__Vi1] = VL_RAND_RESET_I(16);
+            }}
     }}
     top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__logical_lane = VL_RAND_RESET_I(32);
     top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT____Vcellout__gen_main_pes__BRA__0__KET____DOT__u_pe__acc_result = VL_RAND_RESET_I(32);

@@ -1,0 +1,11 @@
+{
+  "success": true,
+  "lut": null,
+  "ff": 2152.0,
+  "dsp": 64.0,
+  "bram": 0.0,
+  "wns_ns": 2.435,
+  "fmax_mhz_est": 132.18770654329148,
+  "utilization_report": "/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/experiments/results/runs/replicated_8x4_c2/vivado/reports/utilization_impl.rpt",
+  "timing_report": "/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/experiments/results/runs/replicated_8x4_c2/vivado/reports/timing_impl.rpt"
+}

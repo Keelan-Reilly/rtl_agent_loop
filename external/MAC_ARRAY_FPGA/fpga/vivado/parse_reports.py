@@ -16,6 +16,11 @@ def find_number(pattern: str, text: str) -> float | None:
     return float(match.group(1).replace(",", ""))
 
 
+def find_used_value(label: str, text: str) -> float | None:
+    pattern = rf"^\|\s*{re.escape(label)}\s*\|\s*([\d,\.]+)\s*\|"
+    return find_number(pattern, text)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--reports-dir", type=Path, required=True)
@@ -34,10 +39,10 @@ def main() -> int:
     util_text = util_path.read_text() if util_path.exists() else ""
     timing_text = timing_path.read_text() if timing_path.exists() else ""
 
-    lut = find_number(r"\|\s*Slice LUTs\s*\|\s*([\d,]+)\s*\|", util_text)
-    ff = find_number(r"\|\s*Slice Registers\s*\|\s*([\d,]+)\s*\|", util_text)
-    dsp = find_number(r"\|\s*DSPs\s*\|\s*([\d,]+)\s*\|", util_text)
-    bram = find_number(r"\|\s*Block RAM Tile\s*\|\s*([\d,\.]+)\s*\|", util_text)
+    lut = find_used_value("Slice LUTs*", util_text)
+    ff = find_used_value("Slice Registers", util_text)
+    dsp = find_used_value("DSPs", util_text)
+    bram = find_used_value("Block RAM Tile", util_text)
 
     wns = find_number(r"WNS\(ns\):\s*(-?[\d\.]+)", timing_text)
     if wns is None:

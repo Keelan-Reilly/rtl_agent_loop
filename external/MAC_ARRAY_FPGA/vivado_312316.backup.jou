@@ -1,0 +1,24 @@
+#-----------------------------------------------------------
+# Vivado v2025.2 (64-bit)
+# SW Build 6299465 on Fri Nov 14 12:34:56 MST 2025
+# IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025
+# SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025
+# Start of session at: Mon Mar 16 14:37:55 2026
+# Process ID         : 312316
+# Current directory  : /home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA
+# Command line       : vivado -mode batch -source /home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/fpga/vivado/run_project.tcl -notrace -tclargs /home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA /home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/experiments/results/runs/shared_4x4_sf2/vivado top_level xc7a35tcpg236-1 /home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/fpga/vivado/constraints/mac_array_constraints.xdc 10.0 4 ACC_WIDTH=32,ARCH_VARIANT=1,ARRAY_M=4,ARRAY_N=4,CLUSTER_SIZE=4,DATA_WIDTH=16,FRAC_BITS=8,INPUT_MEM_DEPTH=64,OUTPUT_MEM_DEPTH=64,PIPE_STAGES=1,SHARE_FACTOR=2,TILE_K=4
+# Log file           : /home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/vivado.log
+# Journal file       : /home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/vivado.jou
+# Running On         : keelan-Inspiron-5593
+# Platform           : Ubuntu
+# Operating System   : Ubuntu 22.04.5 LTS
+# Processor Detail   : Intel(R) Core(TM) i7-1065G7 CPU @ 1.30GHz
+# CPU Frequency      : 2803.200 MHz
+# CPU Physical cores : 4
+# CPU Logical cores  : 8
+# Host memory        : 16527 MB
+# Swap memory        : 2147 MB
+# Total Virtual      : 18674 MB
+# Available Virtual  : 15245 MB
+#-----------------------------------------------------------
+source /home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/fpga/vivado/run_project.tcl -notrace

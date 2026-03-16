@@ -17,7 +17,7 @@ This note records the intended interpretation of the three architecture variants
 
 - each cluster instantiates fewer physical PEs than logical lanes
 - logical lanes are scheduled onto physical PEs over `SHARE_FACTOR` sub-steps
-- cluster logic tracks which logical accumulator each PE result belongs to
+- cluster logic tracks which logical accumulator each PE result belongs to and uses explicit phase-indexed operand muxing
 - intended hypothesis:
   - lower physical compute footprint
   - higher control and mux cost
@@ -31,6 +31,7 @@ This note records the intended interpretation of the three architecture variants
 - active datapaths follow the baseline mapping
 - extra shadow compute is instantiated to increase pressure on resources and routing
 - architectural results are still taken from the primary datapaths
+- shadow compute feeds preserved shadow state and checksum logic so synthesis keeps the extra bank
 - intended hypothesis:
   - similar cycle behavior to baseline
   - higher area

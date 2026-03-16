@@ -16,9 +16,15 @@
     "TILE_K": "4"
   },
   "arch_variant_name": "baseline",
-  "latency_cycles": 7,
-  "latency_time_ms": 7.000000000000001e-05,
-  "throughput_ops_per_sec": 1828571428.5714285,
+  "logical_lane_count": 32,
+  "cluster_count": 8,
+  "physical_pe_count": 32,
+  "shadow_pe_count": 0,
+  "output_count": 32,
+  "total_compute_steps": 4,
+  "latency_cycles": 38,
+  "latency_time_ms": 0.00038,
+  "throughput_ops_per_sec": 336842105.2631579,
   "command": [
     "/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/experiments/results/runs/baseline_8x4/verilator_perf/obj_dir/Vtop_level",
     "--expected",

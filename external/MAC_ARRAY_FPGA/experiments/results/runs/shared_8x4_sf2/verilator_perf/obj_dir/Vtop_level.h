@@ -28,6 +28,10 @@ VL_MODULE(Vtop_level) {
     VL_OUT8(done,0,0);
     VL_OUT8(busy,0,0);
     VL_OUT(debug_cycle_count,31,0);
+    VL_OUT(debug_output_count,31,0);
+    VL_OUT(debug_total_compute_steps,31,0);
+    VL_OUT(debug_primary_checksum,31,0);
+    VL_OUT(debug_shadow_checksum,31,0);
     
     // LOCAL SIGNALS
     // Internals; generally not touched by application code
@@ -41,10 +45,13 @@ VL_MODULE(Vtop_level) {
         CData/*2:0*/ top_level__DOT__u_control__DOT__state_q;
         CData/*2:0*/ top_level__DOT__u_control__DOT__state_d;
         IData/*31:0*/ top_level__DOT__cycle_count;
+        IData/*31:0*/ top_level__DOT__shadow_checksum_q;
         IData/*31:0*/ top_level__DOT__u_control__DOT__compute_iter_q;
         IData/*31:0*/ top_level__DOT__u_control__DOT__compute_iter_d;
         IData/*31:0*/ top_level__DOT__u_control__DOT__drain_iter_q;
         IData/*31:0*/ top_level__DOT__u_control__DOT__drain_iter_d;
+        IData/*31:0*/ top_level__DOT__u_control__DOT__write_iter_q;
+        IData/*31:0*/ top_level__DOT__u_control__DOT__write_iter_d;
         IData/*31:0*/ top_level__DOT__u_control__DOT__cycle_count_d;
         IData/*31:0*/ top_level__DOT__u_interconnect__DOT__a_addr_calc;
         IData/*31:0*/ top_level__DOT__u_interconnect__DOT__b_addr_calc;
@@ -94,11 +101,14 @@ VL_MODULE(Vtop_level) {
         SData/*15:0*/ top_level__DOT__b_col_data[4];
         SData/*15:0*/ top_level__DOT__lane_a[32];
         SData/*15:0*/ top_level__DOT__lane_b[32];
-        IData/*31:0*/ top_level__DOT__cluster_accum[8][4];
-        IData/*31:0*/ top_level__DOT__output_mem[64];
-        SData/*15:0*/ top_level__DOT__gen_clusters__BRA__0__KET____DOT__cluster_lane_a[4];
     };
     struct {
+        IData/*31:0*/ top_level__DOT__cluster_accum[8][4];
+        IData/*31:0*/ top_level__DOT__cluster_shadow_accum[8][4];
+        IData/*31:0*/ top_level__DOT__logical_accum[32];
+        IData/*31:0*/ top_level__DOT__logical_shadow_accum[32];
+        IData/*31:0*/ top_level__DOT__output_mem[64];
+        SData/*15:0*/ top_level__DOT__gen_clusters__BRA__0__KET____DOT__cluster_lane_a[4];
         SData/*15:0*/ top_level__DOT__gen_clusters__BRA__0__KET____DOT__cluster_lane_b[4];
         SData/*15:0*/ top_level__DOT__gen_clusters__BRA__1__KET____DOT__cluster_lane_a[4];
         SData/*15:0*/ top_level__DOT__gen_clusters__BRA__1__KET____DOT__cluster_lane_b[4];
@@ -117,6 +127,7 @@ VL_MODULE(Vtop_level) {
         SData/*15:0*/ top_level__DOT__u_a_buffer__DOT__mem[64];
         SData/*15:0*/ top_level__DOT__u_b_buffer__DOT__mem[64];
         IData/*31:0*/ top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__accum_bank[4];
+        IData/*31:0*/ top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__shadow_accum_bank[4];
         SData/*15:0*/ top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__pe_a[2];
         SData/*15:0*/ top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__pe_b[2];
         IData/*31:0*/ top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__pe_seed[2];
@@ -124,7 +135,11 @@ VL_MODULE(Vtop_level) {
         CData/*0:0*/ top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__pe_done[2];
         IData/*31:0*/ top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__pe_result[2];
         IData/*31:0*/ top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__accum_next[4];
+        IData/*31:0*/ top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__shadow_accum_next[4];
+        SData/*15:0*/ top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__shared_lane_a[2][2];
+        SData/*15:0*/ top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster__DOT__shared_lane_b[2][2];
         IData/*31:0*/ top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__accum_bank[4];
+        IData/*31:0*/ top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__shadow_accum_bank[4];
         SData/*15:0*/ top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__pe_a[2];
         SData/*15:0*/ top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__pe_b[2];
         IData/*31:0*/ top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__pe_seed[2];
@@ -132,7 +147,11 @@ VL_MODULE(Vtop_level) {
         CData/*0:0*/ top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__pe_done[2];
         IData/*31:0*/ top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__pe_result[2];
         IData/*31:0*/ top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__accum_next[4];
+        IData/*31:0*/ top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__shadow_accum_next[4];
+        SData/*15:0*/ top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__shared_lane_a[2][2];
+        SData/*15:0*/ top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster__DOT__shared_lane_b[2][2];
         IData/*31:0*/ top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__accum_bank[4];
+        IData/*31:0*/ top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__shadow_accum_bank[4];
         SData/*15:0*/ top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__pe_a[2];
         SData/*15:0*/ top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__pe_b[2];
         IData/*31:0*/ top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__pe_seed[2];
@@ -140,15 +159,25 @@ VL_MODULE(Vtop_level) {
         CData/*0:0*/ top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__pe_done[2];
         IData/*31:0*/ top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__pe_result[2];
         IData/*31:0*/ top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__accum_next[4];
+        IData/*31:0*/ top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__shadow_accum_next[4];
+        SData/*15:0*/ top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__shared_lane_a[2][2];
+        SData/*15:0*/ top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster__DOT__shared_lane_b[2][2];
         IData/*31:0*/ top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__accum_bank[4];
+        IData/*31:0*/ top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__shadow_accum_bank[4];
         SData/*15:0*/ top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__pe_a[2];
         SData/*15:0*/ top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__pe_b[2];
         IData/*31:0*/ top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__pe_seed[2];
+    };
+    struct {
         CData/*0:0*/ top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__pe_valid[2];
         CData/*0:0*/ top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__pe_done[2];
         IData/*31:0*/ top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__pe_result[2];
         IData/*31:0*/ top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__accum_next[4];
+        IData/*31:0*/ top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__shadow_accum_next[4];
+        SData/*15:0*/ top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__shared_lane_a[2][2];
+        SData/*15:0*/ top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster__DOT__shared_lane_b[2][2];
         IData/*31:0*/ top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__accum_bank[4];
+        IData/*31:0*/ top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__shadow_accum_bank[4];
         SData/*15:0*/ top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__pe_a[2];
         SData/*15:0*/ top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__pe_b[2];
         IData/*31:0*/ top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__pe_seed[2];
@@ -156,17 +185,23 @@ VL_MODULE(Vtop_level) {
         CData/*0:0*/ top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__pe_done[2];
         IData/*31:0*/ top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__pe_result[2];
         IData/*31:0*/ top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__accum_next[4];
+        IData/*31:0*/ top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__shadow_accum_next[4];
+        SData/*15:0*/ top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__shared_lane_a[2][2];
+        SData/*15:0*/ top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster__DOT__shared_lane_b[2][2];
         IData/*31:0*/ top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__accum_bank[4];
+        IData/*31:0*/ top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__shadow_accum_bank[4];
         SData/*15:0*/ top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__pe_a[2];
         SData/*15:0*/ top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__pe_b[2];
         IData/*31:0*/ top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__pe_seed[2];
         CData/*0:0*/ top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__pe_valid[2];
         CData/*0:0*/ top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__pe_done[2];
         IData/*31:0*/ top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__pe_result[2];
-    };
-    struct {
         IData/*31:0*/ top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__accum_next[4];
+        IData/*31:0*/ top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__shadow_accum_next[4];
+        SData/*15:0*/ top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__shared_lane_a[2][2];
+        SData/*15:0*/ top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster__DOT__shared_lane_b[2][2];
         IData/*31:0*/ top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__accum_bank[4];
+        IData/*31:0*/ top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__shadow_accum_bank[4];
         SData/*15:0*/ top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__pe_a[2];
         SData/*15:0*/ top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__pe_b[2];
         IData/*31:0*/ top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__pe_seed[2];
@@ -174,7 +209,11 @@ VL_MODULE(Vtop_level) {
         CData/*0:0*/ top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__pe_done[2];
         IData/*31:0*/ top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__pe_result[2];
         IData/*31:0*/ top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__accum_next[4];
+        IData/*31:0*/ top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__shadow_accum_next[4];
+        SData/*15:0*/ top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__shared_lane_a[2][2];
+        SData/*15:0*/ top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster__DOT__shared_lane_b[2][2];
         IData/*31:0*/ top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__accum_bank[4];
+        IData/*31:0*/ top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__shadow_accum_bank[4];
         SData/*15:0*/ top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__pe_a[2];
         SData/*15:0*/ top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__pe_b[2];
         IData/*31:0*/ top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__pe_seed[2];
@@ -182,6 +221,9 @@ VL_MODULE(Vtop_level) {
         CData/*0:0*/ top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__pe_done[2];
         IData/*31:0*/ top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__pe_result[2];
         IData/*31:0*/ top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__accum_next[4];
+        IData/*31:0*/ top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__shadow_accum_next[4];
+        SData/*15:0*/ top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__shared_lane_a[2][2];
+        SData/*15:0*/ top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster__DOT__shared_lane_b[2][2];
     };
     
     // LOCAL VARIABLES
@@ -213,27 +255,35 @@ VL_MODULE(Vtop_level) {
     SData/*15:0*/ top_level__DOT____Vcellinp__u_interconnect__a_row_data[8];
     CData/*5:0*/ top_level__DOT____Vcellout__u_interconnect__b_read_addr[4];
     CData/*5:0*/ top_level__DOT____Vcellout__u_interconnect__a_read_addr[8];
+    IData/*31:0*/ top_level__DOT____Vcellout__gen_clusters__BRA__0__KET____DOT__u_cluster__shadow_accum_out[4];
     IData/*31:0*/ top_level__DOT____Vcellout__gen_clusters__BRA__0__KET____DOT__u_cluster__accum_out[4];
     SData/*15:0*/ top_level__DOT____Vcellinp__gen_clusters__BRA__0__KET____DOT__u_cluster__lane_b[4];
     SData/*15:0*/ top_level__DOT____Vcellinp__gen_clusters__BRA__0__KET____DOT__u_cluster__lane_a[4];
+    IData/*31:0*/ top_level__DOT____Vcellout__gen_clusters__BRA__1__KET____DOT__u_cluster__shadow_accum_out[4];
     IData/*31:0*/ top_level__DOT____Vcellout__gen_clusters__BRA__1__KET____DOT__u_cluster__accum_out[4];
     SData/*15:0*/ top_level__DOT____Vcellinp__gen_clusters__BRA__1__KET____DOT__u_cluster__lane_b[4];
     SData/*15:0*/ top_level__DOT____Vcellinp__gen_clusters__BRA__1__KET____DOT__u_cluster__lane_a[4];
+    IData/*31:0*/ top_level__DOT____Vcellout__gen_clusters__BRA__2__KET____DOT__u_cluster__shadow_accum_out[4];
     IData/*31:0*/ top_level__DOT____Vcellout__gen_clusters__BRA__2__KET____DOT__u_cluster__accum_out[4];
     SData/*15:0*/ top_level__DOT____Vcellinp__gen_clusters__BRA__2__KET____DOT__u_cluster__lane_b[4];
     SData/*15:0*/ top_level__DOT____Vcellinp__gen_clusters__BRA__2__KET____DOT__u_cluster__lane_a[4];
+    IData/*31:0*/ top_level__DOT____Vcellout__gen_clusters__BRA__3__KET____DOT__u_cluster__shadow_accum_out[4];
     IData/*31:0*/ top_level__DOT____Vcellout__gen_clusters__BRA__3__KET____DOT__u_cluster__accum_out[4];
     SData/*15:0*/ top_level__DOT____Vcellinp__gen_clusters__BRA__3__KET____DOT__u_cluster__lane_b[4];
     SData/*15:0*/ top_level__DOT____Vcellinp__gen_clusters__BRA__3__KET____DOT__u_cluster__lane_a[4];
+    IData/*31:0*/ top_level__DOT____Vcellout__gen_clusters__BRA__4__KET____DOT__u_cluster__shadow_accum_out[4];
     IData/*31:0*/ top_level__DOT____Vcellout__gen_clusters__BRA__4__KET____DOT__u_cluster__accum_out[4];
     SData/*15:0*/ top_level__DOT____Vcellinp__gen_clusters__BRA__4__KET____DOT__u_cluster__lane_b[4];
     SData/*15:0*/ top_level__DOT____Vcellinp__gen_clusters__BRA__4__KET____DOT__u_cluster__lane_a[4];
+    IData/*31:0*/ top_level__DOT____Vcellout__gen_clusters__BRA__5__KET____DOT__u_cluster__shadow_accum_out[4];
     IData/*31:0*/ top_level__DOT____Vcellout__gen_clusters__BRA__5__KET____DOT__u_cluster__accum_out[4];
     SData/*15:0*/ top_level__DOT____Vcellinp__gen_clusters__BRA__5__KET____DOT__u_cluster__lane_b[4];
     SData/*15:0*/ top_level__DOT____Vcellinp__gen_clusters__BRA__5__KET____DOT__u_cluster__lane_a[4];
+    IData/*31:0*/ top_level__DOT____Vcellout__gen_clusters__BRA__6__KET____DOT__u_cluster__shadow_accum_out[4];
     IData/*31:0*/ top_level__DOT____Vcellout__gen_clusters__BRA__6__KET____DOT__u_cluster__accum_out[4];
     SData/*15:0*/ top_level__DOT____Vcellinp__gen_clusters__BRA__6__KET____DOT__u_cluster__lane_b[4];
     SData/*15:0*/ top_level__DOT____Vcellinp__gen_clusters__BRA__6__KET____DOT__u_cluster__lane_a[4];
+    IData/*31:0*/ top_level__DOT____Vcellout__gen_clusters__BRA__7__KET____DOT__u_cluster__shadow_accum_out[4];
     IData/*31:0*/ top_level__DOT____Vcellout__gen_clusters__BRA__7__KET____DOT__u_cluster__accum_out[4];
     SData/*15:0*/ top_level__DOT____Vcellinp__gen_clusters__BRA__7__KET____DOT__u_cluster__lane_b[4];
     SData/*15:0*/ top_level__DOT____Vcellinp__gen_clusters__BRA__7__KET____DOT__u_cluster__lane_a[4];
@@ -273,7 +323,7 @@ VL_MODULE(Vtop_level) {
     static QData _change_request(Vtop_level__Syms* __restrict vlSymsp);
     static QData _change_request_1(Vtop_level__Syms* __restrict vlSymsp);
   public:
-    static void _combo__TOP__5(Vtop_level__Syms* __restrict vlSymsp);
+    static void _combo__TOP__4(Vtop_level__Syms* __restrict vlSymsp);
   private:
     void _ctor_var_reset() VL_ATTR_COLD;
   public:
@@ -285,10 +335,9 @@ VL_MODULE(Vtop_level) {
   public:
     static void _eval_initial(Vtop_level__Syms* __restrict vlSymsp) VL_ATTR_COLD;
     static void _eval_settle(Vtop_level__Syms* __restrict vlSymsp) VL_ATTR_COLD;
-    static void _initial__TOP__2(Vtop_level__Syms* __restrict vlSymsp) VL_ATTR_COLD;
+    static void _initial__TOP__1(Vtop_level__Syms* __restrict vlSymsp) VL_ATTR_COLD;
     static void _sequent__TOP__3(Vtop_level__Syms* __restrict vlSymsp);
-    static void _settle__TOP__1(Vtop_level__Syms* __restrict vlSymsp) VL_ATTR_COLD;
-    static void _settle__TOP__4(Vtop_level__Syms* __restrict vlSymsp) VL_ATTR_COLD;
+    static void _settle__TOP__2(Vtop_level__Syms* __restrict vlSymsp) VL_ATTR_COLD;
 } VL_ATTR_ALIGNED(VL_CACHE_LINE_BYTES);
 
 //----------

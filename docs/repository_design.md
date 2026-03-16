@@ -1,10 +1,10 @@
 # Repository Design
 
-This document describes the current implementation of `rtl_agent_loop` as it exists in this repository on 2026-03-16. It is intentionally implementation-first: where code, config, and docs disagree, this note calls that out explicitly instead of smoothing it over.
+This document describes the current implementation of `rtl_agent_loop` as it exists in this repository on 2026-03-16. It is intentionally implementation-first: where code, config, generated artifacts, and docs disagree, this note names the mismatch instead of smoothing it over.
 
 ## 1. System Purpose
 
-`rtl_agent_loop` is a deterministic orchestration layer for bounded FPGA design-space exploration over an external accelerator repository, [`external/CNN_FPGA`](/home/keelan/rtl_agent_loop/external/CNN_FPGA/README.md).
+`rtl_agent_loop` is a deterministic orchestration layer for bounded FPGA design-space exploration over an external MAC-array accelerator repository, [`external/MAC_ARRAY_FPGA`](/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/README.md).
 
 This repository owns:
 
@@ -17,21 +17,22 @@ This repository owns:
 - SQLite-backed experiment state
 - role prompts and operator-facing documentation
 
-This repository does not own the accelerator RTL implementation as a product surface. The external repo remains the hardware implementation boundary.
+This repository does not own the accelerator RTL implementation as a product surface. The external MAC-array repo is the hardware implementation boundary.
 
 ## 2. Top-Level Repository Layout
 
 The repo is organized into a few clear ownership zones:
 
 - [`rtl_agent_loop/`](/home/keelan/rtl_agent_loop/rtl_agent_loop): Python controller package
-- [`scripts/`](/home/keelan/rtl_agent_loop/scripts): stable wrapper entrypoints used by the controller and `Makefile`
+- [`scripts/`](/home/keelan/rtl_agent_loop/scripts): stable wrapper entrypoints used by the controller and [`Makefile`](/home/keelan/rtl_agent_loop/Makefile)
 - [`config/`](/home/keelan/rtl_agent_loop/config): search-space and scoring policy JSON
 - [`candidates/`](/home/keelan/rtl_agent_loop/candidates): contributor-authored source manifests
 - [`runs/`](/home/keelan/rtl_agent_loop/runs): controller-owned manifest copies and per-run artifacts
 - [`var/`](/home/keelan/rtl_agent_loop/var): SQLite state and best-candidate pointer JSON
 - [`docs/`](/home/keelan/rtl_agent_loop/docs): operator notes, scoring policy, measured summaries, and this design note
 - [`prompts/`](/home/keelan/rtl_agent_loop/prompts): role-specific operating prompts
-- [`external/CNN_FPGA/`](/home/keelan/rtl_agent_loop/external/CNN_FPGA): external accelerator dependency
+- [`external/MAC_ARRAY_FPGA/`](/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA): active external accelerator dependency
+- [`external/CNN_FPGA/`](/home/keelan/rtl_agent_loop/external/CNN_FPGA): historical dependency still present in the workspace, but no longer the default integration target
 
 ## 3. Core Execution Model
 
@@ -80,9 +81,8 @@ Candidate summary states:
 - `perf_passed`
 - `perf_failed`
 - `scored`
-- `scoring` is defined as a name but the candidate summary state written after scoring is `scored`
 
-Important implementation detail:
+Important implementation details:
 
 - `candidates.current_state` is only a summary of the latest transition.
 - `run_stages` is the authoritative per-run stage snapshot.
@@ -98,7 +98,7 @@ Stage range handling is implemented by `normalize_stage_range()`. If the caller 
 
 [`rtl_agent_loop/__main__.py`](/home/keelan/rtl_agent_loop/rtl_agent_loop/__main__.py) is the module entrypoint and simply dispatches to CLI `main()`.
 
-[`rtl_agent_loop/__init__.py`](/home/keelan/rtl_agent_loop/rtl_agent_loop/__init__.py) only exposes `__version__ = "0.1.0"`.
+[`rtl_agent_loop/__init__.py`](/home/keelan/rtl_agent_loop/rtl_agent_loop/__init__.py) exposes `__version__ = "0.1.0"`.
 
 [`pyproject.toml`](/home/keelan/rtl_agent_loop/pyproject.toml) defines a minimal setuptools package with `requires-python = ">=3.12"`.
 
@@ -165,24 +165,32 @@ Important design choice:
 
 That means a candidate can currently be in a pending or failed summary state and still rank successfully if older passing canonical artifacts exist.
 
-### 5.4 Config and validation
+## 6. Active Search Space And Manifest Validation
 
-[`rtl_agent_loop/config.py`](/home/keelan/rtl_agent_loop/rtl_agent_loop/config.py) does three things:
+[`rtl_agent_loop/config.py`](/home/keelan/rtl_agent_loop/rtl_agent_loop/config.py) handles:
 
 - generic JSON loading
 - config loading for search space and weights
 - manifest validation against the active search-space schema
 
-`validate_manifest()` currently accepts only:
+[`rtl_agent_loop/models.py`](/home/keelan/rtl_agent_loop/rtl_agent_loop/models.py) now defines MAC-array-era parameter constants rather than CNN-era ones.
 
-- required parameters:
-  - `DENSE_OUT_PAR`
-  - `DATA_WIDTH`
-  - `FRAC_BITS`
-  - `CONV_CHANNEL_PAR`
-  - `CONV_VARIANT`
-- optional parameters:
-  - `DENSE_SPLIT_MAC_PIPELINE`
+Current required searched parameters are:
+
+- `ARCH_VARIANT`
+- `ARRAY_M`
+- `ARRAY_N`
+- `CLUSTER_SIZE`
+- `SHARE_FACTOR`
+- `DATA_WIDTH`
+- `FRAC_BITS`
+- `ACC_WIDTH`
+- `PIPE_STAGES`
+- `TILE_K`
+- `INPUT_MEM_DEPTH`
+- `OUTPUT_MEM_DEPTH`
+
+There are currently no optional searched parameters in the active schema.
 
 Validation rules include:
 
@@ -190,47 +198,57 @@ Validation rules include:
 - `candidate_id` must be a non-empty string
 - `parameters` must be an object
 - unsupported parameter keys are rejected
-- integer parameters must fall inside the allowed sets in `config/search_space.json`
-- `CONV_VARIANT` must be both logically allowed and present in the configured allowed set
+- all required parameters must be integers inside the allowed sets in [`config/search_space.json`](/home/keelan/rtl_agent_loop/config/search_space.json)
+- `ARCH_VARIANT` must be one of `{0, 1, 2}`
 - `FRAC_BITS` must be strictly less than `DATA_WIDTH`
+- `ACC_WIDTH` must be strictly greater than `DATA_WIDTH`
+- `SHARE_FACTOR` must be `1` for baseline and replicated variants
+- shared variants require `SHARE_FACTOR >= 2`
+- `CLUSTER_SIZE` must be `<= max(ARRAY_M, ARRAY_N)`
+- `INPUT_MEM_DEPTH` must cover the active `A` and `B` operand footprints implied by `ARRAY_M`, `ARRAY_N`, and `TILE_K`
+- `OUTPUT_MEM_DEPTH` must cover the active `ARRAY_M * ARRAY_N` output tile
 - `tags` must be a list of strings
 
-This validator returns a `CandidateManifest` dataclass, not a raw dict.
+The validator returns a [`CandidateManifest`](/home/keelan/rtl_agent_loop/rtl_agent_loop/models.py) dataclass, not a raw dict.
 
-### 5.5 Models
+## 7. Active Configuration Files
 
-[`rtl_agent_loop/models.py`](/home/keelan/rtl_agent_loop/rtl_agent_loop/models.py) contains lightweight dataclasses and parameter-key constants.
+### 7.1 Search space
 
-Important constants:
+[`config/search_space.json`](/home/keelan/rtl_agent_loop/config/search_space.json) now points to the MAC-array repo and defines the active bounded study space.
 
-- `ALLOWED_CONV_VARIANTS = {"baseline", "pipelined"}`
-- `REQUIRED_PARAMETER_KEYS`
-- `OPTIONAL_PARAMETER_KEYS`
+Current allowed parameter values are:
 
-Important dataclasses:
+- `ARCH_VARIANT`: `[0, 1, 2]`
+- `ARRAY_M`: `[4, 8]`
+- `ARRAY_N`: `[4, 8]`
+- `CLUSTER_SIZE`: `[1, 2, 4]`
+- `SHARE_FACTOR`: `[1, 2]`
+- `DATA_WIDTH`: `[12, 16]`
+- `FRAC_BITS`: `[6, 8]`
+- `ACC_WIDTH`: `[24, 32]`
+- `PIPE_STAGES`: `[1, 2]`
+- `TILE_K`: `[4]`
+- `INPUT_MEM_DEPTH`: `[16, 64]`
+- `OUTPUT_MEM_DEPTH`: `[16, 64]`
 
-- `CandidateManifest`
-- `CandidateRecord`
-- `StageResult`
+Current default integration settings are:
 
-These dataclasses are data containers; they do not implement behavior.
+- external repo path: `external/MAC_ARRAY_FPGA`
+- global clock: `100000000 Hz`
+- Vivado top: `top_level`
+- Vivado part: `xc7a35tcpg236-1`
+- Vivado XDC: `fpga/vivado/constraints/mac_array_constraints.xdc`
+- Verilator top: `top_level`
+- fast verify mode: `verilator_lint`
 
-### 5.6 Paths
+The current fast-verify TODO explicitly documents that `PIPE_STAGES` is still a bounded latency-modeling knob rather than a fully retimed arithmetic pipeline.
 
-[`rtl_agent_loop/paths.py`](/home/keelan/rtl_agent_loop/rtl_agent_loop/paths.py) centralizes filesystem roots:
+### 7.2 Score weights
 
-- repo root
-- config paths
-- `runs/`
-- `logs/`
-- `var/`
-- database path
-- best-candidate JSON path
-- scripts dir
+[`config/score_weights.json`](/home/keelan/rtl_agent_loop/config/score_weights.json) still defines the controller ranking policy. The active score remains primarily latency/area/timing driven rather than throughput driven.
 
-This keeps path logic out of the controller and wrappers.
-
-### 5.7 Scoring
+## 8. Scoring
 
 [`rtl_agent_loop/scoring.py`](/home/keelan/rtl_agent_loop/rtl_agent_loop/scoring.py) converts raw Vivado and Verilator payload metrics into:
 
@@ -254,27 +272,15 @@ Flattened performance metrics:
 - `latency_time_ms`
 - `throughput_inferences_per_sec`
 
-Only a subset contributes to the weighted score. The current weights JSON uses:
+Important current mismatch:
 
-- `latency_cycles`
-- `lut`
-- `ff`
-- `dsp`
-- `bram`
-- `wns_ns`
+- the MAC-array external repo emits `throughput_ops_per_sec`
+- the controller scoring code still looks for `throughput_inferences_per_sec`
+- the active weights do not currently depend on throughput, so this mismatch does not affect the numeric score today, but it is real drift
 
-Penalty rules are explicit:
+## 9. SQLite Store
 
-- each missing weighted metric adds `missing_metric`
-- missing timing adds `timing_missing`
-- negative `wns_ns` adds `timing_negative_wns`
-- failed stage runs add `stage_failed`
-
-This module is intentionally simple and transparent rather than statistically sophisticated.
-
-### 5.8 SQLite store
-
-[`rtl_agent_loop/sqlite_store.py`](/home/keelan/rtl_agent_loop/rtl_agent_loop/sqlite_store.py) is the persistence layer.
+[`rtl_agent_loop/sqlite_store.py`](/home/keelan/rtl_agent_loop/rtl_agent_loop/sqlite_store.py) remains the persistence layer.
 
 It is responsible for:
 
@@ -290,60 +296,13 @@ It is responsible for:
 
 The database file is [`var/rtl_agent_loop.db`](/home/keelan/rtl_agent_loop/var/rtl_agent_loop.db).
 
-Base schema tables:
+`create_run()` still uses `BEGIN IMMEDIATE`, computes `attempt_index` transactionally, allocates `runs/<candidate_id>/attempt_<n>`, and generates a UUID-based `owner_token`.
 
-- `schema_migrations`
-- `candidates`
-- `candidate_params`
-- `runs`
-- `state_transitions`
-- `artifacts`
-- `scores`
+## 10. Wrapper Script Design
 
-Migration-added/maintained columns and tables:
+The shell wrappers in [`scripts/`](/home/keelan/rtl_agent_loop/scripts) remain the stable integration surface used by both the controller and the repo-level [`Makefile`](/home/keelan/rtl_agent_loop/Makefile).
 
-- candidate lineage columns:
-  - `parent_candidate_id`
-  - `lineage_root_candidate_id`
-  - `revision_kind`
-  - `derived_from_run_id`
-  - `supersedes_candidate_id`
-- run ownership and request columns:
-  - `owner_token`
-  - `requested_start_stage`
-  - `requested_end_stage`
-  - `worktree_ref`
-- `run_stages` table
-
-`create_run()` is worth calling out:
-
-- it uses `BEGIN IMMEDIATE`
-- it computes the next `attempt_index` inside the transaction
-- it allocates `runs/<candidate_id>/attempt_<n>`
-- it generates a UUID-based `owner_token`
-
-This is the core concurrency-safety mechanism for run numbering.
-
-`_backfill_run_stages()` is the compatibility layer for older runs:
-
-- if a run already has `run_stages`, nothing is changed
-- otherwise the method reconstructs stage rows from `state_transitions` and `artifacts`
-- missing-but-inferred data is annotated in `details_json`
-
-### 5.9 Subprocess execution
-
-[`rtl_agent_loop/subprocess_utils.py`](/home/keelan/rtl_agent_loop/rtl_agent_loop/subprocess_utils.py) is intentionally tiny.
-
-It provides:
-
-- `shell_join()` for readable logging
-- `run_command()` for subprocess execution with stdout/stderr redirected into a file
-
-The controller uses this to keep a `controller_command.log` per stage invocation.
-
-## 6. Wrapper Script Design
-
-The shell wrappers in [`scripts/`](/home/keelan/rtl_agent_loop/scripts) are part of the stable integration surface. Each wrapper:
+Each wrapper:
 
 - accepts `--candidate-id` or `--candidate-manifest`
 - requires `--run-dir`
@@ -352,11 +311,11 @@ The shell wrappers in [`scripts/`](/home/keelan/rtl_agent_loop/scripts) are part
 - writes a stage result JSON
 - exits non-zero on failure
 
-The heavy logic in each wrapper actually lives in an embedded Python block. Bash is mainly used for argument parsing and directory setup.
+The heavy logic still lives in embedded Python blocks.
 
-### 6.1 `bootstrap_env.sh`
+### 10.1 `bootstrap_env.sh`
 
-[`scripts/bootstrap_env.sh`](/home/keelan/rtl_agent_loop/scripts/bootstrap_env.sh) is the environment bootstrap contract.
+[`scripts/bootstrap_env.sh`](/home/keelan/rtl_agent_loop/scripts/bootstrap_env.sh) now defaults the external repo path to `external/MAC_ARRAY_FPGA`.
 
 It:
 
@@ -366,62 +325,54 @@ It:
 - exports `RTL_AGENT_LOOP_PYTHON`
 - exports `RTL_AGENT_LOOP_EXTERNAL_REPO`
 - exports `VIVADO_BIN` with a default of `vivado`
-- prints basic environment facts
+- prints environment facts
 - runs a lightweight stdlib import check
 - runs `python -m compileall rtl_agent_loop`
 - optionally runs `python -m rtl_agent_loop init-db`
 
-This is the minimum validation gate required by the repo instructions before handoff for code/script changes.
+### 10.2 `fast_verify.sh`
 
-### 6.2 `fast_verify.sh`
-
-[`scripts/fast_verify.sh`](/home/keelan/rtl_agent_loop/scripts/fast_verify.sh) is the fast verification gate.
+[`scripts/fast_verify.sh`](/home/keelan/rtl_agent_loop/scripts/fast_verify.sh) is the fast verification gate for MAC-array candidates.
 
 Implementation details:
 
-- loads `config/search_space.json`
-- resolves the manifest path from the CLI args or canonical locations
+- loads [`config/search_space.json`](/home/keelan/rtl_agent_loop/config/search_space.json)
+- resolves the manifest from CLI args or canonical controller-owned locations
 - resolves the external repo path from args, env, or config default
-- reads `external/CNN_FPGA/hdl/top_level.sv`
+- reads `external/MAC_ARRAY_FPGA/hdl/top_level.sv`
 - parses the `top_level` parameter block with a regex
-- collects searched generics from the manifest for:
-  - `CONV_CHANNEL_PAR`
-  - `DATA_WIDTH`
-  - `DENSE_OUT_PAR`
-  - `FRAC_BITS`
-  - `DENSE_SPLIT_MAC_PIPELINE`
+- checks that every searched generic from the manifest is present in the real top-level parameter list
 - performs preflight checks for:
   - external repo existence
   - external `Makefile`
-  - `top_level.sv`
+  - `hdl/top_level.sv`
   - `tb/tb_full_pipeline.cpp`
-  - `weights/input_image.mem`
+  - `data/input_a.mem`
+  - `data/input_b.mem`
+  - `data/expected_output.mem`
   - HDL directory
-  - Vivado batch wrapper
+  - Vivado wrapper
   - Verilator perf script
   - local `verilator`
   - local `make`
-  - searched generic presence in `top_level`
+- in `verilator_lint` mode, runs:
+  - `verilator -sv --lint-only -Wall -Wno-fatal ... --top-module top_level`
 
-In `verilator_lint` mode, it builds and runs:
+Important current behavior:
 
-- `verilator -sv --lint-only -Wall -Wno-fatal ... --top-module top_level`
-
-Important current limitation:
-
-- `CONV_VARIANT` is recorded and warned about, but not mapped into the external RTL for this gate.
+- `ARCH_VARIANT` is a real hardware generic and is linted like the other searched parameters
+- `PIPE_STAGES` is also forwarded and linted, but its hardware meaning is still limited compared with a full retiming framework
 
 The output JSON includes:
 
 - `checks`
 - `top_level_parameters`
-- `warnings`
 - `command`
 - `returncode`
 - config `todo`
 - relative `log_path`
 
-### 6.3 `run_vivado_batch.sh`
+### 10.3 `run_vivado_batch.sh`
 
 [`scripts/run_vivado_batch.sh`](/home/keelan/rtl_agent_loop/scripts/run_vivado_batch.sh) is the implementation wrapper.
 
@@ -430,40 +381,40 @@ Implementation details:
 - loads the manifest
 - resolves external repo and Vivado defaults from config
 - targets:
-  - `external/CNN_FPGA/fpga/vivado/run_batch.sh`
-  - `external/CNN_FPGA/fpga/vivado/parse_reports.py`
-- creates a nested wrapper-owned path:
+  - `external/MAC_ARRAY_FPGA/fpga/vivado/run_batch.sh`
+  - `external/MAC_ARRAY_FPGA/fpga/vivado/parse_reports.py`
+- creates a wrapper-owned path:
   - `<run_dir>/vivado/batch_run`
 - writes parsed metrics to:
   - `<run_dir>/vivado/metrics.json`
+- forwards all searched parameters as real Vivado generics, including `ARCH_VARIANT`
 
-It strips `CONV_VARIANT` out of the generic set before building the external command because the current external repo does not expose that as a real synthesis generic.
+Important current limitation:
+
+- the controller wrapper only parses metrics if the external Vivado batch exits success
+- by contrast, the external sweep utility can keep synth-stage metrics when implementation fails
 
 The result JSON includes:
 
 - preflight `checks`
-- the exact command
+- exact `command`
 - relative `reports_dir`
 - relative `metrics_path`
 - parsed `metrics`
-- a `todo` string documenting the missing `CONV_VARIANT` integration hook
+- a TODO noting the current `PIPE_STAGES` modeling limit
 
-### 6.4 `collect_verilator_perf.sh`
+### 10.4 `collect_verilator_perf.sh`
 
 [`scripts/collect_verilator_perf.sh`](/home/keelan/rtl_agent_loop/scripts/collect_verilator_perf.sh) is the performance wrapper.
 
 Implementation details:
 
-- targets `external/CNN_FPGA/experiments/collect_verilator_perf.py`
+- targets `external/MAC_ARRAY_FPGA/experiments/collect_verilator_perf.py`
 - creates:
   - `<run_dir>/verilator_perf/perf_run`
-- expects external output at:
+- expects machine-readable output at:
   - `<run_dir>/verilator_perf/perf_run/verilator_perf/performance.json`
-
-As in the Vivado wrapper:
-
-- searched generics other than `CONV_VARIANT` are passed through
-- `CONV_VARIANT` is recorded but not wired into the external flow
+- forwards all searched parameters as real simulation generics
 
 The result JSON includes:
 
@@ -471,11 +422,47 @@ The result JSON includes:
 - exact `command`
 - relative `performance_path`
 - parsed `metrics`
-- a `todo` about external prerequisites
+- a TODO noting the current `PIPE_STAGES` modeling limit
 
-## 7. Makefile Surface
+## 11. External MAC_ARRAY_FPGA Contract
 
-[`Makefile`](/home/keelan/rtl_agent_loop/Makefile) is the stable automation interface called out in repo policy.
+The active external repo is designed as a bounded MAC-array / GEMM-style research platform rather than a CNN accelerator.
+
+The controller and wrappers currently depend on these stable integration points:
+
+- [`external/MAC_ARRAY_FPGA/hdl/top_level.sv`](/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv)
+- [`external/MAC_ARRAY_FPGA/tb/tb_full_pipeline.cpp`](/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/tb/tb_full_pipeline.cpp)
+- [`external/MAC_ARRAY_FPGA/experiments/collect_verilator_perf.py`](/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/experiments/collect_verilator_perf.py)
+- [`external/MAC_ARRAY_FPGA/fpga/vivado/run_batch.sh`](/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/fpga/vivado/run_batch.sh)
+- [`external/MAC_ARRAY_FPGA/fpga/vivado/parse_reports.py`](/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/fpga/vivado/parse_reports.py)
+- [`external/MAC_ARRAY_FPGA/data/input_a.mem`](/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/data/input_a.mem)
+- [`external/MAC_ARRAY_FPGA/data/input_b.mem`](/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/data/input_b.mem)
+- [`external/MAC_ARRAY_FPGA/data/expected_output.mem`](/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/data/expected_output.mem)
+
+The MAC-array top level exposes real synthesizable generics for:
+
+- `ARCH_VARIANT`
+- `ARRAY_M`
+- `ARRAY_N`
+- `CLUSTER_SIZE`
+- `SHARE_FACTOR`
+- `DATA_WIDTH`
+- `FRAC_BITS`
+- `ACC_WIDTH`
+- `PIPE_STAGES`
+- `TILE_K`
+- `INPUT_MEM_DEPTH`
+- `OUTPUT_MEM_DEPTH`
+
+The external implementation also includes a bounded manual sweep utility:
+
+- [`external/MAC_ARRAY_FPGA/experiments/sweep_variants.py`](/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/experiments/sweep_variants.py)
+
+That script is not part of the controller execution path, but it is now part of the real repo state and the current study workflow.
+
+## 12. Makefile Surface
+
+[`Makefile`](/home/keelan/rtl_agent_loop/Makefile) remains the stable automation interface called out in repo policy.
 
 Targets:
 
@@ -488,7 +475,7 @@ Targets:
 Important behavior:
 
 - `PYTHON` defaults from `RTL_AGENT_LOOP_PYTHON` or `python3`
-- `EXTERNAL_REPO` defaults from `RTL_AGENT_LOOP_EXTERNAL_REPO` or `external/CNN_FPGA`
+- `EXTERNAL_REPO` defaults from `RTL_AGENT_LOOP_EXTERNAL_REPO` or `external/MAC_ARRAY_FPGA`
 - `VIVADO_BIN` defaults to `vivado`
 - if `MANIFEST_PATH` is not supplied, the Makefile resolves the manifest from:
   - `candidates/<candidate_id>.json` if it exists
@@ -498,267 +485,189 @@ Important behavior:
   - `runs/<candidate_id>/manual_implement`
   - `runs/<candidate_id>/manual_perf`
 
-The docs and AGENTS file explicitly warn that these default manual paths are not safe for parallel worktrees. The controller-owned `attempt_<n>` model is the concurrency-safe canonical path.
+Those default manual paths remain unsafe for parallel worktrees. The controller-owned `attempt_<n>` model is still the concurrency-safe canonical path.
 
-## 8. Configuration Files
+## 13. Candidate, Run, And Artifact Model
 
-### 8.1 Search space
+### 13.1 Source manifests
 
-[`config/search_space.json`](/home/keelan/rtl_agent_loop/config/search_space.json) defines three things:
+The active schema now supports MAC-array candidate manifests. Current starter examples include:
 
-- default external repo location
-- allowed search-space values
-- default integration settings for Vivado, Verilator, and fast verify
-
-Current active allowed parameters:
-
-- `DENSE_OUT_PAR`: `[1, 2, 5, 10]`
-- `DATA_WIDTH`: `[12, 16]`
-- `FRAC_BITS`: `[6, 7]`
-- `CONV_CHANNEL_PAR`: `[1, 2, 4]`
-- `DENSE_SPLIT_MAC_PIPELINE`: `[0, 1]`
-- `CONV_VARIANT`: `["baseline", "pipelined"]`
-
-Current default integration settings:
-
-- global clock:
-  - `clock_hz = 100000000`
-- Vivado:
-  - part `xc7a35tcpg236-1`
-  - top `top_level`
-  - xdc `CNN_constraints.xdc`
-  - jobs `4`
-  - clock period `10.0 ns`
-- Verilator:
-  - top `top_level`
-  - placeholder dataset/image paths for future use
-- fast verify:
-  - mode `verilator_lint`
-  - TODO note about `CONV_VARIANT`
-
-### 8.2 Score weights
-
-[`config/score_weights.json`](/home/keelan/rtl_agent_loop/config/score_weights.json) defines the current ranking policy:
-
-- negative weights for latency and area
-- a positive weight for `wns_ns`
-- fixed penalties for missing metrics, missing timing, negative WNS, and stage failure
-
-The scoring policy is also described narratively in [`docs/scoring_policy.md`](/home/keelan/rtl_agent_loop/docs/scoring_policy.md).
-
-## 9. Candidate, Run, and Artifact Model
-
-### 9.1 Source manifests
-
-Source manifests live in [`candidates/`](/home/keelan/rtl_agent_loop/candidates).
-
-Examples:
-
-- [`dense1_dw12_fb6_base.json`](/home/keelan/rtl_agent_loop/candidates/dense1_dw12_fb6_base.json)
-- [`dense2_dw12_fb6_base_r1.json`](/home/keelan/rtl_agent_loop/candidates/dense2_dw12_fb6_base_r1.json)
+- [`candidates/mac_baseline_4x4_dw16.json`](/home/keelan/rtl_agent_loop/candidates/mac_baseline_4x4_dw16.json)
+- [`candidates/mac_baseline_8x4_dw16.json`](/home/keelan/rtl_agent_loop/candidates/mac_baseline_8x4_dw16.json)
+- [`candidates/mac_shared_4x4_sf2_dw16.json`](/home/keelan/rtl_agent_loop/candidates/mac_shared_4x4_sf2_dw16.json)
+- [`candidates/mac_replicated_4x4_c2_dw16.json`](/home/keelan/rtl_agent_loop/candidates/mac_replicated_4x4_c2_dw16.json)
 
 These files store:
 
 - the candidate ID
-- provenance/source label
+- source label
 - creation timestamp
 - searched parameters
-- rationale/hypothesis in `notes`
+- rationale or hypothesis in `notes`
 - lightweight classification in `tags`
 
-### 9.2 Canonical manifest copy
+### 13.2 Canonical manifest copy
 
-Registration writes an immutable canonical copy to:
+Registration still writes an immutable canonical copy to:
 
 - `runs/<candidate_id>/candidate_manifest.json`
 
-This copy, not the original `candidates/` file, is what the controller records in SQLite as the manifest path.
+### 13.3 Controller-owned run directories
 
-### 9.3 Controller-owned run directories
-
-Each controller-created run lives under:
+Each controller-created run still lives under:
 
 - `runs/<candidate_id>/attempt_<n>/`
 
-Stage result conventions:
+Stage result conventions remain:
 
 - `fast_verify/fast_verify.json`
 - `vivado/vivado_result.json`
 - `verilator_perf/verilator_result.json`
 
-The wrappers also create additional logs and nested working directories under those stage roots.
+## 14. Current External Study Tooling
 
-### 9.4 Artifact resolution strategy
+The external MAC-array repo now includes a real first bounded study flow.
 
-When computing a candidate score without an explicit `--run-dir`, the controller resolves:
+Primary study files:
 
-- the latest successful canonical Vivado result
-- the latest successful canonical Verilator performance result
+- [`external/MAC_ARRAY_FPGA/docs/first_bounded_study.md`](/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/docs/first_bounded_study.md)
+- [`external/MAC_ARRAY_FPGA/experiments/results/sweep_results.csv`](/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/experiments/results/sweep_results.csv)
+- [`external/MAC_ARRAY_FPGA/experiments/results/sweep_summary.md`](/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/experiments/results/sweep_summary.md)
 
-These can come from different attempts.
+Current default sweep matrix:
 
-This is an important design choice: the system treats candidate scoring as an aggregate over the latest passing stage artifacts, not necessarily a single monolithic full-pipeline run.
+- `baseline_4x4`
+- `baseline_8x4`
+- `baseline_8x8`
+- `shared_4x4_sf2`
+- `shared_8x4_sf2`
+- `replicated_4x4_c2`
+- `replicated_8x4_c2`
+- `replicated_8x8_c2`
 
-## 10. Current SQLite Data Model
+Observed current behavior from the checked-in summary:
 
-The live DB currently records:
+- larger `ARRAY_M` / `ARRAY_N` points now produce genuinely larger active work and higher latency
+- shared mode now shows explicit latency overhead relative to baseline
+- replicated mode can produce synth-only study rows when implementation overflows or is otherwise not preserved through to full implementation
 
-- registered candidates
-- candidate parameter key/value rows
-- run ownership and requested stage windows
-- per-stage snapshots in `run_stages`
-- state history in `state_transitions`
-- artifact registrations
-- score history
+The checked-in summary currently shows:
 
-Observed live behavior from the current DB:
+- `baseline_4x4`: `22` cycles
+- `baseline_8x4`: `38` cycles
+- `baseline_8x8`: `70` cycles
+- `shared_4x4_sf2`: `26` cycles
+- `shared_8x4_sf2`: `42` cycles
+- `replicated_8x8_c2`: currently `passed_perf_synth_only`
 
-- candidates can have old passing artifacts and a newer in-progress summary state
-- `rank-candidates` still uses the passing artifacts
-- `show-best-candidates` is stored outside SQLite in [`var/best_candidates.json`](/home/keelan/rtl_agent_loop/var/best_candidates.json)
+## 15. Real Repository State Observations
 
-## 11. Current Documented Operator Workflow
+The repo contains real controller state and real external study artifacts, not just scaffolding.
 
-The implemented operator surfaces are split across CLI, Makefile, and docs.
-
-Main lifecycle:
-
-1. `make setup`
-2. `python3 -m rtl_agent_loop register --manifest ...`
-3. `python3 -m rtl_agent_loop run --candidate-id <id> ...`
-4. `python3 -m rtl_agent_loop score --candidate-id <id>`
-5. `python3 -m rtl_agent_loop rank-candidates`
-
-Supporting notes:
-
-- [`docs/worktree_operations.md`](/home/keelan/rtl_agent_loop/docs/worktree_operations.md): parallel worktree ownership rules
-- [`docs/integration_notes.md`](/home/keelan/rtl_agent_loop/docs/integration_notes.md): known unresolved integration hooks
-- [`docs/measured_dse_summary.md`](/home/keelan/rtl_agent_loop/docs/measured_dse_summary.md): measured results summary
-- [`docs/dense2_lineage_case_study.md`](/home/keelan/rtl_agent_loop/docs/dense2_lineage_case_study.md): a concrete lineage analysis note
-- [`docs/conv_parallelism_experiment.md`](/home/keelan/rtl_agent_loop/docs/conv_parallelism_experiment.md): bounded convolution-channel parallelism experiment summary
-
-## 12. Prompt Files
-
-The prompt set in [`prompts/`](/home/keelan/rtl_agent_loop/prompts) encodes disciplined role boundaries for:
-
-- explorer
-- verifier
-- implementer
-- timing doctor
-- scorer
-
-These files are not executable code, but they are part of the repository’s operating model. They reinforce current design assumptions:
-
-- one bounded task at a time
-- child candidates for repairs
-- explicit canonical versus manual run ownership
-- no artifact overwrites
-- no inferred measurements
-
-## 13. Real Repository State Observations
-
-The current repo contains real measured state, not just scaffolding.
-
-Examples visible through the live CLI:
+Examples visible in the current workspace:
 
 - registered candidates exist in SQLite
-- lineage exists for `dense2_dw12_fb6_base -> dense2_dw12_fb6_base_r1`
-- canonical run attempts exist under `runs/`
-- best-candidate pointers currently exist in `var/best_candidates.json`
+- legacy CNN-era candidates and MAC-array candidates both exist under [`candidates/`](/home/keelan/rtl_agent_loop/candidates)
+- canonical run attempts exist under [`runs/`](/home/keelan/rtl_agent_loop/runs)
+- best-candidate pointers currently exist in [`var/best_candidates.json`](/home/keelan/rtl_agent_loop/var/best_candidates.json)
+- the external MAC-array repo includes real sweep outputs under [`external/MAC_ARRAY_FPGA/experiments/results/`](/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/experiments/results)
 
-One especially important observed behavior:
+One especially important implementation behavior remains unchanged:
 
-- a candidate can currently rank using older successful artifacts even while its latest run is in progress and its current summary state is pending
+- a candidate can still rank using older successful artifacts even while its latest run is pending or failed, because ranking resolves the latest successful artifacts rather than requiring the latest run to be clean
 
-That is not a bug in the ranking code; it is how artifact resolution is intentionally implemented today.
+## 16. Known Mismatches And Design Drift
 
-## 14. Known Mismatches And Design Drift
+This repo currently has a few important mismatches between the active implementation and older repository surfaces.
 
-This repo currently has a few important mismatches between files.
+### 16.1 Top-level docs and AGENTS drift
 
-### 14.1 Candidate schema migration side effect
+Several top-level source-of-truth documents still describe the old CNN-oriented system:
 
-`CONV_CHANNEL_PAR` is now a real required searched parameter in:
-
-- [`rtl_agent_loop/config.py`](/home/keelan/rtl_agent_loop/rtl_agent_loop/config.py)
-- [`rtl_agent_loop/models.py`](/home/keelan/rtl_agent_loop/rtl_agent_loop/models.py)
-- [`config/search_space.json`](/home/keelan/rtl_agent_loop/config/search_space.json)
-
-Practical consequence:
-
-- newly authored manifests must include `CONV_CHANNEL_PAR`
-- existing source manifests in [`candidates/`](/home/keelan/rtl_agent_loop/candidates) were backfilled with `CONV_CHANNEL_PAR = 1` to preserve baseline semantics
-- some older already-registered canonical manifest copies under `runs/<candidate_id>/candidate_manifest.json` may still reflect pre-migration parameter sets because registration captures an immutable copy at registration time
-
-### 14.2 CLI surface drift
-
-The CLI currently implements:
-
-- `set-best-candidates`
-- `show-best-candidates`
-
-Those commands are real and working, but they are not consistently reflected in every project-level stable-surface note. The code is the reliable statement of current behavior here.
-
-### 14.3 Timing-clean interpretation drift in docs versus current artifacts
-
-The measured summaries in some docs describe earlier timing-clean results, but the current `rank-candidates` output in this workspace now resolves later canonical artifacts where all ranked candidates have negative WNS.
-
-Practical consequence:
-
-- historical docs may reflect earlier measured runs
-- current ranking is driven by the newest passing canonical artifacts, not by those older summaries
-
-### 14.4 `CONV_CHANNEL_PAR` is real, but currently network-limited
-
-`CONV_CHANNEL_PAR` is now wired into the external RTL:
-
-- [`external/CNN_FPGA/hdl/top_level.sv`](/home/keelan/rtl_agent_loop/external/CNN_FPGA/hdl/top_level.sv)
-- [`external/CNN_FPGA/hdl/conv2d.sv`](/home/keelan/rtl_agent_loop/external/CNN_FPGA/hdl/conv2d.sv)
-
-The current implementation mirrors IFMAP storage into `CONV_CHANNEL_PAR` read banks and performs grouped channel accumulation in `conv2d`.
-
-Practical consequence:
-
-- the knob is synthesis-real and affects LUT/DSP/BRAM/timing
-- the current checked-in accelerator still fixes `IN_CHANNELS = 1` at top level
-- the completed experiment in [`docs/conv_parallelism_experiment.md`](/home/keelan/rtl_agent_loop/docs/conv_parallelism_experiment.md) shows no end-to-end latency or throughput improvement for `CONV_CHANNEL_PAR = 1, 2, 4` in this network, even though convolution remains the dominant stage
-
-### 14.5 `CONV_VARIANT` orchestration-only status
-
-`CONV_VARIANT` is accepted and stored across the system, but both stage wrappers still treat it as an orchestration-level field, not as a real hardware control hook into the external repo.
-
-This is documented honestly in:
-
-- [`scripts/fast_verify.sh`](/home/keelan/rtl_agent_loop/scripts/fast_verify.sh)
-- [`scripts/run_vivado_batch.sh`](/home/keelan/rtl_agent_loop/scripts/run_vivado_batch.sh)
-- [`scripts/collect_verilator_perf.sh`](/home/keelan/rtl_agent_loop/scripts/collect_verilator_perf.sh)
+- [`README.md`](/home/keelan/rtl_agent_loop/README.md)
+- [`AGENTS.md`](/home/keelan/rtl_agent_loop/AGENTS.md)
 - [`docs/integration_notes.md`](/home/keelan/rtl_agent_loop/docs/integration_notes.md)
 
-## 15. What Is Not Implemented
+Those files still talk about `external/CNN_FPGA`, `DENSE_OUT_PAR`, `CONV_CHANNEL_PAR`, and `CONV_VARIANT`, while the active config, wrappers, and external default now target `external/MAC_ARRAY_FPGA`.
 
-This repo does not currently implement:
+### 16.2 Mixed-era candidate manifests
+
+[`candidates/`](/home/keelan/rtl_agent_loop/candidates) currently contains a mix of:
+
+- legacy CNN-era manifests
+- new MAC-array manifests
+
+Practical consequence:
+
+- old source manifests such as `dense*.json` and `conv*.json` do not satisfy the active MAC-array schema
+- newly registered candidates must use the MAC-array parameter set described in Section 6
+
+### 16.3 Throughput metric naming drift
+
+As noted above, the external MAC-array perf flow emits `throughput_ops_per_sec`, but controller scoring still flattens `throughput_inferences_per_sec`.
+
+Practical consequence:
+
+- no current score breakage, because the active weights do not depend on throughput
+- real naming drift remains and should be cleaned up if throughput becomes part of scoring
+
+### 16.4 Controller Vivado stage versus sweep behavior
+
+There is now a behavioral difference between:
+
+- the controller Vivado wrapper
+- the external manual sweep utility
+
+The wrapper requires full external batch success before parsing metrics. The sweep utility can preserve synth-stage metrics and label the row `passed_perf_synth_only`.
+
+Practical consequence:
+
+- external study summaries may include synth-only rows
+- controller-managed canonical Vivado stages currently still behave as all-or-nothing passes
+
+### 16.5 `PIPE_STAGES` is real config, limited microarchitecture
+
+`PIPE_STAGES` is accepted, validated, forwarded, and present in the external top-level generic list.
+
+Practical consequence:
+
+- it is not orchestration-only metadata
+- but it still models deterministic drain latency more than a full arithmetic retiming framework
+
+## 17. What Is Not Implemented
+
+This repo still does not implement:
 
 - a scheduler or job queue
 - distributed workers
 - a web UI or dashboard
 - automatic candidate generation loops
 - mutation engines
-- external RTL patch management as a first-class controller feature
 - artifact garbage collection
 - a formal schema migration framework beyond additive SQL helpers
-- direct DB-backed storage for best-candidate pointers
-- any controller-managed abstraction for patching or versioning external RTL changes beyond direct repo edits
+- DB-backed storage for best-candidate pointers
+- controller-managed patch management for external RTL repos
 
-## 16. Recommended Mental Model
+The MAC-array external repo also intentionally avoids:
 
-The cleanest way to think about this codebase is:
+- CNN-specific functionality
+- AXI or DMA stacks
+- software runtime stacks
+- sparse compute support
+- partial reconfiguration flows
+
+## 18. Recommended Mental Model
+
+The cleanest current way to think about the codebase is:
 
 - `rtl_agent_loop/` is the deterministic control plane
 - `scripts/` are the stable boundary adapters to external tooling
-- `config/` defines the allowed parameter and scoring policy
-- `candidates/` are human/agent proposals
-- `runs/` are canonical evidence
+- `config/` defines the allowed MAC-array parameter and scoring policy
+- `candidates/` contains mixed historical manifests, but only MAC-array manifests match the active schema
+- `runs/` are canonical controller-owned evidence
 - `var/rtl_agent_loop.db` is the authoritative execution ledger
-- `external/CNN_FPGA/` is the hardware/toolflow dependency being orchestrated, not reimplemented
+- `external/MAC_ARRAY_FPGA/` is the active hardware/toolflow dependency being orchestrated
+- `external/CNN_FPGA/` remains historical workspace state, not the active default target
 
-That mental model matches the code more closely than thinking of this repo as an RTL repo or as a general-purpose workflow engine.
+That mental model matches the code more closely than thinking of this repo as a CNN repo or as a general-purpose workflow engine.

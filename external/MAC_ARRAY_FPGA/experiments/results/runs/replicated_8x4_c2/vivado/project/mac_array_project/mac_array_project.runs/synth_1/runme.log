@@ -1,0 +1,714 @@
+
+*** Running vivado
+    with args -log top_level.vds -m64 -product Vivado -mode batch -messageDb vivado.pb -notrace -source top_level.tcl
+
+
+****** Vivado v2025.2 (64-bit)
+  **** SW Build 6299465 on Fri Nov 14 12:34:56 MST 2025
+  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025
+  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025
+  **** Start of session at: Mon Mar 16 14:44:11 2026
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+
+source top_level.tcl -notrace
+Command: synth_design -top top_level -part xc7a35tcpg236-1
+Starting synth_design
+Attempting to get a license for feature 'Synthesis' and/or device 'xc7a35t'
+INFO: [Common 17-349] Got license for feature 'Synthesis' and/or device 'xc7a35t'
+INFO: [Device 21-403] Loading part xc7a35tcpg236-1
+INFO: [Synth 8-7079] Multithreading enabled for synth_design using a maximum of 7 processes.
+INFO: [Synth 8-7078] Launching helper process for spawning children vivado processes
+INFO: [Synth 8-7075] Helper process launched with PID 332064
+---------------------------------------------------------------------------------
+Starting RTL Elaboration : Time (s): cpu = 00:00:05 ; elapsed = 00:00:05 . Memory (MB): peak = 2186.762 ; gain = 479.906 ; free physical = 9321 ; free virtual = 12711
+---------------------------------------------------------------------------------
+INFO: [Synth 8-6157] synthesizing module 'top_level' [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:1]
+	Parameter ARCH_VARIANT bound to: 32'sb00000000000000000000000000000010 
+	Parameter ARRAY_M bound to: 32'sb00000000000000000000000000001000 
+	Parameter ARRAY_N bound to: 32'sb00000000000000000000000000000100 
+	Parameter CLUSTER_SIZE bound to: 32'sb00000000000000000000000000000010 
+	Parameter SHARE_FACTOR bound to: 32'sb00000000000000000000000000000001 
+	Parameter DATA_WIDTH bound to: 32'sb00000000000000000000000000010000 
+	Parameter FRAC_BITS bound to: 32'sb00000000000000000000000000001000 
+	Parameter ACC_WIDTH bound to: 32'sb00000000000000000000000000100000 
+	Parameter PIPE_STAGES bound to: 32'sb00000000000000000000000000000001 
+	Parameter TILE_K bound to: 32'sb00000000000000000000000000000100 
+	Parameter INPUT_MEM_DEPTH bound to: 32'sb00000000000000000000000001000000 
+	Parameter OUTPUT_MEM_DEPTH bound to: 32'sb00000000000000000000000001000000 
+INFO: [Synth 8-6157] synthesizing module 'cluster' [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/cluster.sv:1]
+	Parameter ARCH_VARIANT bound to: 32'sb00000000000000000000000000000010 
+	Parameter NUM_PES bound to: 32'sb00000000000000000000000000000010 
+	Parameter SHARE_FACTOR bound to: 32'sb00000000000000000000000000000001 
+	Parameter DATA_WIDTH bound to: 32'sb00000000000000000000000000010000 
+	Parameter FRAC_BITS bound to: 32'sb00000000000000000000000000001000 
+	Parameter ACC_WIDTH bound to: 32'sb00000000000000000000000000100000 
+	Parameter PIPE_STAGES bound to: 32'sb00000000000000000000000000000001 
+	Parameter LANE_ID_W bound to: 32'sb00000000000000000000000000000001 
+INFO: [Synth 8-6157] synthesizing module 'pe' [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/pe.sv:1]
+	Parameter ARCH_VARIANT bound to: 32'sb00000000000000000000000000000010 
+	Parameter DATA_WIDTH bound to: 32'sb00000000000000000000000000010000 
+	Parameter FRAC_BITS bound to: 32'sb00000000000000000000000000001000 
+	Parameter ACC_WIDTH bound to: 32'sb00000000000000000000000000100000 
+	Parameter PIPE_STAGES bound to: 32'sb00000000000000000000000000000001 
+INFO: [Synth 8-6155] done synthesizing module 'pe' (0#1) [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/pe.sv:1]
+INFO: [Synth 8-6155] done synthesizing module 'cluster' (0#1) [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/cluster.sv:1]
+INFO: [Synth 8-6157] synthesizing module 'control' [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/control.sv:1]
+	Parameter ARCH_VARIANT bound to: 32'sb00000000000000000000000000000010 
+	Parameter ARRAY_M bound to: 32'sb00000000000000000000000000001000 
+	Parameter ARRAY_N bound to: 32'sb00000000000000000000000000000100 
+	Parameter TILE_K bound to: 32'sb00000000000000000000000000000100 
+	Parameter SHARE_FACTOR bound to: 32'sb00000000000000000000000000000001 
+	Parameter PIPE_STAGES bound to: 32'sb00000000000000000000000000000001 
+INFO: [Synth 8-6155] done synthesizing module 'control' (0#1) [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/control.sv:1]
+INFO: [Synth 8-6157] synthesizing module 'global_buffer' [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/global_buffer.sv:1]
+	Parameter WIDTH bound to: 32'sb00000000000000000000000000010000 
+	Parameter DEPTH bound to: 32'sb00000000000000000000000001000000 
+	Parameter NUM_READ_PORTS bound to: 32'sb00000000000000000000000000001000 
+	Parameter INIT_FILE bound to: data/input_a.mem - type: string 
+CRITICAL WARNING: [Synth 8-4445] could not open $readmem data file 'data/input_a.mem'; please make sure the file is added to project and has read permission, ignoring [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/global_buffer.sv:22]
+INFO: [Synth 8-6155] done synthesizing module 'global_buffer' (0#1) [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/global_buffer.sv:1]
+INFO: [Synth 8-6157] synthesizing module 'global_buffer__parameterized0' [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/global_buffer.sv:1]
+	Parameter WIDTH bound to: 32'sb00000000000000000000000000010000 
+	Parameter DEPTH bound to: 32'sb00000000000000000000000001000000 
+	Parameter NUM_READ_PORTS bound to: 32'sb00000000000000000000000000000100 
+	Parameter INIT_FILE bound to: data/input_b.mem - type: string 
+CRITICAL WARNING: [Synth 8-4445] could not open $readmem data file 'data/input_b.mem'; please make sure the file is added to project and has read permission, ignoring [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/global_buffer.sv:22]
+INFO: [Synth 8-6155] done synthesizing module 'global_buffer__parameterized0' (0#1) [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/global_buffer.sv:1]
+INFO: [Synth 8-6157] synthesizing module 'operand_interconnect' [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/interconnect.sv:1]
+	Parameter ARRAY_M bound to: 32'sb00000000000000000000000000001000 
+	Parameter ARRAY_N bound to: 32'sb00000000000000000000000000000100 
+	Parameter TILE_K bound to: 32'sb00000000000000000000000000000100 
+	Parameter DATA_WIDTH bound to: 32'sb00000000000000000000000000010000 
+	Parameter INPUT_ADDR_W bound to: 32'sb00000000000000000000000000000110 
+	Parameter K_W bound to: 32'sb00000000000000000000000000000010 
+INFO: [Synth 8-6155] done synthesizing module 'operand_interconnect' (0#1) [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/interconnect.sv:1]
+INFO: [Synth 8-6155] done synthesizing module 'top_level' (0#1) [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:1]
+WARNING: [Synth 8-6014] Unused sequential element logical_lane_reg was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/cluster.sv:145]
+WARNING: [Synth 8-6014] Unused sequential element lane_idx_reg was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:203]
+WARNING: [Synth 8-6014] Unused sequential element output_mem_reg[0] was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:204]
+WARNING: [Synth 8-6014] Unused sequential element output_mem_reg[1] was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:204]
+WARNING: [Synth 8-6014] Unused sequential element output_mem_reg[2] was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:204]
+WARNING: [Synth 8-6014] Unused sequential element output_mem_reg[3] was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:204]
+WARNING: [Synth 8-6014] Unused sequential element output_mem_reg[4] was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:204]
+WARNING: [Synth 8-6014] Unused sequential element output_mem_reg[5] was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:204]
+WARNING: [Synth 8-6014] Unused sequential element output_mem_reg[6] was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:204]
+WARNING: [Synth 8-6014] Unused sequential element output_mem_reg[7] was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:204]
+WARNING: [Synth 8-6014] Unused sequential element output_mem_reg[8] was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:204]
+WARNING: [Synth 8-6014] Unused sequential element output_mem_reg[9] was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:204]
+WARNING: [Synth 8-6014] Unused sequential element output_mem_reg[10] was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:204]
+WARNING: [Synth 8-6014] Unused sequential element output_mem_reg[11] was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:204]
+WARNING: [Synth 8-6014] Unused sequential element output_mem_reg[12] was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:204]
+WARNING: [Synth 8-6014] Unused sequential element output_mem_reg[13] was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:204]
+WARNING: [Synth 8-6014] Unused sequential element output_mem_reg[14] was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:204]
+WARNING: [Synth 8-6014] Unused sequential element output_mem_reg[15] was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:204]
+WARNING: [Synth 8-6014] Unused sequential element output_mem_reg[16] was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:204]
+WARNING: [Synth 8-6014] Unused sequential element output_mem_reg[17] was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:204]
+WARNING: [Synth 8-6014] Unused sequential element output_mem_reg[18] was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:204]
+WARNING: [Synth 8-6014] Unused sequential element output_mem_reg[19] was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:204]
+WARNING: [Synth 8-6014] Unused sequential element output_mem_reg[20] was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:204]
+WARNING: [Synth 8-6014] Unused sequential element output_mem_reg[21] was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:204]
+WARNING: [Synth 8-6014] Unused sequential element output_mem_reg[22] was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:204]
+WARNING: [Synth 8-6014] Unused sequential element output_mem_reg[23] was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:204]
+WARNING: [Synth 8-6014] Unused sequential element output_mem_reg[24] was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:204]
+WARNING: [Synth 8-6014] Unused sequential element output_mem_reg[25] was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:204]
+WARNING: [Synth 8-6014] Unused sequential element output_mem_reg[26] was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:204]
+WARNING: [Synth 8-6014] Unused sequential element output_mem_reg[27] was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:204]
+WARNING: [Synth 8-6014] Unused sequential element output_mem_reg[28] was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:204]
+WARNING: [Synth 8-6014] Unused sequential element output_mem_reg[29] was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:204]
+WARNING: [Synth 8-6014] Unused sequential element output_mem_reg[30] was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:204]
+WARNING: [Synth 8-6014] Unused sequential element output_mem_reg[31] was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:204]
+WARNING: [Synth 8-6014] Unused sequential element output_mem_reg[32] was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:204]
+WARNING: [Synth 8-6014] Unused sequential element output_mem_reg[33] was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:204]
+WARNING: [Synth 8-6014] Unused sequential element output_mem_reg[34] was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:204]
+WARNING: [Synth 8-6014] Unused sequential element output_mem_reg[35] was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:204]
+WARNING: [Synth 8-6014] Unused sequential element output_mem_reg[36] was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:204]
+WARNING: [Synth 8-6014] Unused sequential element output_mem_reg[37] was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:204]
+WARNING: [Synth 8-6014] Unused sequential element output_mem_reg[38] was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:204]
+WARNING: [Synth 8-6014] Unused sequential element output_mem_reg[39] was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:204]
+WARNING: [Synth 8-6014] Unused sequential element output_mem_reg[40] was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:204]
+WARNING: [Synth 8-6014] Unused sequential element output_mem_reg[41] was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:204]
+WARNING: [Synth 8-6014] Unused sequential element output_mem_reg[42] was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:204]
+WARNING: [Synth 8-6014] Unused sequential element output_mem_reg[43] was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:204]
+WARNING: [Synth 8-6014] Unused sequential element output_mem_reg[44] was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:204]
+WARNING: [Synth 8-6014] Unused sequential element output_mem_reg[45] was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:204]
+WARNING: [Synth 8-6014] Unused sequential element output_mem_reg[46] was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:204]
+WARNING: [Synth 8-6014] Unused sequential element output_mem_reg[47] was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:204]
+WARNING: [Synth 8-6014] Unused sequential element output_mem_reg[48] was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:204]
+WARNING: [Synth 8-6014] Unused sequential element output_mem_reg[49] was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:204]
+WARNING: [Synth 8-6014] Unused sequential element output_mem_reg[50] was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:204]
+WARNING: [Synth 8-6014] Unused sequential element output_mem_reg[51] was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:204]
+WARNING: [Synth 8-6014] Unused sequential element output_mem_reg[52] was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:204]
+WARNING: [Synth 8-6014] Unused sequential element output_mem_reg[53] was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:204]
+WARNING: [Synth 8-6014] Unused sequential element output_mem_reg[54] was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:204]
+WARNING: [Synth 8-6014] Unused sequential element output_mem_reg[55] was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:204]
+WARNING: [Synth 8-6014] Unused sequential element output_mem_reg[56] was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:204]
+WARNING: [Synth 8-6014] Unused sequential element output_mem_reg[57] was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:204]
+WARNING: [Synth 8-6014] Unused sequential element output_mem_reg[58] was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:204]
+WARNING: [Synth 8-6014] Unused sequential element output_mem_reg[59] was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:204]
+WARNING: [Synth 8-6014] Unused sequential element output_mem_reg[60] was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:204]
+WARNING: [Synth 8-6014] Unused sequential element output_mem_reg[61] was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:204]
+WARNING: [Synth 8-6014] Unused sequential element output_mem_reg[62] was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:204]
+WARNING: [Synth 8-6014] Unused sequential element output_mem_reg[63] was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:204]
+WARNING: [Synth 8-6014] Unused sequential element debug_primary_checksum_reg was removed.  [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/hdl/top_level.sv:206]
+WARNING: [Synth 8-7129] Port shared_phase[0] in module cluster is either unconnected or has no load
+---------------------------------------------------------------------------------
+Finished RTL Elaboration : Time (s): cpu = 00:00:07 ; elapsed = 00:00:07 . Memory (MB): peak = 2274.730 ; gain = 567.875 ; free physical = 9220 ; free virtual = 12611
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Handling Custom Attributes
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Handling Custom Attributes : Time (s): cpu = 00:00:07 ; elapsed = 00:00:07 . Memory (MB): peak = 2289.574 ; gain = 582.719 ; free physical = 9219 ; free virtual = 12611
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished RTL Optimization Phase 1 : Time (s): cpu = 00:00:07 ; elapsed = 00:00:07 . Memory (MB): peak = 2289.574 ; gain = 582.719 ; free physical = 9219 ; free virtual = 12611
+---------------------------------------------------------------------------------
+Netlist sorting complete. Time (s): cpu = 00:00:00.07 ; elapsed = 00:00:00.08 . Memory (MB): peak = 2289.574 ; gain = 0.000 ; free physical = 9228 ; free virtual = 12619
+INFO: [Project 1-570] Preparing netlist for logic optimization
+
+Processing XDC Constraints
+Initializing timing engine
+Parsing XDC File [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/fpga/vivado/constraints/mac_array_constraints.xdc]
+Finished Parsing XDC File [/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/fpga/vivado/constraints/mac_array_constraints.xdc]
+Completed Processing XDC Constraints
+
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 2395.312 ; gain = 0.000 ; free physical = 9228 ; free virtual = 12619
+INFO: [Project 1-111] Unisim Transformation Summary:
+No Unisim elements were transformed.
+
+Constraint Validation Runtime : Time (s): cpu = 00:00:00.03 ; elapsed = 00:00:00.02 . Memory (MB): peak = 2395.348 ; gain = 0.000 ; free physical = 9228 ; free virtual = 12619
+---------------------------------------------------------------------------------
+Finished Constraint Validation : Time (s): cpu = 00:00:14 ; elapsed = 00:00:15 . Memory (MB): peak = 2395.348 ; gain = 688.492 ; free physical = 9278 ; free virtual = 12669
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Loading Part and Timing Information
+---------------------------------------------------------------------------------
+Loading part: xc7a35tcpg236-1
+---------------------------------------------------------------------------------
+Finished Loading Part and Timing Information : Time (s): cpu = 00:00:14 ; elapsed = 00:00:15 . Memory (MB): peak = 2403.316 ; gain = 696.461 ; free physical = 9278 ; free virtual = 12669
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Applying 'set_property' XDC Constraints
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished applying 'set_property' XDC Constraints : Time (s): cpu = 00:00:14 ; elapsed = 00:00:15 . Memory (MB): peak = 2403.316 ; gain = 696.461 ; free physical = 9278 ; free virtual = 12669
+---------------------------------------------------------------------------------
+INFO: [Synth 8-802] inferred FSM for state register 'state_q_reg' in module 'control'
+---------------------------------------------------------------------------------------------------
+                   State |                     New Encoding |                Previous Encoding 
+---------------------------------------------------------------------------------------------------
+                 ST_IDLE |                           000001 |                              000
+                ST_CLEAR |                           000010 |                              001
+              ST_COMPUTE |                           000100 |                              010
+                ST_DRAIN |                           001000 |                              011
+                ST_WRITE |                           010000 |                              100
+                 ST_DONE |                           100000 |                              101
+---------------------------------------------------------------------------------------------------
+INFO: [Synth 8-3354] encoded FSM with state register 'state_q_reg' using encoding 'one-hot' in module 'control'
+---------------------------------------------------------------------------------
+Finished RTL Optimization Phase 2 : Time (s): cpu = 00:00:15 ; elapsed = 00:00:15 . Memory (MB): peak = 2403.316 ; gain = 696.461 ; free physical = 9277 ; free virtual = 12670
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start RTL Component Statistics 
+---------------------------------------------------------------------------------
+Detailed RTL Component Info : 
++---Adders : 
+	   2 Input   32 Bit       Adders := 68    
++---XORs : 
+	   2 Input     32 Bit         XORs := 2     
++---Registers : 
+	               32 Bit    Registers := 69    
++---Muxes : 
+	   2 Input   32 Bit        Muxes := 36    
+	   6 Input   32 Bit        Muxes := 4     
+	   6 Input    2 Bit        Muxes := 1     
+	   6 Input    1 Bit        Muxes := 6     
+---------------------------------------------------------------------------------
+Finished RTL Component Statistics 
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Part Resource Summary
+---------------------------------------------------------------------------------
+Part Resources:
+DSPs: 90 (col length:60)
+BRAMs: 100 (col length: RAMB18 60 RAMB36 30)
+---------------------------------------------------------------------------------
+Finished Part Resource Summary
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Cross Boundary and Area Optimization
+---------------------------------------------------------------------------------
+DSP Report: Generating DSP acc_result2, operation Mode is: A*B.
+DSP Report: operator acc_result2 is absorbed into DSP acc_result2.
+DSP Report: Generating DSP acc_result2, operation Mode is: A*B.
+DSP Report: operator acc_result2 is absorbed into DSP acc_result2.
+DSP Report: Generating DSP acc_result2, operation Mode is: A*B.
+DSP Report: operator acc_result2 is absorbed into DSP acc_result2.
+DSP Report: Generating DSP acc_result2, operation Mode is: A*B.
+DSP Report: operator acc_result2 is absorbed into DSP acc_result2.
+DSP Report: Generating DSP acc_result2, operation Mode is: A*B.
+DSP Report: operator acc_result2 is absorbed into DSP acc_result2.
+DSP Report: Generating DSP acc_result2, operation Mode is: A*B.
+DSP Report: operator acc_result2 is absorbed into DSP acc_result2.
+DSP Report: Generating DSP acc_result2, operation Mode is: A*B.
+DSP Report: operator acc_result2 is absorbed into DSP acc_result2.
+DSP Report: Generating DSP acc_result2, operation Mode is: A*B.
+DSP Report: operator acc_result2 is absorbed into DSP acc_result2.
+DSP Report: Generating DSP acc_result2, operation Mode is: A*B.
+DSP Report: operator acc_result2 is absorbed into DSP acc_result2.
+DSP Report: Generating DSP acc_result2, operation Mode is: A*B.
+DSP Report: operator acc_result2 is absorbed into DSP acc_result2.
+DSP Report: Generating DSP acc_result2, operation Mode is: A*B.
+DSP Report: operator acc_result2 is absorbed into DSP acc_result2.
+DSP Report: Generating DSP acc_result2, operation Mode is: A*B.
+DSP Report: operator acc_result2 is absorbed into DSP acc_result2.
+DSP Report: Generating DSP acc_result2, operation Mode is: A*B.
+DSP Report: operator acc_result2 is absorbed into DSP acc_result2.
+DSP Report: Generating DSP acc_result2, operation Mode is: A*B.
+DSP Report: operator acc_result2 is absorbed into DSP acc_result2.
+DSP Report: Generating DSP acc_result2, operation Mode is: A*B.
+DSP Report: operator acc_result2 is absorbed into DSP acc_result2.
+DSP Report: Generating DSP acc_result2, operation Mode is: A*B.
+DSP Report: operator acc_result2 is absorbed into DSP acc_result2.
+DSP Report: Generating DSP acc_result2, operation Mode is: A*B.
+DSP Report: operator acc_result2 is absorbed into DSP acc_result2.
+DSP Report: Generating DSP acc_result2, operation Mode is: A*B.
+DSP Report: operator acc_result2 is absorbed into DSP acc_result2.
+DSP Report: Generating DSP acc_result2, operation Mode is: A*B.
+DSP Report: operator acc_result2 is absorbed into DSP acc_result2.
+DSP Report: Generating DSP acc_result2, operation Mode is: A*B.
+DSP Report: operator acc_result2 is absorbed into DSP acc_result2.
+DSP Report: Generating DSP acc_result2, operation Mode is: A*B.
+DSP Report: operator acc_result2 is absorbed into DSP acc_result2.
+DSP Report: Generating DSP acc_result2, operation Mode is: A*B.
+DSP Report: operator acc_result2 is absorbed into DSP acc_result2.
+DSP Report: Generating DSP acc_result2, operation Mode is: A*B.
+DSP Report: operator acc_result2 is absorbed into DSP acc_result2.
+DSP Report: Generating DSP acc_result2, operation Mode is: A*B.
+DSP Report: operator acc_result2 is absorbed into DSP acc_result2.
+DSP Report: Generating DSP acc_result2, operation Mode is: A*B.
+DSP Report: operator acc_result2 is absorbed into DSP acc_result2.
+DSP Report: Generating DSP acc_result2, operation Mode is: A*B.
+DSP Report: operator acc_result2 is absorbed into DSP acc_result2.
+DSP Report: Generating DSP acc_result2, operation Mode is: A*B.
+DSP Report: operator acc_result2 is absorbed into DSP acc_result2.
+DSP Report: Generating DSP acc_result2, operation Mode is: A*B.
+DSP Report: operator acc_result2 is absorbed into DSP acc_result2.
+DSP Report: Generating DSP acc_result2, operation Mode is: A*B.
+DSP Report: operator acc_result2 is absorbed into DSP acc_result2.
+DSP Report: Generating DSP acc_result2, operation Mode is: A*B.
+DSP Report: operator acc_result2 is absorbed into DSP acc_result2.
+DSP Report: Generating DSP acc_result2, operation Mode is: A*B.
+DSP Report: operator acc_result2 is absorbed into DSP acc_result2.
+DSP Report: Generating DSP acc_result2, operation Mode is: A*B.
+DSP Report: operator acc_result2 is absorbed into DSP acc_result2.
+DSP Report: Generating DSP acc_result2, operation Mode is: A*B.
+DSP Report: operator acc_result2 is absorbed into DSP acc_result2.
+DSP Report: Generating DSP acc_result2, operation Mode is: A*B.
+DSP Report: operator acc_result2 is absorbed into DSP acc_result2.
+DSP Report: Generating DSP acc_result2, operation Mode is: A*B.
+DSP Report: operator acc_result2 is absorbed into DSP acc_result2.
+DSP Report: Generating DSP acc_result2, operation Mode is: A*B.
+DSP Report: operator acc_result2 is absorbed into DSP acc_result2.
+DSP Report: Generating DSP acc_result2, operation Mode is: A*B.
+DSP Report: operator acc_result2 is absorbed into DSP acc_result2.
+DSP Report: Generating DSP acc_result2, operation Mode is: A*B.
+DSP Report: operator acc_result2 is absorbed into DSP acc_result2.
+DSP Report: Generating DSP acc_result2, operation Mode is: A*B.
+DSP Report: operator acc_result2 is absorbed into DSP acc_result2.
+DSP Report: Generating DSP acc_result2, operation Mode is: A*B.
+DSP Report: operator acc_result2 is absorbed into DSP acc_result2.
+DSP Report: Generating DSP acc_result2, operation Mode is: A*B.
+DSP Report: operator acc_result2 is absorbed into DSP acc_result2.
+DSP Report: Generating DSP acc_result2, operation Mode is: A*B.
+DSP Report: operator acc_result2 is absorbed into DSP acc_result2.
+DSP Report: Generating DSP acc_result2, operation Mode is: A*B.
+DSP Report: operator acc_result2 is absorbed into DSP acc_result2.
+DSP Report: Generating DSP acc_result2, operation Mode is: A*B.
+DSP Report: operator acc_result2 is absorbed into DSP acc_result2.
+DSP Report: Generating DSP acc_result2, operation Mode is: A*B.
+DSP Report: operator acc_result2 is absorbed into DSP acc_result2.
+DSP Report: Generating DSP acc_result2, operation Mode is: A*B.
+DSP Report: operator acc_result2 is absorbed into DSP acc_result2.
+DSP Report: Generating DSP acc_result2, operation Mode is: A*B.
+DSP Report: operator acc_result2 is absorbed into DSP acc_result2.
+DSP Report: Generating DSP acc_result2, operation Mode is: A*B.
+DSP Report: operator acc_result2 is absorbed into DSP acc_result2.
+DSP Report: Generating DSP acc_result2, operation Mode is: A*B.
+DSP Report: operator acc_result2 is absorbed into DSP acc_result2.
+DSP Report: Generating DSP acc_result2, operation Mode is: A*B.
+DSP Report: operator acc_result2 is absorbed into DSP acc_result2.
+DSP Report: Generating DSP acc_result2, operation Mode is: A*B.
+DSP Report: operator acc_result2 is absorbed into DSP acc_result2.
+DSP Report: Generating DSP acc_result2, operation Mode is: A*B.
+DSP Report: operator acc_result2 is absorbed into DSP acc_result2.
+DSP Report: Generating DSP acc_result2, operation Mode is: A*B.
+DSP Report: operator acc_result2 is absorbed into DSP acc_result2.
+DSP Report: Generating DSP acc_result2, operation Mode is: A*B.
+DSP Report: operator acc_result2 is absorbed into DSP acc_result2.
+DSP Report: Generating DSP acc_result2, operation Mode is: A*B.
+DSP Report: operator acc_result2 is absorbed into DSP acc_result2.
+DSP Report: Generating DSP acc_result2, operation Mode is: A*B.
+DSP Report: operator acc_result2 is absorbed into DSP acc_result2.
+DSP Report: Generating DSP acc_result2, operation Mode is: A*B.
+DSP Report: operator acc_result2 is absorbed into DSP acc_result2.
+DSP Report: Generating DSP acc_result2, operation Mode is: A*B.
+DSP Report: operator acc_result2 is absorbed into DSP acc_result2.
+DSP Report: Generating DSP acc_result2, operation Mode is: A*B.
+DSP Report: operator acc_result2 is absorbed into DSP acc_result2.
+DSP Report: Generating DSP acc_result2, operation Mode is: A*B.
+DSP Report: operator acc_result2 is absorbed into DSP acc_result2.
+DSP Report: Generating DSP acc_result2, operation Mode is: A*B.
+DSP Report: operator acc_result2 is absorbed into DSP acc_result2.
+DSP Report: Generating DSP acc_result2, operation Mode is: A*B.
+DSP Report: operator acc_result2 is absorbed into DSP acc_result2.
+DSP Report: Generating DSP acc_result2, operation Mode is: A*B.
+DSP Report: operator acc_result2 is absorbed into DSP acc_result2.
+DSP Report: Generating DSP acc_result2, operation Mode is: A*B.
+DSP Report: operator acc_result2 is absorbed into DSP acc_result2.
+WARNING: [Synth 8-7129] Port shared_phase[0] in module cluster is either unconnected or has no load
+WARNING: [Synth 8-7257] Removed RAM (u_a_buffer/mem_reg) due to inactive write enable.
+WARNING: [Synth 8-6014] Unused sequential element u_a_buffer/mem_reg was removed. 
+WARNING: [Synth 8-7257] Removed RAM (u_b_buffer/mem_reg) due to inactive write enable.
+WARNING: [Synth 8-6014] Unused sequential element u_b_buffer/mem_reg was removed. 
+---------------------------------------------------------------------------------
+Finished Cross Boundary and Area Optimization : Time (s): cpu = 00:00:19 ; elapsed = 00:00:19 . Memory (MB): peak = 2403.316 ; gain = 696.461 ; free physical = 9260 ; free virtual = 12657
+---------------------------------------------------------------------------------
+ Sort Area is  acc_result2_0 : 0 0 : 1937 1937 : Used 1 time 0
+ Sort Area is  acc_result2_10 : 0 0 : 1937 1937 : Used 1 time 0
+ Sort Area is  acc_result2_11 : 0 0 : 1937 1937 : Used 1 time 0
+ Sort Area is  acc_result2_12 : 0 0 : 1937 1937 : Used 1 time 0
+ Sort Area is  acc_result2_13 : 0 0 : 1937 1937 : Used 1 time 0
+ Sort Area is  acc_result2_14 : 0 0 : 1937 1937 : Used 1 time 0
+ Sort Area is  acc_result2_15 : 0 0 : 1937 1937 : Used 1 time 0
+ Sort Area is  acc_result2_16 : 0 0 : 1937 1937 : Used 1 time 0
+ Sort Area is  acc_result2_17 : 0 0 : 1937 1937 : Used 1 time 0
+ Sort Area is  acc_result2_18 : 0 0 : 1937 1937 : Used 1 time 0
+ Sort Area is  acc_result2_19 : 0 0 : 1937 1937 : Used 1 time 0
+ Sort Area is  acc_result2_1a : 0 0 : 1937 1937 : Used 1 time 0
+ Sort Area is  acc_result2_1b : 0 0 : 1937 1937 : Used 1 time 0
+ Sort Area is  acc_result2_1c : 0 0 : 1937 1937 : Used 1 time 0
+ Sort Area is  acc_result2_1d : 0 0 : 1937 1937 : Used 1 time 0
+ Sort Area is  acc_result2_1e : 0 0 : 1937 1937 : Used 1 time 0
+ Sort Area is  acc_result2_1f : 0 0 : 1937 1937 : Used 1 time 0
+ Sort Area is  acc_result2_2 : 0 0 : 1937 1937 : Used 1 time 0
+ Sort Area is  acc_result2_20 : 0 0 : 1937 1937 : Used 1 time 0
+ Sort Area is  acc_result2_21 : 0 0 : 1937 1937 : Used 1 time 0
+ Sort Area is  acc_result2_22 : 0 0 : 1937 1937 : Used 1 time 0
+ Sort Area is  acc_result2_23 : 0 0 : 1937 1937 : Used 1 time 0
+ Sort Area is  acc_result2_24 : 0 0 : 1937 1937 : Used 1 time 0
+ Sort Area is  acc_result2_25 : 0 0 : 1937 1937 : Used 1 time 0
+ Sort Area is  acc_result2_26 : 0 0 : 1937 1937 : Used 1 time 0
+ Sort Area is  acc_result2_27 : 0 0 : 1937 1937 : Used 1 time 0
+ Sort Area is  acc_result2_28 : 0 0 : 1937 1937 : Used 1 time 0
+ Sort Area is  acc_result2_29 : 0 0 : 1937 1937 : Used 1 time 0
+ Sort Area is  acc_result2_2a : 0 0 : 1937 1937 : Used 1 time 0
+ Sort Area is  acc_result2_2b : 0 0 : 1937 1937 : Used 1 time 0
+ Sort Area is  acc_result2_2c : 0 0 : 1937 1937 : Used 1 time 0
+ Sort Area is  acc_result2_2d : 0 0 : 1937 1937 : Used 1 time 0
+ Sort Area is  acc_result2_2e : 0 0 : 1937 1937 : Used 1 time 0
+ Sort Area is  acc_result2_2f : 0 0 : 1937 1937 : Used 1 time 0
+ Sort Area is  acc_result2_3 : 0 0 : 1937 1937 : Used 1 time 0
+ Sort Area is  acc_result2_30 : 0 0 : 1937 1937 : Used 1 time 0
+ Sort Area is  acc_result2_31 : 0 0 : 1937 1937 : Used 1 time 0
+ Sort Area is  acc_result2_32 : 0 0 : 1937 1937 : Used 1 time 0
+ Sort Area is  acc_result2_33 : 0 0 : 1937 1937 : Used 1 time 0
+ Sort Area is  acc_result2_34 : 0 0 : 1937 1937 : Used 1 time 0
+ Sort Area is  acc_result2_35 : 0 0 : 1937 1937 : Used 1 time 0
+ Sort Area is  acc_result2_36 : 0 0 : 1937 1937 : Used 1 time 0
+ Sort Area is  acc_result2_37 : 0 0 : 1937 1937 : Used 1 time 0
+ Sort Area is  acc_result2_38 : 0 0 : 1937 1937 : Used 1 time 0
+ Sort Area is  acc_result2_39 : 0 0 : 1937 1937 : Used 1 time 0
+ Sort Area is  acc_result2_3a : 0 0 : 1937 1937 : Used 1 time 0
+ Sort Area is  acc_result2_3b : 0 0 : 1937 1937 : Used 1 time 0
+ Sort Area is  acc_result2_3c : 0 0 : 1937 1937 : Used 1 time 0
+ Sort Area is  acc_result2_3d : 0 0 : 1937 1937 : Used 1 time 0
+ Sort Area is  acc_result2_3e : 0 0 : 1937 1937 : Used 1 time 0
+ Sort Area is  acc_result2_3f : 0 0 : 1937 1937 : Used 1 time 0
+ Sort Area is  acc_result2_4 : 0 0 : 1937 1937 : Used 1 time 0
+ Sort Area is  acc_result2_40 : 0 0 : 1937 1937 : Used 1 time 0
+ Sort Area is  acc_result2_5 : 0 0 : 1937 1937 : Used 1 time 0
+ Sort Area is  acc_result2_6 : 0 0 : 1937 1937 : Used 1 time 0
+ Sort Area is  acc_result2_7 : 0 0 : 1937 1937 : Used 1 time 0
+ Sort Area is  acc_result2_8 : 0 0 : 1937 1937 : Used 1 time 0
+ Sort Area is  acc_result2_9 : 0 0 : 1937 1937 : Used 1 time 0
+ Sort Area is  acc_result2_a : 0 0 : 1937 1937 : Used 1 time 0
+ Sort Area is  acc_result2_b : 0 0 : 1937 1937 : Used 1 time 0
+ Sort Area is  acc_result2_c : 0 0 : 1937 1937 : Used 1 time 0
+ Sort Area is  acc_result2_d : 0 0 : 1937 1937 : Used 1 time 0
+ Sort Area is  acc_result2_e : 0 0 : 1937 1937 : Used 1 time 0
+ Sort Area is  acc_result2_f : 0 0 : 1937 1937 : Used 1 time 0
+---------------------------------------------------------------------------------
+Start ROM, RAM, DSP, Shift Register and Retiming Reporting
+---------------------------------------------------------------------------------
+
+DSP: Preliminary Mapping Report (see note below. The ' indicates corresponding REG is set)
++------------+-------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
+|Module Name | DSP Mapping | A Size | B Size | C Size | D Size | P Size | AREG | BREG | CREG | DREG | ADREG | MREG | PREG | 
++------------+-------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
+|pe          | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
++------------+-------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
+
+Note: The table above is a preliminary report that shows the DSPs inferred at the current stage of the synthesis flow. Some DSP may be reimplemented as non DSP primitives later in the synthesis flow. Multiple instantiated DSPs are reported only once.
+---------------------------------------------------------------------------------
+Finished ROM, RAM, DSP, Shift Register and Retiming Reporting
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Applying XDC Timing Constraints
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Applying XDC Timing Constraints : Time (s): cpu = 00:00:25 ; elapsed = 00:00:26 . Memory (MB): peak = 2514.316 ; gain = 807.461 ; free physical = 9145 ; free virtual = 12543
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Timing Optimization
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Timing Optimization : Time (s): cpu = 00:00:28 ; elapsed = 00:00:28 . Memory (MB): peak = 2601.926 ; gain = 895.070 ; free physical = 9056 ; free virtual = 12454
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Technology Mapping
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Technology Mapping : Time (s): cpu = 00:00:30 ; elapsed = 00:00:30 . Memory (MB): peak = 2601.926 ; gain = 895.070 ; free physical = 9058 ; free virtual = 12455
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Flattening Before IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Flattening Before IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Final Netlist Cleanup
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Final Netlist Cleanup
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished IO Insertion : Time (s): cpu = 00:00:34 ; elapsed = 00:00:34 . Memory (MB): peak = 2751.738 ; gain = 1044.883 ; free physical = 8924 ; free virtual = 12322
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Instances
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Instances : Time (s): cpu = 00:00:34 ; elapsed = 00:00:34 . Memory (MB): peak = 2751.738 ; gain = 1044.883 ; free physical = 8924 ; free virtual = 12322
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Rebuilding User Hierarchy
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Rebuilding User Hierarchy : Time (s): cpu = 00:00:34 ; elapsed = 00:00:35 . Memory (MB): peak = 2751.738 ; gain = 1044.883 ; free physical = 8924 ; free virtual = 12322
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Ports
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Ports : Time (s): cpu = 00:00:34 ; elapsed = 00:00:35 . Memory (MB): peak = 2751.738 ; gain = 1044.883 ; free physical = 8924 ; free virtual = 12322
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Handling Custom Attributes
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Handling Custom Attributes : Time (s): cpu = 00:00:34 ; elapsed = 00:00:35 . Memory (MB): peak = 2751.738 ; gain = 1044.883 ; free physical = 8924 ; free virtual = 12322
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Nets
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Nets : Time (s): cpu = 00:00:34 ; elapsed = 00:00:35 . Memory (MB): peak = 2751.738 ; gain = 1044.883 ; free physical = 8924 ; free virtual = 12322
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Writing Synthesis Report
+---------------------------------------------------------------------------------
+
+DSP Final Report (the ' indicates corresponding REG is set)
++------------+-------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
+|Module Name | DSP Mapping | A Size | B Size | C Size | D Size | P Size | AREG | BREG | CREG | DREG | ADREG | MREG | PREG | 
++------------+-------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
+|pe          | A*B         | 30     | 18     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 30     | 18     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 30     | 18     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 30     | 18     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 30     | 18     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 30     | 18     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 30     | 18     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 30     | 18     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 30     | 18     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 30     | 18     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 30     | 18     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 30     | 18     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 30     | 18     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 30     | 18     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 30     | 18     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 30     | 18     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 30     | 18     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 30     | 18     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 30     | 18     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 30     | 18     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 30     | 18     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 30     | 18     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 30     | 18     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 30     | 18     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 30     | 18     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 30     | 18     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 30     | 18     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 30     | 18     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 30     | 18     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 30     | 18     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 30     | 18     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 30     | 18     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 30     | 18     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 30     | 18     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 30     | 18     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 30     | 18     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 30     | 18     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 30     | 18     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 30     | 18     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 30     | 18     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 30     | 18     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 30     | 18     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 30     | 18     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 30     | 18     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 30     | 18     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 30     | 18     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 30     | 18     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 30     | 18     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 30     | 18     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 30     | 18     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 30     | 18     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 30     | 18     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 30     | 18     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 30     | 18     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 30     | 18     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 30     | 18     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 30     | 18     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 30     | 18     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 30     | 18     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 30     | 18     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 30     | 18     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 30     | 18     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 30     | 18     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|pe          | A*B         | 30     | 18     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
++------------+-------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
+
+
+Report BlackBoxes: 
++-+--------------+----------+
+| |BlackBox name |Instances |
++-+--------------+----------+
++-+--------------+----------+
+
+Report Cell Usage: 
++------+--------+------+
+|      |Cell    |Count |
++------+--------+------+
+|1     |BUFG    |     1|
+|2     |CARRY4  |   528|
+|3     |DSP48E1 |    64|
+|4     |LUT1    |    64|
+|5     |LUT2    |  2130|
+|6     |LUT3    |    35|
+|7     |LUT4    |    10|
+|8     |LUT5    |    43|
+|9     |LUT6    |   291|
+|10    |MUXF7   |   128|
+|11    |MUXF8   |    64|
+|12    |FDRE    |  2151|
+|13    |FDSE    |     1|
+|14    |IBUF    |     3|
+|15    |OBUF    |     2|
++------+--------+------+
+---------------------------------------------------------------------------------
+Finished Writing Synthesis Report : Time (s): cpu = 00:00:34 ; elapsed = 00:00:35 . Memory (MB): peak = 2751.738 ; gain = 1044.883 ; free physical = 8924 ; free virtual = 12322
+---------------------------------------------------------------------------------
+Synthesis finished with 0 errors, 0 critical warnings and 5 warnings.
+Synthesis Optimization Runtime : Time (s): cpu = 00:00:32 ; elapsed = 00:00:33 . Memory (MB): peak = 2751.738 ; gain = 939.109 ; free physical = 8924 ; free virtual = 12322
+Synthesis Optimization Complete : Time (s): cpu = 00:00:34 ; elapsed = 00:00:35 . Memory (MB): peak = 2751.746 ; gain = 1044.883 ; free physical = 8924 ; free virtual = 12322
+INFO: [Project 1-571] Translating synthesized netlist
+Netlist sorting complete. Time (s): cpu = 00:00:00.08 ; elapsed = 00:00:00.08 . Memory (MB): peak = 2751.746 ; gain = 0.000 ; free physical = 9102 ; free virtual = 12500
+INFO: [Netlist 29-17] Analyzing 784 Unisim elements for replacement
+INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds
+INFO: [Project 1-570] Preparing netlist for logic optimization
+INFO: [Opt 31-138] Pushed 0 inverter(s) to 0 load pin(s).
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.01 . Memory (MB): peak = 2807.766 ; gain = 0.000 ; free physical = 9102 ; free virtual = 12500
+INFO: [Project 1-111] Unisim Transformation Summary:
+No Unisim elements were transformed.
+
+Synth Design complete | Checksum: 303d8008
+INFO: [Common 17-83] Releasing license: Synthesis
+30 Infos, 73 Warnings, 2 Critical Warnings and 0 Errors encountered.
+synth_design completed successfully
+synth_design: Time (s): cpu = 00:00:45 ; elapsed = 00:00:42 . Memory (MB): peak = 2807.801 ; gain = 1193.281 ; free physical = 9102 ; free virtual = 12500
+INFO: [Common 17-2834] synth_design peak Physical Memory [PSS] (MB): overall = 1988.305; main = 1894.918; forked = 281.829
+INFO: [Common 17-2834] synth_design peak Virtual Memory [VSS] (MB): overall = 3595.910; main = 2807.770; forked = 993.980
+INFO: [runtcl-6] Synthesis results are not added to the cache due to CRITICAL_WARNING
+Write ShapeDB Complete: Time (s): cpu = 00:00:00.04 ; elapsed = 00:00:00.01 . Memory (MB): peak = 2831.777 ; gain = 0.000 ; free physical = 9102 ; free virtual = 12501
+INFO: [Common 17-1381] The checkpoint '/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/experiments/results/runs/replicated_8x4_c2/vivado/project/mac_array_project/mac_array_project.runs/synth_1/top_level.dcp' has been generated.
+INFO: [Vivado 12-24828] Executing command : report_utilization -file top_level_utilization_synth.rpt -pb top_level_utilization_synth.pb
+INFO: [Common 17-206] Exiting Vivado at Mon Mar 16 14:44:59 2026...

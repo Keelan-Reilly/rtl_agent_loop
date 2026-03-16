@@ -11,6 +11,7 @@
 
 // INCLUDE MODULE CLASSES
 #include "Vtop_level.h"
+#include "Vtop_level_cluster__pi4.h"
 
 // SYMS CLASS
 class Vtop_level__Syms : public VerilatedSyms {
@@ -22,6 +23,14 @@ class Vtop_level__Syms : public VerilatedSyms {
     
     // SUBCELL STATE
     Vtop_level*                    TOPp;
+    Vtop_level_cluster__pi4        TOP__top_level__DOT__gen_clusters__BRA__0__KET____DOT__u_cluster;
+    Vtop_level_cluster__pi4        TOP__top_level__DOT__gen_clusters__BRA__1__KET____DOT__u_cluster;
+    Vtop_level_cluster__pi4        TOP__top_level__DOT__gen_clusters__BRA__2__KET____DOT__u_cluster;
+    Vtop_level_cluster__pi4        TOP__top_level__DOT__gen_clusters__BRA__3__KET____DOT__u_cluster;
+    Vtop_level_cluster__pi4        TOP__top_level__DOT__gen_clusters__BRA__4__KET____DOT__u_cluster;
+    Vtop_level_cluster__pi4        TOP__top_level__DOT__gen_clusters__BRA__5__KET____DOT__u_cluster;
+    Vtop_level_cluster__pi4        TOP__top_level__DOT__gen_clusters__BRA__6__KET____DOT__u_cluster;
+    Vtop_level_cluster__pi4        TOP__top_level__DOT__gen_clusters__BRA__7__KET____DOT__u_cluster;
     
     // CREATORS
     Vtop_level__Syms(Vtop_level* topp, const char* namep);
