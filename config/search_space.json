@@ -1,11 +1,27 @@
 {
   "external_repo": {
-    "path": "external/CNN_FPGA"
+    "path": "external/MAC_ARRAY_FPGA"
   },
   "search_space": {
-    "DENSE_OUT_PAR": {
+    "ARCH_VARIANT": {
       "type": "int",
-      "allowed": [1, 2, 5, 10]
+      "allowed": [0, 1, 2]
+    },
+    "ARRAY_M": {
+      "type": "int",
+      "allowed": [4, 8]
+    },
+    "ARRAY_N": {
+      "type": "int",
+      "allowed": [4, 8]
+    },
+    "CLUSTER_SIZE": {
+      "type": "int",
+      "allowed": [1, 2, 4]
+    },
+    "SHARE_FACTOR": {
+      "type": "int",
+      "allowed": [1, 2]
     },
     "DATA_WIDTH": {
       "type": "int",
@@ -13,19 +29,27 @@
     },
     "FRAC_BITS": {
       "type": "int",
-      "allowed": [6, 7]
+      "allowed": [6, 8]
     },
-    "CONV_CHANNEL_PAR": {
+    "ACC_WIDTH": {
       "type": "int",
-      "allowed": [1, 2, 4]
+      "allowed": [24, 32]
     },
-    "DENSE_SPLIT_MAC_PIPELINE": {
+    "PIPE_STAGES": {
       "type": "int",
-      "allowed": [0, 1]
+      "allowed": [1, 2]
     },
-    "CONV_VARIANT": {
-      "type": "enum",
-      "allowed": ["baseline", "pipelined"]
+    "TILE_K": {
+      "type": "int",
+      "allowed": [4]
+    },
+    "INPUT_MEM_DEPTH": {
+      "type": "int",
+      "allowed": [16, 64]
+    },
+    "OUTPUT_MEM_DEPTH": {
+      "type": "int",
+      "allowed": [16, 64]
     }
   },
   "defaults": {
@@ -33,18 +57,16 @@
     "vivado": {
       "part": "xc7a35tcpg236-1",
       "top": "top_level",
-      "xdc": "CNN_constraints.xdc",
+      "xdc": "fpga/vivado/constraints/mac_array_constraints.xdc",
       "jobs": 4,
       "clock_period_ns": 10.0
     },
     "verilator": {
-      "top": "top_level",
-      "images_path": "data/MNIST/raw/t10k-images-idx3-ubyte",
-      "labels_path": "data/MNIST/raw/t10k-labels-idx1-ubyte"
+      "top": "top_level"
     },
     "fast_verify": {
       "mode": "verilator_lint",
-      "todo": "TODO: Decide whether CONV_VARIANT should map to a real RTL hook or remain orchestration-only."
+      "todo": "ARCH_VARIANT is a real top_level generic. PIPE_STAGES currently models deterministic drain latency rather than a fully retimed MAC pipeline."
     }
   }
 }

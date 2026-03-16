@@ -96,7 +96,9 @@ external_root = Path(
 makefile_path = external_root / "Makefile"
 top_level_path = external_root / "hdl" / "top_level.sv"
 tb_full_path = external_root / "tb" / "tb_full_pipeline.cpp"
-weights_input_path = external_root / "weights" / "input_image.mem"
+input_a_path = external_root / "data" / "input_a.mem"
+input_b_path = external_root / "data" / "input_b.mem"
+expected_output_path = external_root / "data" / "expected_output.mem"
 hdl_dir = external_root / "hdl"
 mode = config["defaults"]["fast_verify"]["mode"]
 
@@ -113,11 +115,7 @@ def parse_top_level_parameters(top_level_text: str) -> set[str]:
 top_level_text = top_level_path.read_text() if top_level_path.exists() else ""
 top_level_parameters = parse_top_level_parameters(top_level_text)
 candidate_parameters = manifest.get("parameters", {})
-lint_generics = {
-    key: candidate_parameters[key]
-    for key in ("CONV_CHANNEL_PAR", "DATA_WIDTH", "DENSE_OUT_PAR", "FRAC_BITS", "DENSE_SPLIT_MAC_PIPELINE")
-    if key in candidate_parameters
-}
+lint_generics = dict(candidate_parameters)
 
 checks = {
     "manifest_exists": manifest_path.exists(),
@@ -125,7 +123,9 @@ checks = {
     "makefile_exists": makefile_path.exists(),
     "top_level_exists": top_level_path.exists(),
     "tb_full_exists": tb_full_path.exists(),
-    "weights_input_exists": weights_input_path.exists(),
+    "input_a_exists": input_a_path.exists(),
+    "input_b_exists": input_b_path.exists(),
+    "expected_output_exists": expected_output_path.exists(),
     "hdl_dir_exists": hdl_dir.exists(),
     "vivado_wrapper_exists": (external_root / "fpga" / "vivado" / "run_batch.sh").exists(),
     "verilator_perf_exists": (external_root / "experiments" / "collect_verilator_perf.py").exists(),
@@ -158,7 +158,9 @@ required_check_keys = [
     "makefile_exists",
     "top_level_exists",
     "tb_full_exists",
-    "weights_input_exists",
+    "input_a_exists",
+    "input_b_exists",
+    "expected_output_exists",
     "hdl_dir_exists",
     "vivado_wrapper_exists",
     "verilator_perf_exists",
@@ -174,15 +176,17 @@ elif mode == "verilator_lint":
         message = "Fast verification requires 'verilator' in PATH."
         returncode = 2
     else:
-        hdl_files = sorted(hdl_dir.glob("*.sv"))
+        hdl_files = list(hdl_dir.glob("*.sv"))
+        hdl_files.sort(key=lambda path: (0 if path.name == "types_pkg.sv" else 1, path.name))
         if not hdl_files:
             status = "failed"
-            message = "No HDL files found under external/CNN_FPGA/hdl."
+            message = "No HDL files found under external/MAC_ARRAY_FPGA/hdl."
             returncode = 3
         else:
             command = [
                 "verilator",
                 "-sv",
+                "-I" + str(hdl_dir),
                 "--lint-only",
                 "-Wall",
                 "-Wno-fatal",
@@ -191,10 +195,6 @@ elif mode == "verilator_lint":
                 command.append(f"-G{key}={lint_generics[key]}")
             command.extend(str(path) for path in hdl_files)
             command.extend(["--top-module", "top_level"])
-            if candidate_parameters.get("CONV_VARIANT") != "baseline":
-                warnings.append(
-                    "CONV_VARIANT is recorded for orchestration but is not yet mapped into the external RTL fast gate."
-                )
             log_lines.append(f"running={' '.join(command)}")
             with log_path.open("w") as logf:
                 logf.write("\n".join(log_lines) + "\n")

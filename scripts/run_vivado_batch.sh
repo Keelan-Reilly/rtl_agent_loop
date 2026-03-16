@@ -103,7 +103,6 @@ metrics_path = run_dir / "vivado" / "metrics.json"
 reports_dir = wrapper_run_dir / "reports"
 
 params = dict(manifest.get("parameters", {}))
-conv_variant = params.pop("CONV_VARIANT", None)
 
 command = [
     str(run_script),
@@ -135,12 +134,6 @@ checks = {
     "parse_script_exists": parse_script.exists(),
     "xdc_exists": xdc_path.exists(),
 }
-
-if conv_variant is not None:
-    message = (
-        "Vivado batch completed. CONV_VARIANT is recorded but not yet mapped into external RTL; "
-        "see docs/integration_notes.md."
-    )
 
 with log_path.open("w") as logf:
     logf.write(f"candidate_id={manifest.get('candidate_id')}\n")
@@ -190,7 +183,7 @@ payload = {
     "reports_dir": str(reports_dir.relative_to(run_dir)) if reports_dir.exists() else None,
     "metrics_path": str(metrics_path.relative_to(run_dir)) if metrics_path.exists() else None,
     "metrics": parsed_metrics,
-    "todo": "TODO: map CONV_VARIANT into CNN_FPGA once the external repo exposes the desired integration hook.",
+    "todo": "ARCH_VARIANT is forwarded as a real generic. PIPE_STAGES currently models deterministic drain latency rather than a fully retimed datapath.",
     "log_path": str(log_path.relative_to(run_dir)),
 }
 result_path.write_text(json.dumps(payload, indent=2) + "\n")

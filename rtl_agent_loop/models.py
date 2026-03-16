@@ -5,9 +5,22 @@ from pathlib import Path
 from typing import Any
 
 
-ALLOWED_CONV_VARIANTS = {"baseline", "pipelined"}
-REQUIRED_PARAMETER_KEYS = ("DENSE_OUT_PAR", "DATA_WIDTH", "FRAC_BITS", "CONV_CHANNEL_PAR", "CONV_VARIANT")
-OPTIONAL_PARAMETER_KEYS = ("DENSE_SPLIT_MAC_PIPELINE",)
+ALLOWED_ARCH_VARIANTS = {0, 1, 2}
+REQUIRED_PARAMETER_KEYS = (
+    "ARCH_VARIANT",
+    "ARRAY_M",
+    "ARRAY_N",
+    "CLUSTER_SIZE",
+    "SHARE_FACTOR",
+    "DATA_WIDTH",
+    "FRAC_BITS",
+    "ACC_WIDTH",
+    "PIPE_STAGES",
+    "TILE_K",
+    "INPUT_MEM_DEPTH",
+    "OUTPUT_MEM_DEPTH",
+)
+OPTIONAL_PARAMETER_KEYS: tuple[str, ...] = ()
 
 
 @dataclass(slots=True)

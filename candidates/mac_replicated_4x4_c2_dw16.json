@@ -1,0 +1,21 @@
+{
+  "candidate_id": "mac_replicated_4x4_c2_dw16",
+  "source": "mac_array_fpga_first_study",
+  "created_at": "2026-03-16T00:00:00Z",
+  "parameters": {
+    "ARCH_VARIANT": 2,
+    "ARRAY_M": 4,
+    "ARRAY_N": 4,
+    "CLUSTER_SIZE": 2,
+    "SHARE_FACTOR": 1,
+    "DATA_WIDTH": 16,
+    "FRAC_BITS": 8,
+    "ACC_WIDTH": 32,
+    "PIPE_STAGES": 1,
+    "TILE_K": 4,
+    "INPUT_MEM_DEPTH": 64,
+    "OUTPUT_MEM_DEPTH": 64
+  },
+  "notes": "Hypothesis: replicated 4x4 with cluster size 2 should preserve a simple active datapath while increasing area through shadow compute replication. It is expected to keep baseline-like cycle behavior but spend more LUT and FF resources.",
+  "tags": ["mac-array", "replicated", "cluster2", "first-study"]
+}

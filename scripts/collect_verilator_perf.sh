@@ -96,11 +96,12 @@ verilator_cfg = defaults["verilator"]
 perf_script = external_root / "experiments" / "collect_verilator_perf.py"
 perf_root = run_dir / "verilator_perf" / "perf_run"
 perf_json = perf_root / "verilator_perf" / "performance.json"
-weights_input_path = external_root / "weights" / "input_image.mem"
 tb_full_path = external_root / "tb" / "tb_full_pipeline.cpp"
+input_a_path = external_root / "data" / "input_a.mem"
+input_b_path = external_root / "data" / "input_b.mem"
+expected_output_path = external_root / "data" / "expected_output.mem"
 
 params = dict(manifest.get("parameters", {}))
-conv_variant = params.pop("CONV_VARIANT", None)
 
 command = [
     sys.executable,
@@ -113,7 +114,7 @@ command = [
     str(verilator_cfg["top"]),
 ]
 for key in sorted(params):
-    command.extend(["--generic", f"{key}={params[key]}"])
+    command.extend(["--parameter", f"{key}={params[key]}"])
 
 status = "passed"
 message = "Verilator performance collection completed successfully."
@@ -122,15 +123,11 @@ parsed_metrics = {}
 checks = {
     "external_root_exists": external_root.exists(),
     "perf_script_exists": perf_script.exists(),
-    "weights_input_exists": weights_input_path.exists(),
+    "input_a_exists": input_a_path.exists(),
+    "input_b_exists": input_b_path.exists(),
+    "expected_output_exists": expected_output_path.exists(),
     "tb_full_exists": tb_full_path.exists(),
 }
-
-if conv_variant is not None:
-    message = (
-        "Verilator performance collection completed. CONV_VARIANT is recorded but not yet mapped into external RTL; "
-        "see docs/integration_notes.md."
-    )
 
 with log_path.open("w") as logf:
     logf.write(f"candidate_id={manifest.get('candidate_id')}\n")
@@ -167,7 +164,7 @@ payload = {
     "checks": checks,
     "performance_path": str(perf_json.relative_to(run_dir)) if perf_json.exists() else None,
     "metrics": parsed_metrics,
-    "todo": "TODO: confirm Verilator data and weight prerequisites in the external CNN_FPGA repo.",
+    "todo": "ARCH_VARIANT is forwarded as a real hardware parameter. PIPE_STAGES currently models deterministic drain latency rather than a fully retimed datapath.",
     "log_path": str(log_path.relative_to(run_dir)),
 }
 result_path.write_text(json.dumps(payload, indent=2) + "\n")

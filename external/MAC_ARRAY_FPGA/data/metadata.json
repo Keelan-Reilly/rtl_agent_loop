@@ -1,0 +1,9 @@
+{
+  "description": "Deterministic fixed-point 4x4x4 GEMM vectors for MAC_ARRAY_FPGA.",
+  "array_m": 4,
+  "array_n": 4,
+  "tile_k": 4,
+  "data_width": 16,
+  "frac_bits": 8,
+  "acc_width": 32
+}

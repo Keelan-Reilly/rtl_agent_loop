@@ -5,7 +5,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
 PYTHON_BIN="${RTL_AGENT_LOOP_PYTHON:-python3}"
-EXTERNAL_REPO="${RTL_AGENT_LOOP_EXTERNAL_REPO:-${REPO_ROOT}/external/CNN_FPGA}"
+EXTERNAL_REPO="${RTL_AGENT_LOOP_EXTERNAL_REPO:-${REPO_ROOT}/external/MAC_ARRAY_FPGA}"
 INIT_DB="1"
 
 usage() {
@@ -15,7 +15,7 @@ Usage:
 
 Environment:
   RTL_AGENT_LOOP_PYTHON             Python interpreter to use for this repo
-  RTL_AGENT_LOOP_EXTERNAL_REPO      Path to the underlying CNN_FPGA checkout
+  RTL_AGENT_LOOP_EXTERNAL_REPO      Path to the underlying MAC_ARRAY_FPGA checkout
   VIVADO_BIN                        Vivado executable used by the external batch flow
 EOF
 }
@@ -52,7 +52,7 @@ if ! command -v "${PYTHON_BIN}" >/dev/null 2>&1; then
 fi
 
 if [[ ! -d "${EXTERNAL_REPO}" ]]; then
-  echo "ERROR: external CNN_FPGA repo not found: ${EXTERNAL_REPO}" >&2
+  echo "ERROR: external MAC_ARRAY_FPGA repo not found: ${EXTERNAL_REPO}" >&2
   exit 1
 fi
 
@@ -89,4 +89,3 @@ if [[ "${INIT_DB}" == "1" ]]; then
 fi
 
 echo "bootstrap_status=ok"
-

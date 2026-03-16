@@ -1,0 +1,21 @@
+{
+  "candidate_id": "mac_shared_4x4_sf2_dw16",
+  "source": "mac_array_fpga_first_study",
+  "created_at": "2026-03-16T00:00:00Z",
+  "parameters": {
+    "ARCH_VARIANT": 1,
+    "ARRAY_M": 4,
+    "ARRAY_N": 4,
+    "CLUSTER_SIZE": 4,
+    "SHARE_FACTOR": 2,
+    "DATA_WIDTH": 16,
+    "FRAC_BITS": 8,
+    "ACC_WIDTH": 32,
+    "PIPE_STAGES": 1,
+    "TILE_K": 4,
+    "INPUT_MEM_DEPTH": 64,
+    "OUTPUT_MEM_DEPTH": 64
+  },
+  "notes": "Hypothesis: shared 4x4 with SHARE_FACTOR=2 should reduce physical MAC duplication inside each cluster, but the added muxing and phased scheduling may worsen timing and certainly increase latency cycles for the same deterministic workload.",
+  "tags": ["mac-array", "shared", "sf2", "first-study"]
+}

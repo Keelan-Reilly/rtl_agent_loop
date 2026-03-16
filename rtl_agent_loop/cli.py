@@ -9,7 +9,7 @@ from .controller import Controller
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Deterministic FPGA DSE controller for CNN_FPGA")
+    parser = argparse.ArgumentParser(description="Deterministic FPGA DSE controller for external accelerator studies")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     subparsers.add_parser("init-db", help="Initialize the SQLite database")

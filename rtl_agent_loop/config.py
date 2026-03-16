@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from .models import ALLOWED_CONV_VARIANTS, CandidateManifest, OPTIONAL_PARAMETER_KEYS, REQUIRED_PARAMETER_KEYS
+from .models import ALLOWED_ARCH_VARIANTS, CandidateManifest, OPTIONAL_PARAMETER_KEYS, REQUIRED_PARAMETER_KEYS
 from .paths import DEFAULT_SCORE_WEIGHTS_PATH, DEFAULT_SEARCH_SPACE_PATH
 
 
@@ -48,7 +48,7 @@ def validate_manifest(manifest_data: dict[str, Any], manifest_path: Path, search
         raise ValidationError(f"Unsupported parameters in manifest: {', '.join(unsupported)}")
 
     search_space_def = search_space["search_space"]
-    for key in ("DENSE_OUT_PAR", "DATA_WIDTH", "FRAC_BITS", "CONV_CHANNEL_PAR"):
+    for key in REQUIRED_PARAMETER_KEYS:
         value = parameters[key]
         if not isinstance(value, int):
             raise ValidationError(f"{key} must be an integer")
@@ -56,25 +56,37 @@ def validate_manifest(manifest_data: dict[str, Any], manifest_path: Path, search
         if value not in allowed:
             raise ValidationError(f"{key}={value} is outside allowed set {allowed}")
 
-    if "DENSE_SPLIT_MAC_PIPELINE" in parameters:
-        value = parameters["DENSE_SPLIT_MAC_PIPELINE"]
-        if not isinstance(value, int):
-            raise ValidationError("DENSE_SPLIT_MAC_PIPELINE must be an integer")
-        allowed = search_space_def["DENSE_SPLIT_MAC_PIPELINE"]["allowed"]
-        if value not in allowed:
-            raise ValidationError(f"DENSE_SPLIT_MAC_PIPELINE={value} is outside allowed set {allowed}")
-
-    conv_variant = parameters["CONV_VARIANT"]
-    if conv_variant not in ALLOWED_CONV_VARIANTS:
-        raise ValidationError(
-            f"CONV_VARIANT must be one of {sorted(ALLOWED_CONV_VARIANTS)}, got {conv_variant!r}"
-        )
-    allowed_variants = search_space_def["CONV_VARIANT"]["allowed"]
-    if conv_variant not in allowed_variants:
-        raise ValidationError(f"CONV_VARIANT={conv_variant!r} is outside allowed set {allowed_variants}")
+    arch_variant = parameters["ARCH_VARIANT"]
+    if arch_variant not in ALLOWED_ARCH_VARIANTS:
+        raise ValidationError(f"ARCH_VARIANT must be one of {sorted(ALLOWED_ARCH_VARIANTS)}, got {arch_variant!r}")
 
     if parameters["FRAC_BITS"] >= parameters["DATA_WIDTH"]:
         raise ValidationError("FRAC_BITS must be strictly less than DATA_WIDTH")
+
+    if parameters["ACC_WIDTH"] <= parameters["DATA_WIDTH"]:
+        raise ValidationError("ACC_WIDTH must be strictly greater than DATA_WIDTH")
+
+    if parameters["ARCH_VARIANT"] != 1 and parameters["SHARE_FACTOR"] != 1:
+        raise ValidationError("SHARE_FACTOR must be 1 for baseline and replicated variants")
+
+    if parameters["ARCH_VARIANT"] == 1 and parameters["SHARE_FACTOR"] < 2:
+        raise ValidationError("Shared variants require SHARE_FACTOR >= 2")
+
+    if parameters["CLUSTER_SIZE"] > max(parameters["ARRAY_M"], parameters["ARRAY_N"]):
+        raise ValidationError("CLUSTER_SIZE must be <= max(ARRAY_M, ARRAY_N)")
+
+    required_input_depth = max(
+        parameters["ARRAY_M"] * parameters["TILE_K"],
+        parameters["ARRAY_N"] * parameters["TILE_K"],
+    )
+    if parameters["INPUT_MEM_DEPTH"] < required_input_depth:
+        raise ValidationError(
+            f"INPUT_MEM_DEPTH must be >= {required_input_depth} for the selected ARRAY_M/ARRAY_N/TILE_K"
+        )
+
+    required_output_depth = parameters["ARRAY_M"] * parameters["ARRAY_N"]
+    if parameters["OUTPUT_MEM_DEPTH"] < required_output_depth:
+        raise ValidationError(f"OUTPUT_MEM_DEPTH must be >= {required_output_depth} for the selected output tile")
 
     if not isinstance(manifest_data["tags"], list) or not all(isinstance(tag, str) for tag in manifest_data["tags"]):
         raise ValidationError("tags must be a list of strings")

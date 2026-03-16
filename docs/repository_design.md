@@ -179,6 +179,7 @@ That means a candidate can currently be in a pending or failed summary state and
   - `DENSE_OUT_PAR`
   - `DATA_WIDTH`
   - `FRAC_BITS`
+  - `CONV_CHANNEL_PAR`
   - `CONV_VARIANT`
 - optional parameters:
   - `DENSE_SPLIT_MAC_PIPELINE`
@@ -384,6 +385,7 @@ Implementation details:
 - reads `external/CNN_FPGA/hdl/top_level.sv`
 - parses the `top_level` parameter block with a regex
 - collects searched generics from the manifest for:
+  - `CONV_CHANNEL_PAR`
   - `DATA_WIDTH`
   - `DENSE_OUT_PAR`
   - `FRAC_BITS`
@@ -513,6 +515,7 @@ Current active allowed parameters:
 - `DENSE_OUT_PAR`: `[1, 2, 5, 10]`
 - `DATA_WIDTH`: `[12, 16]`
 - `FRAC_BITS`: `[6, 7]`
+- `CONV_CHANNEL_PAR`: `[1, 2, 4]`
 - `DENSE_SPLIT_MAC_PIPELINE`: `[0, 1]`
 - `CONV_VARIANT`: `["baseline", "pipelined"]`
 
@@ -632,6 +635,7 @@ Supporting notes:
 - [`docs/integration_notes.md`](/home/keelan/rtl_agent_loop/docs/integration_notes.md): known unresolved integration hooks
 - [`docs/measured_dse_summary.md`](/home/keelan/rtl_agent_loop/docs/measured_dse_summary.md): measured results summary
 - [`docs/dense2_lineage_case_study.md`](/home/keelan/rtl_agent_loop/docs/dense2_lineage_case_study.md): a concrete lineage analysis note
+- [`docs/conv_parallelism_experiment.md`](/home/keelan/rtl_agent_loop/docs/conv_parallelism_experiment.md): bounded convolution-channel parallelism experiment summary
 
 ## 12. Prompt Files
 
@@ -672,20 +676,19 @@ That is not a bug in the ranking code; it is how artifact resolution is intentio
 
 This repo currently has a few important mismatches between files.
 
-### 14.1 Candidate schema drift
+### 14.1 Candidate schema migration side effect
 
-Several candidate manifests in [`candidates/`](/home/keelan/rtl_agent_loop/candidates) now include `CONV_CHANNEL_PAR`, for example:
+`CONV_CHANNEL_PAR` is now a real required searched parameter in:
 
-- [`conv1_dw12_fb6.json`](/home/keelan/rtl_agent_loop/candidates/conv1_dw12_fb6.json)
-- [`dense1_dw12_fb6_base.json`](/home/keelan/rtl_agent_loop/candidates/dense1_dw12_fb6_base.json)
-
-But the current validator in [`rtl_agent_loop/config.py`](/home/keelan/rtl_agent_loop/rtl_agent_loop/config.py) does not permit `CONV_CHANNEL_PAR`, and [`config/search_space.json`](/home/keelan/rtl_agent_loop/config/search_space.json) does not define it.
+- [`rtl_agent_loop/config.py`](/home/keelan/rtl_agent_loop/rtl_agent_loop/config.py)
+- [`rtl_agent_loop/models.py`](/home/keelan/rtl_agent_loop/rtl_agent_loop/models.py)
+- [`config/search_space.json`](/home/keelan/rtl_agent_loop/config/search_space.json)
 
 Practical consequence:
 
-- those manifests are present in the tree
-- but they are not valid under the current implemented manifest schema
-- the already-registered dense candidates in SQLite/runs were registered from earlier canonical copies that omit `CONV_CHANNEL_PAR`
+- newly authored manifests must include `CONV_CHANNEL_PAR`
+- existing source manifests in [`candidates/`](/home/keelan/rtl_agent_loop/candidates) were backfilled with `CONV_CHANNEL_PAR = 1` to preserve baseline semantics
+- some older already-registered canonical manifest copies under `runs/<candidate_id>/candidate_manifest.json` may still reflect pre-migration parameter sets because registration captures an immutable copy at registration time
 
 ### 14.2 CLI surface drift
 
@@ -705,7 +708,22 @@ Practical consequence:
 - historical docs may reflect earlier measured runs
 - current ranking is driven by the newest passing canonical artifacts, not by those older summaries
 
-### 14.4 `CONV_VARIANT` orchestration-only status
+### 14.4 `CONV_CHANNEL_PAR` is real, but currently network-limited
+
+`CONV_CHANNEL_PAR` is now wired into the external RTL:
+
+- [`external/CNN_FPGA/hdl/top_level.sv`](/home/keelan/rtl_agent_loop/external/CNN_FPGA/hdl/top_level.sv)
+- [`external/CNN_FPGA/hdl/conv2d.sv`](/home/keelan/rtl_agent_loop/external/CNN_FPGA/hdl/conv2d.sv)
+
+The current implementation mirrors IFMAP storage into `CONV_CHANNEL_PAR` read banks and performs grouped channel accumulation in `conv2d`.
+
+Practical consequence:
+
+- the knob is synthesis-real and affects LUT/DSP/BRAM/timing
+- the current checked-in accelerator still fixes `IN_CHANNELS = 1` at top level
+- the completed experiment in [`docs/conv_parallelism_experiment.md`](/home/keelan/rtl_agent_loop/docs/conv_parallelism_experiment.md) shows no end-to-end latency or throughput improvement for `CONV_CHANNEL_PAR = 1, 2, 4` in this network, even though convolution remains the dominant stage
+
+### 14.5 `CONV_VARIANT` orchestration-only status
 
 `CONV_VARIANT` is accepted and stored across the system, but both stage wrappers still treat it as an orchestration-level field, not as a real hardware control hook into the external repo.
 
@@ -729,7 +747,7 @@ This repo does not currently implement:
 - artifact garbage collection
 - a formal schema migration framework beyond additive SQL helpers
 - direct DB-backed storage for best-candidate pointers
-- full manifest/schema support for the newer convolution-parallelism candidates now present in `candidates/`
+- any controller-managed abstraction for patching or versioning external RTL changes beyond direct repo edits
 
 ## 16. Recommended Mental Model
 
