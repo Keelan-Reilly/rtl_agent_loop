@@ -6,9 +6,9 @@
     "DENSE_OUT_PAR": 2,
     "DATA_WIDTH": 16,
     "FRAC_BITS": 7,
+    "CONV_CHANNEL_PAR": 1,
     "CONV_VARIANT": "baseline"
   },
   "notes": "Baseline architecture point for controller bring-up.",
   "tags": ["baseline", "manual"]
 }
-

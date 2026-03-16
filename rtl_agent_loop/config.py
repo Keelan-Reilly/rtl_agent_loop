@@ -48,7 +48,7 @@ def validate_manifest(manifest_data: dict[str, Any], manifest_path: Path, search
         raise ValidationError(f"Unsupported parameters in manifest: {', '.join(unsupported)}")
 
     search_space_def = search_space["search_space"]
-    for key in ("DENSE_OUT_PAR", "DATA_WIDTH", "FRAC_BITS"):
+    for key in ("DENSE_OUT_PAR", "DATA_WIDTH", "FRAC_BITS", "CONV_CHANNEL_PAR"):
         value = parameters[key]
         if not isinstance(value, int):
             raise ValidationError(f"{key} must be an integer")

@@ -1,0 +1,14 @@
+{
+  "candidate_id": "conv4_dw12_fb6",
+  "source": "manual",
+  "created_at": "2026-03-16T00:00:00Z",
+  "parameters": {
+    "DENSE_OUT_PAR": 1,
+    "DATA_WIDTH": 12,
+    "FRAC_BITS": 6,
+    "CONV_CHANNEL_PAR": 4,
+    "CONV_VARIANT": "baseline"
+  },
+  "notes": "Bounded convolution-parallelism experiment child. Hypothesis: a 4-lane conv channel group maximizes the requested architectural scaling range and will show the clearest area/timing tradeoff, with benefits only if the deployed accelerator can keep those lanes fed.",
+  "tags": ["conv_parallelism", "architecture_scaling", "manual"]
+}

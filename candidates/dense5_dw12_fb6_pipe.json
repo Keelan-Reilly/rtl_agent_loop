@@ -6,6 +6,7 @@
     "DENSE_OUT_PAR": 5,
     "DATA_WIDTH": 12,
     "FRAC_BITS": 6,
+    "CONV_CHANNEL_PAR": 1,
     "CONV_VARIANT": "pipelined"
   },
   "notes": "Fast-fail verification candidate.",

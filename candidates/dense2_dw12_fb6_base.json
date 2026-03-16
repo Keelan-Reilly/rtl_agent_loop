@@ -6,6 +6,7 @@
     "DENSE_OUT_PAR": 2,
     "DATA_WIDTH": 12,
     "FRAC_BITS": 6,
+    "CONV_CHANNEL_PAR": 1,
     "CONV_VARIANT": "baseline"
   },
   "notes": "Hypothesis: this point increases dense-stage parallelism relative to dense1_dw12_fb6_base while preserving the lower 12-bit precision that enabled timing closure there. Expected tradeoff: better throughput and lower dense latency than dense1_dw12_fb6_base, with some increase in LUT/FF/DSP usage and tighter timing margin. Compared with dense2_dw16_fb7_base, this keeps the same dense parallelism but should materially reduce resource pressure and improve the chance of maintaining timing closure because DATA_WIDTH and FRAC_BITS remain reduced.",

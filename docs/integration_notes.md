@@ -16,8 +16,15 @@ This repo intentionally stops short of inventing `CNN_FPGA`-specific details tha
   - `tb/tb_full_pipeline.cpp`
   - `weights/input_image.mem`
   - Vivado and Verilator helper scripts
-- The lint gate validates the actual searched generics currently exposed by `top_level`: `DATA_WIDTH`, `FRAC_BITS`, and `DENSE_OUT_PAR`.
+- The lint gate validates the actual searched generics currently exposed by `top_level`: `DATA_WIDTH`, `FRAC_BITS`, `DENSE_OUT_PAR`, and `CONV_CHANNEL_PAR`.
 - TODO: decide whether to keep lint-only as the v1 gate or replace it with a lightweight compile/regression target later.
+
+## `CONV_CHANNEL_PAR`
+
+- `CONV_CHANNEL_PAR` is accepted, validated, stored, and forwarded through fast verify, Vivado batch, and Verilator performance collection.
+- The external RTL now exposes it as a synthesis generic on `top_level` and `conv2d`.
+- The current implementation realizes the knob by mirroring IFMAP storage into `CONV_CHANNEL_PAR` deterministic read banks, then summing up to that many channel products per convolution tap group.
+- Important current-system limitation: the checked-in accelerator still uses `IN_CHANNELS=1` at `top_level`, so wider `CONV_CHANNEL_PAR` points currently measure synthesis/timing/resource effects but do not reduce end-to-end latency for the shipped network.
 
 ## `CONV_VARIANT`
 

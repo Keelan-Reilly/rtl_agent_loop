@@ -1,0 +1,14 @@
+{
+  "candidate_id": "conv1_dw12_fb6",
+  "source": "manual",
+  "created_at": "2026-03-16T00:00:00Z",
+  "parameters": {
+    "DENSE_OUT_PAR": 1,
+    "DATA_WIDTH": 12,
+    "FRAC_BITS": 6,
+    "CONV_CHANNEL_PAR": 1,
+    "CONV_VARIANT": "baseline"
+  },
+  "notes": "Bounded convolution-parallelism experiment root. Hypothesis: preserving the current single-channel baseline at 12-bit precision provides the control point for measuring whether extra convolution input-channel parallel hardware changes latency, throughput, area, or timing in the current accelerator integration.",
+  "tags": ["conv_parallelism", "baseline", "manual"]
+}
