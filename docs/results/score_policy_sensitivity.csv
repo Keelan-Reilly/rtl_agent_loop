@@ -2,20 +2,40 @@ policy_name,policy_label,candidate_id,rank,winner,total_score,latency_cycles,lut
 default_current,Default current policy,mac_shared_4x4_sf2_dw16,1,mac_shared_4x4_sf2_dw16,-9.066,26.0,695.0,8.0,2.024,full,full_implementation
 default_current,Default current policy,mac_baseline_4x4_dw16,2,mac_shared_4x4_sf2_dw16,-10.992,22.0,689.0,16.0,3.028,full,full_implementation
 default_current,Default current policy,mac_replicated_4x4_c2_dw16,3,mac_shared_4x4_sf2_dw16,-22.21,22.0,1212.0,32.0,4.034,full,full_implementation
-default_current,Default current policy,mac_baseline_8x4_dw16,4,mac_shared_4x4_sf2_dw16,-28.72,38.0,1408.0,32.0,2.851,full,full_implementation
+default_current,Default current policy,mac_shared_8x4_sf2_dw16,4,mac_shared_4x4_sf2_dw16,-23.542,42.0,1415.0,16.0,1.477,full,full_implementation
+default_current,Default current policy,mac_baseline_8x4_dw16,5,mac_shared_4x4_sf2_dw16,-28.72,38.0,1408.0,32.0,2.851,full,full_implementation
+default_current,Default current policy,mac_shared_8x8_sf2_dw16,6,mac_shared_4x4_sf2_dw16,-48.834,74.0,2749.0,32.0,1.571,full,full_implementation
+default_current,Default current policy,mac_replicated_8x4_c2_dw16,7,mac_shared_4x4_sf2_dw16,-56.002,38.0,2453.0,64.0,2.435,full,full_implementation
+default_current,Default current policy,mac_baseline_8x8_dw16,8,mac_shared_4x4_sf2_dw16,-64.802,70.0,2730.0,64.0,1.49,full,full_implementation
 latency_priority,Latency-priority policy,mac_shared_4x4_sf2_dw16,1,mac_shared_4x4_sf2_dw16,-2.8499999999999996,26.0,695.0,8.0,2.024,full,full_implementation
 latency_priority,Latency-priority policy,mac_baseline_4x4_dw16,2,mac_shared_4x4_sf2_dw16,-2.9469999999999996,22.0,689.0,16.0,3.028,full,full_implementation
 latency_priority,Latency-priority policy,mac_replicated_4x4_c2_dw16,3,mac_shared_4x4_sf2_dw16,-5.909999999999999,22.0,1212.0,32.0,4.034,full,full_implementation
-latency_priority,Latency-priority policy,mac_baseline_8x4_dw16,4,mac_shared_4x4_sf2_dw16,-9.085,38.0,1408.0,32.0,2.851,full,full_implementation
+latency_priority,Latency-priority policy,mac_shared_8x4_sf2_dw16,4,mac_shared_4x4_sf2_dw16,-8.16,42.0,1415.0,16.0,1.477,full,full_implementation
+latency_priority,Latency-priority policy,mac_baseline_8x4_dw16,5,mac_shared_4x4_sf2_dw16,-9.085,38.0,1408.0,32.0,2.851,full,full_implementation
+latency_priority,Latency-priority policy,mac_shared_8x8_sf2_dw16,6,mac_shared_4x4_sf2_dw16,-17.162,74.0,2749.0,32.0,1.571,full,full_implementation
+latency_priority,Latency-priority policy,mac_replicated_8x4_c2_dw16,7,mac_shared_4x4_sf2_dw16,-17.436000000000003,38.0,2453.0,64.0,2.435,full,full_implementation
+latency_priority,Latency-priority policy,mac_baseline_8x8_dw16,8,mac_shared_4x4_sf2_dw16,-21.906000000000002,70.0,2730.0,64.0,1.49,full,full_implementation
 area_priority,Area-priority policy,mac_shared_4x4_sf2_dw16,1,mac_shared_4x4_sf2_dw16,-23.096,26.0,695.0,8.0,2.024,full,full_implementation
 area_priority,Area-priority policy,mac_baseline_4x4_dw16,2,mac_shared_4x4_sf2_dw16,-29.967000000000006,22.0,689.0,16.0,3.028,full,full_implementation
-area_priority,Area-priority policy,mac_replicated_4x4_c2_dw16,3,mac_shared_4x4_sf2_dw16,-55.421,22.0,1212.0,32.0,4.034,full,full_implementation
-area_priority,Area-priority policy,mac_baseline_8x4_dw16,4,mac_shared_4x4_sf2_dw16,-63.78399999999999,38.0,1408.0,32.0,2.851,full,full_implementation
+area_priority,Area-priority policy,mac_shared_8x4_sf2_dw16,3,mac_shared_4x4_sf2_dw16,-49.300000000000004,42.0,1415.0,16.0,1.477,full,full_implementation
+area_priority,Area-priority policy,mac_replicated_4x4_c2_dw16,4,mac_shared_4x4_sf2_dw16,-55.421,22.0,1212.0,32.0,4.034,full,full_implementation
+area_priority,Area-priority policy,mac_baseline_8x4_dw16,5,mac_shared_4x4_sf2_dw16,-63.78399999999999,38.0,1408.0,32.0,2.851,full,full_implementation
+area_priority,Area-priority policy,mac_shared_8x8_sf2_dw16,6,mac_shared_4x4_sf2_dw16,-98.06400000000001,74.0,2749.0,32.0,1.571,full,full_implementation
+area_priority,Area-priority policy,mac_replicated_8x4_c2_dw16,7,mac_shared_4x4_sf2_dw16,-117.1,38.0,2453.0,64.0,2.435,full,full_implementation
+area_priority,Area-priority policy,mac_baseline_8x8_dw16,8,mac_shared_4x4_sf2_dw16,-129.76299999999998,70.0,2730.0,64.0,1.49,full,full_implementation
 timing_priority,Timing-priority policy,mac_replicated_4x4_c2_dw16,1,mac_replicated_4x4_c2_dw16,11.877,22.0,1212.0,32.0,4.034,full,full_implementation
 timing_priority,Timing-priority policy,mac_baseline_4x4_dw16,2,mac_replicated_4x4_c2_dw16,11.133,22.0,689.0,16.0,3.028,full,full_implementation
 timing_priority,Timing-priority policy,mac_shared_4x4_sf2_dw16,3,mac_replicated_4x4_c2_dw16,6.682,26.0,695.0,8.0,2.024,full,full_implementation
 timing_priority,Timing-priority policy,mac_baseline_8x4_dw16,4,mac_replicated_4x4_c2_dw16,2.9030000000000022,38.0,1408.0,32.0,2.851,full,full_implementation
+timing_priority,Timing-priority policy,mac_shared_8x4_sf2_dw16,5,mac_replicated_4x4_c2_dw16,-2.171000000000001,42.0,1415.0,16.0,1.477,full,full_implementation
+timing_priority,Timing-priority policy,mac_replicated_8x4_c2_dw16,6,mac_replicated_4x4_c2_dw16,-10.173000000000002,38.0,2453.0,64.0,2.435,full,full_implementation
+timing_priority,Timing-priority policy,mac_shared_8x8_sf2_dw16,7,mac_replicated_4x4_c2_dw16,-12.213000000000003,74.0,2749.0,32.0,1.571,full,full_implementation
+timing_priority,Timing-priority policy,mac_baseline_8x8_dw16,8,mac_replicated_4x4_c2_dw16,-19.021,70.0,2730.0,64.0,1.49,full,full_implementation
 balanced_no_throughput,Balanced no-throughput policy,mac_shared_4x4_sf2_dw16,1,mac_shared_4x4_sf2_dw16,-7.566000000000001,26.0,695.0,8.0,2.024,full,full_implementation
 balanced_no_throughput,Balanced no-throughput policy,mac_baseline_4x4_dw16,2,mac_shared_4x4_sf2_dw16,-8.794,22.0,689.0,16.0,3.028,full,full_implementation
 balanced_no_throughput,Balanced no-throughput policy,mac_replicated_4x4_c2_dw16,3,mac_shared_4x4_sf2_dw16,-17.068999999999996,22.0,1212.0,32.0,4.034,full,full_implementation
-balanced_no_throughput,Balanced no-throughput policy,mac_baseline_8x4_dw16,4,mac_shared_4x4_sf2_dw16,-22.643499999999996,38.0,1408.0,32.0,2.851,full,full_implementation
+balanced_no_throughput,Balanced no-throughput policy,mac_shared_8x4_sf2_dw16,4,mac_shared_4x4_sf2_dw16,-19.1765,42.0,1415.0,16.0,1.477,full,full_implementation
+balanced_no_throughput,Balanced no-throughput policy,mac_baseline_8x4_dw16,5,mac_shared_4x4_sf2_dw16,-22.643499999999996,38.0,1408.0,32.0,2.851,full,full_implementation
+balanced_no_throughput,Balanced no-throughput policy,mac_shared_8x8_sf2_dw16,6,mac_shared_4x4_sf2_dw16,-39.54350000000001,74.0,2749.0,32.0,1.571,full,full_implementation
+balanced_no_throughput,Balanced no-throughput policy,mac_replicated_8x4_c2_dw16,7,mac_shared_4x4_sf2_dw16,-42.8275,38.0,2453.0,64.0,2.435,full,full_implementation
+balanced_no_throughput,Balanced no-throughput policy,mac_baseline_8x8_dw16,8,mac_shared_4x4_sf2_dw16,-50.697,70.0,2730.0,64.0,1.49,full,full_implementation

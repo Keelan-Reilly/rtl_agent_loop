@@ -16,6 +16,7 @@ DEFAULT_CASES = [
     {"name": "baseline_8x8", "ARCH_VARIANT": 0, "ARRAY_M": 8, "ARRAY_N": 8, "CLUSTER_SIZE": 4, "SHARE_FACTOR": 1},
     {"name": "shared_4x4_sf2", "ARCH_VARIANT": 1, "ARRAY_M": 4, "ARRAY_N": 4, "CLUSTER_SIZE": 4, "SHARE_FACTOR": 2},
     {"name": "shared_8x4_sf2", "ARCH_VARIANT": 1, "ARRAY_M": 8, "ARRAY_N": 4, "CLUSTER_SIZE": 4, "SHARE_FACTOR": 2},
+    {"name": "shared_8x8_sf2", "ARCH_VARIANT": 1, "ARRAY_M": 8, "ARRAY_N": 8, "CLUSTER_SIZE": 4, "SHARE_FACTOR": 2},
     {"name": "replicated_4x4_c2", "ARCH_VARIANT": 2, "ARRAY_M": 4, "ARRAY_N": 4, "CLUSTER_SIZE": 2, "SHARE_FACTOR": 1},
     {"name": "replicated_8x4_c2", "ARCH_VARIANT": 2, "ARRAY_M": 8, "ARRAY_N": 4, "CLUSTER_SIZE": 2, "SHARE_FACTOR": 1},
     {"name": "replicated_8x8_c2", "ARCH_VARIANT": 2, "ARRAY_M": 8, "ARRAY_N": 8, "CLUSTER_SIZE": 2, "SHARE_FACTOR": 1},
