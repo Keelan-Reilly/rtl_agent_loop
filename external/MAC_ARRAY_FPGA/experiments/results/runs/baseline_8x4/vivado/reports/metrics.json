@@ -1,11 +1,12 @@
 {
   "success": true,
-  "lut": null,
+  "lut": 1408.0,
   "ff": 2152.0,
   "dsp": 32.0,
   "bram": 0.0,
   "wns_ns": 2.851,
   "fmax_mhz_est": 139.87970345502868,
+  "report_kind": "implementation",
   "utilization_report": "/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/experiments/results/runs/baseline_8x4/vivado/reports/utilization_impl.rpt",
   "timing_report": "/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA/experiments/results/runs/baseline_8x4/vivado/reports/timing_impl.rpt"
 }

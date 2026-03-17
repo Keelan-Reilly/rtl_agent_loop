@@ -117,6 +117,7 @@ for key in sorted(params):
     command.extend(["--parameter", f"{key}={params[key]}"])
 
 status = "passed"
+outcome_classification = "full_pass"
 message = "Verilator performance collection completed successfully."
 returncode = 0
 parsed_metrics = {}
@@ -138,6 +139,7 @@ with log_path.open("w") as logf:
         logf.write(f"  {key}={value}\n")
     if not all(checks.values()):
         status = "failed"
+        outcome_classification = "failed_preflight"
         message = "Verilator wrapper preflight failed."
         returncode = 2
     else:
@@ -145,17 +147,21 @@ with log_path.open("w") as logf:
         returncode = proc.returncode
         if returncode != 0:
             status = "failed"
+            outcome_classification = "failed_tool"
             message = f"Verilator performance collection failed with exit code {returncode}"
         elif perf_json.exists():
             parsed_metrics = json.loads(perf_json.read_text())
         else:
             status = "failed"
+            outcome_classification = "missing_result"
             message = "Verilator performance collection completed but performance.json was not found."
             returncode = 3
 
 payload = {
     "stage": "verilator_perf",
     "status": status,
+    "passed": status == "passed",
+    "outcome_classification": outcome_classification,
     "message": message,
     "candidate_id": manifest.get("candidate_id"),
     "parameters": manifest.get("parameters", {}),

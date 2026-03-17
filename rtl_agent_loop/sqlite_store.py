@@ -538,6 +538,19 @@ class SQLiteStore:
                 (candidate_id, stage_name),
             ).fetchone()
 
+    def list_run_stages_with_results(self, candidate_id: str, stage_name: str) -> list[sqlite3.Row]:
+        with self.connect() as conn:
+            return conn.execute(
+                """
+                SELECT * FROM run_stages
+                WHERE candidate_id = ?
+                  AND stage_name = ?
+                  AND result_path IS NOT NULL
+                ORDER BY COALESCE(ended_at, '') DESC, run_id DESC
+                """,
+                (candidate_id, stage_name),
+            ).fetchall()
+
     def state_history(self, candidate_id: str) -> list[sqlite3.Row]:
         with self.connect() as conn:
             return conn.execute(

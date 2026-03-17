@@ -146,7 +146,7 @@ Key public methods:
 - `run_pending()`: finds `registered` candidates and runs them
 - `get_status()`: returns candidate, latest run, state history, optional lineage, and optional run details
 - `list_candidates()`: filterable listing by parent/root/leaf status
-- `compute_candidate_score()`: computes a score either from an explicit run dir or by resolving the latest successful canonical artifacts
+- `compute_candidate_score()`: computes a score either from an explicit run dir or by resolving the latest measurement-usable canonical artifacts
 - `rank_candidates()`: resolves scoreable artifacts for many candidates, disqualifies incomplete ones, sorts by numeric score, and optionally writes a Markdown report
 - `link_lineage()`: attaches an already-registered child candidate to a parent
 - `set_best_candidates()` and `get_best_candidates()`: maintain a small JSON pointer in `var/best_candidates.json`
@@ -154,16 +154,20 @@ Key public methods:
 The most important internal helpers are:
 
 - `_run_stage()`: maps stage names to wrapper scripts, captures a controller command log, loads the stage JSON, and normalizes missing-result failures
-- `_resolve_candidate_stage_artifacts()`: chooses the latest successful `vivado` and `verilator_perf` artifacts per candidate, unless the current run already produced a passing payload
+- `_resolve_candidate_stage_artifacts()`: chooses the latest measurement-usable `vivado` and `verilator_perf` artifacts per candidate, unless the current run already produced usable payloads
 - `_score_candidate_from_resolved_artifacts()`: scores from resolved artifacts and optionally applies the stage-failure penalty
 - `_selected_stage_names()`: expands a stage range into concrete stage names
 - `_latest_candidate_per_root()`: implements `--latest-only-per-root` ranking behavior
 
-Important design choice:
+Important design choices:
 
 - scoring is artifact-resolution based, not latest-run based
+- Vivado resolution now prefers the newest measurement-usable evidence, including a newer `synth_only` payload over an older full implementation payload
 
-That means a candidate can currently be in a pending or failed summary state and still rank successfully if older passing canonical artifacts exist.
+Practical consequence:
+
+- a candidate can rank from older canonical artifacts when newer runs are junk or missing
+- a candidate can also rank from newer synth-only Vivado evidence, but that evidence is explicitly marked provisional and carries the stage-failed penalty
 
 ## 6. Active Search Space And Manifest Validation
 

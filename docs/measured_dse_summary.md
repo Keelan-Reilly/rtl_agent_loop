@@ -1,5 +1,7 @@
 # Measured DSE Summary
 
+Legacy note: this document summarizes the earlier CNN-oriented study space and is preserved as historical evidence. The active architecture study now targets `external/MAC_ARRAY_FPGA`.
+
 This note summarizes the currently measured design-space exploration points available in `rtl_agent_loop` from existing implementation and Verilator performance artifacts.
 
 Source of truth for the table below:

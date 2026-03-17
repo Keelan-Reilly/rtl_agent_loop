@@ -1,5 +1,7 @@
 # Dense2 Canonical Lineage Case Study
 
+Legacy note: this is a historical CNN-era case study, not the current active MAC-array exploration path.
+
 This note summarizes the canonical parent/child experiment for `dense2_dw12_fb6_base` and `dense2_dw12_fb6_base_r1` using only measured canonical artifacts under `runs/`.
 
 ## Candidates

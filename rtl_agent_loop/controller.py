@@ -5,7 +5,14 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from .config import ValidationError, load_json, load_score_weights, load_search_space, validate_manifest
+from .config import (
+    ValidationError,
+    detect_parameter_family,
+    load_json,
+    load_score_weights,
+    load_search_space,
+    validate_manifest,
+)
 from .models import CandidateManifest, StageResult
 from .paths import BEST_CANDIDATES_PATH, DEFAULT_SCORE_WEIGHTS_PATH, RUNS_DIR, SCRIPTS_DIR, VAR_DIR
 from .scoring import score_candidate
@@ -355,14 +362,17 @@ class Controller:
         candidate = self.store.get_candidate(candidate_id)
         if candidate is None:
             raise ValidationError(f"Candidate {candidate_id!r} is not registered")
+        candidate_view = self._candidate_view(dict(candidate))
         run = self.store.latest_run(candidate_id)
         history = self.store.state_history(candidate_id)
         score = self.store.latest_score(candidate_id)
+        resolved_artifacts = self._resolve_candidate_stage_artifacts(candidate_id)
         result: dict[str, Any] = {
-            "candidate": dict(candidate),
+            "candidate": candidate_view,
             "latest_run": dict(run) if run else None,
             "state_history": [dict(row) for row in history],
             "latest_score": dict(score) if score else None,
+            "resolved_artifact_summary": self._resolved_artifact_summary(candidate_id, run, resolved_artifacts),
         }
         if run is not None:
             result["latest_run_stages"] = [dict(row) for row in self.store.list_run_stages(run["run_id"])]
@@ -393,16 +403,20 @@ class Controller:
         parent_candidate_id: str | None = None,
         lineage_root_candidate_id: str | None = None,
         leaf_only: bool = False,
+        active_schema_only: bool = False,
     ) -> list[dict[str, Any]]:
         self.store.init_db()
-        return [
-            dict(row)
+        candidates = [
+            self._candidate_view(dict(row))
             for row in self.store.list_candidates(
                 parent_candidate_id=parent_candidate_id,
                 lineage_root_candidate_id=lineage_root_candidate_id,
                 leaf_only=leaf_only,
             )
         ]
+        if active_schema_only:
+            candidates = [candidate for candidate in candidates if candidate["active_schema_compatible"]]
+        return candidates
 
     def compute_candidate_score(self, candidate_id: str, run_dir: Path | None = None) -> dict[str, Any]:
         self.store.init_db()
@@ -417,8 +431,8 @@ class Controller:
             vivado_payload = load_json(vivado_result_path) if vivado_result_path.exists() else {}
             perf_payload = load_json(perf_result_path) if perf_result_path.exists() else {}
             stage_failed = any(
-                payload and payload.get("status") != "passed"
-                for payload in (vivado_payload, perf_payload)
+                payload and not self._is_stage_payload_full_pass(stage_name, payload)
+                for stage_name, payload in (("vivado", vivado_payload), ("verilator_perf", perf_payload))
             )
             score = score_candidate(
                 self.score_weights,
@@ -439,13 +453,16 @@ class Controller:
         resolved_artifacts = self._resolve_candidate_stage_artifacts(candidate_id)
         return {
             "candidate_id": candidate_id,
-            "resolution_mode": "candidate_latest_successful_stage_artifacts",
+            "resolution_mode": "candidate_latest_measurement_artifacts",
             "run_dir": None,
             "vivado_result_path": resolved_artifacts["sources"]["vivado"]["result_path"],
             "perf_result_path": resolved_artifacts["sources"]["verilator_perf"]["result_path"],
-            "stage_failed": False,
+            "stage_failed": resolved_artifacts["stage_failed"],
             "score": resolved_artifacts["score"],
             "artifact_sources": resolved_artifacts["sources"],
+            "measurement_quality": resolved_artifacts["measurement_quality"],
+            "implementation_evidence": resolved_artifacts["implementation_evidence"],
+            "score_provisional": resolved_artifacts["score_provisional"],
         }
 
     def rank_candidates(
@@ -455,15 +472,18 @@ class Controller:
         lineage_root_candidate_id: str | None = None,
         latest_only_per_root: bool = False,
         leaf_only: bool = False,
+        active_schema_only: bool = False,
     ) -> dict[str, Any]:
         self.store.init_db()
         candidates = [
-            dict(row)
+            self._candidate_view(dict(row))
             for row in self.store.list_candidates(
                 lineage_root_candidate_id=lineage_root_candidate_id,
                 leaf_only=leaf_only,
             )
         ]
+        if active_schema_only:
+            candidates = [candidate for candidate in candidates if candidate["active_schema_compatible"]]
         if latest_only_per_root:
             candidates = list(self._latest_candidate_per_root(candidates).values())
 
@@ -484,7 +504,7 @@ class Controller:
                         "parent_candidate_id": candidate["parent_candidate_id"],
                         "lineage_root_candidate_id": candidate["lineage_root_candidate_id"],
                         "revision_kind": candidate["revision_kind"],
-                        "reason": "No successful canonical stage artifacts are available.",
+                        "reason": "No measurement-usable canonical stage artifacts are available.",
                     }
                 )
                 continue
@@ -524,6 +544,8 @@ class Controller:
                 {
                     "candidate_id": candidate_id,
                     "current_state": candidate["current_state"],
+                    "manifest_parameter_family": candidate["manifest_parameter_family"],
+                    "active_schema_compatible": candidate["active_schema_compatible"],
                     "parent_candidate_id": candidate["parent_candidate_id"],
                     "lineage_root_candidate_id": candidate["lineage_root_candidate_id"],
                     "revision_kind": candidate["revision_kind"],
@@ -533,8 +555,16 @@ class Controller:
                     "vivado_result_path": resolved_artifacts["sources"]["vivado"]["result_path"],
                     "perf_result_path": resolved_artifacts["sources"]["verilator_perf"]["result_path"],
                     "artifact_sources": resolved_artifacts["sources"],
+                    "artifact_provenance_note": self._artifact_provenance_note(
+                        self.store.latest_run(candidate_id),
+                        resolved_artifacts["sources"],
+                    ),
+                    "measurement_completeness": self._measurement_completeness(resolved_artifacts["sources"]),
+                    "measurement_quality": resolved_artifacts["measurement_quality"],
+                    "implementation_evidence": resolved_artifacts["implementation_evidence"],
+                    "score_provisional": resolved_artifacts["score_provisional"],
                     "timing_status": timing_status,
-                    "stage_failed": False,
+                    "stage_failed": resolved_artifacts["stage_failed"],
                     "score": score,
                 }
             )
@@ -649,6 +679,8 @@ class Controller:
             payload = {
                 "stage": stage_name,
                 "status": "failed",
+                "passed": False,
+                "outcome_classification": "missing_result",
                 "message": f"{stage_name} did not produce expected result file",
                 "command": shell_join(command),
                 "returncode": completed.returncode,
@@ -664,7 +696,7 @@ class Controller:
             result_path.write_text(json.dumps(payload, indent=2) + "\n")
         return StageResult(
             stage=stage_name,
-            passed=completed.returncode == 0 and payload.get("status") == "passed",
+            passed=self._stage_payload_passed(payload, completed.returncode),
             result_path=result_path,
             payload=payload,
         )
@@ -685,42 +717,60 @@ class Controller:
 
         for stage_name in ("vivado", "verilator_perf"):
             preferred_payload = preferred.get(stage_name, {})
-            if preferred_payload.get("status") == "passed" and preferred_payload.get("metrics"):
+            if self._is_stage_payload_measurement_usable(stage_name, preferred_payload):
                 payloads[stage_name] = preferred_payload
+                preferred_classification = self._classify_stage_payload(stage_name, preferred_payload)
                 sources[stage_name] = {
                     "source": "current_run",
                     "run_id": None,
                     "result_path": None,
+                    "stage_status": preferred_payload.get("status"),
+                    "outcome_classification": preferred_classification,
+                    "resolution_quality": self._resolution_quality(stage_name, preferred_classification),
                 }
                 continue
 
-            stage_row = self.store.latest_successful_run_stage(candidate_id, stage_name)
-            if stage_row is None or not stage_row["result_path"]:
+            stage_row, payload, classification = self._latest_measurement_stage(candidate_id, stage_name)
+            if stage_row is None or payload is None:
                 payloads[stage_name] = {}
                 sources[stage_name] = {
-                    "source": "candidate_latest_successful",
+                    "source": "candidate_latest_measurement",
                     "run_id": None,
                     "result_path": None,
+                    "stage_status": "missing",
+                    "outcome_classification": "missing",
+                    "resolution_quality": "missing",
                 }
                 continue
 
             result_path = Path(stage_row["result_path"])
-            payloads[stage_name] = load_json(result_path) if result_path.exists() else {}
+            payloads[stage_name] = payload
             sources[stage_name] = {
-                "source": "candidate_latest_successful",
+                "source": "candidate_latest_measurement",
                 "run_id": stage_row["run_id"],
                 "result_path": str(result_path),
+                "stage_status": stage_row["status"],
+                "outcome_classification": classification,
+                "resolution_quality": self._resolution_quality(stage_name, classification),
             }
 
+        measurement_quality = self._measurement_completeness(sources)
+        implementation_evidence = self._implementation_evidence(sources)
+        score_provisional = implementation_evidence != "full_implementation"
+        stage_failed = score_provisional
         score = score_candidate(
             self.score_weights,
             payloads["vivado"].get("metrics"),
             payloads["verilator_perf"].get("metrics"),
-            stage_failed=False,
+            stage_failed=stage_failed,
         )
         return {
             "payloads": payloads,
             "sources": sources,
+            "measurement_quality": measurement_quality,
+            "implementation_evidence": implementation_evidence,
+            "score_provisional": score_provisional,
+            "stage_failed": stage_failed,
             "score": score,
         }
 
@@ -759,6 +809,62 @@ class Controller:
                 latest[root_id] = candidate
         return latest
 
+    def _stage_payload_passed(self, payload: dict[str, Any], returncode: int) -> bool:
+        return returncode == 0 and self._is_stage_payload_full_pass(payload.get("stage"), payload)
+
+    def _classify_stage_payload(self, stage_name: str, payload: dict[str, Any]) -> str:
+        outcome = payload.get("outcome_classification")
+        if isinstance(outcome, str) and outcome:
+            return outcome
+        if payload.get("status") == "passed":
+            return "full_pass"
+        return "failed_tool"
+
+    def _is_stage_payload_full_pass(self, stage_name: str | None, payload: dict[str, Any]) -> bool:
+        if not payload:
+            return False
+        classification = self._classify_stage_payload(stage_name or "", payload)
+        return classification == "full_pass"
+
+    def _is_stage_payload_measurement_usable(self, stage_name: str, payload: dict[str, Any]) -> bool:
+        if not payload or not payload.get("metrics"):
+            return False
+        classification = self._classify_stage_payload(stage_name, payload)
+        if stage_name == "vivado":
+            return classification in {"full_pass", "synth_only"}
+        return classification == "full_pass"
+
+    def _resolution_quality(self, stage_name: str, classification: str) -> str:
+        if classification == "missing":
+            return "missing"
+        if stage_name == "vivado" and classification == "synth_only":
+            return "provisional_synth_only"
+        if classification == "full_pass":
+            return "full"
+        return "unusable"
+
+    def _latest_measurement_stage(
+        self,
+        candidate_id: str,
+        stage_name: str,
+    ) -> tuple[dict[str, Any] | None, dict[str, Any] | None, str | None]:
+        # Policy: prefer the newest measurement-usable evidence. For Vivado,
+        # this means a newer synth-only payload wins over an older full
+        # implementation payload because it better reflects the current design
+        # state, but it is surfaced as provisional and penalized.
+        for stage_row in self.store.list_run_stages_with_results(candidate_id, stage_name):
+            result_path = stage_row["result_path"]
+            if not result_path:
+                continue
+            path = Path(result_path)
+            if not path.exists():
+                continue
+            payload = load_json(path)
+            classification = self._classify_stage_payload(stage_name, payload)
+            if self._is_stage_payload_measurement_usable(stage_name, payload):
+                return dict(stage_row), payload, classification
+        return None, None, None
+
     def _render_ranking_markdown(self, report: dict[str, Any]) -> str:
         lines = [
             "# Candidate Ranking",
@@ -768,17 +874,19 @@ class Controller:
             f"- Best under numeric score: `{report['best_under_numeric_score']}`",
             f"- Best timing-clean candidate: `{report['best_timing_clean']}`",
             "",
-            "| Rank | Candidate | Timing | Score | Parent | Revision | WNS (ns) | Latency (cycles) | LUT | DSP |",
-            "| --- | --- | --- | ---: | --- | --- | ---: | ---: | ---: | ---: |",
+            "| Rank | Candidate | Timing | Quality | Impl Evidence | Score | Parent | Revision | WNS (ns) | Latency (cycles) | LUT | DSP | Provenance |",
+            "| --- | --- | --- | --- | --- | ---: | --- | --- | ---: | ---: | ---: | ---: | --- |",
         ]
 
         for item in report["ranked_candidates"]:
             metrics = item["score"]["metrics"]
             lines.append(
-                "| {rank} | `{candidate}` | {timing} | {score:.3f} | {parent} | {revision} | {wns} | {latency} | {lut} | {dsp} |".format(
+                "| {rank} | `{candidate}` | {timing} | {completeness} | {implementation_evidence} | {score:.3f} | {parent} | {revision} | {wns} | {latency} | {lut} | {dsp} | {provenance} |".format(
                     rank=item["rank"],
                     candidate=item["candidate_id"],
                     timing=item["timing_status"],
+                    completeness=item["measurement_quality"],
+                    implementation_evidence=item["implementation_evidence"],
                     score=item["score"]["total_score"],
                     parent=f"`{item['parent_candidate_id']}`" if item["parent_candidate_id"] else "N/A",
                     revision=item["revision_kind"] or "N/A",
@@ -786,6 +894,7 @@ class Controller:
                     latency=metrics.get("latency_cycles", "N/A"),
                     lut=metrics.get("lut", "N/A"),
                     dsp=metrics.get("dsp", "N/A"),
+                    provenance=item["artifact_provenance_note"],
                 )
             )
 
@@ -804,3 +913,68 @@ class Controller:
 
         lines.append("")
         return "\n".join(lines)
+
+    def _candidate_view(self, candidate: dict[str, Any]) -> dict[str, Any]:
+        try:
+            manifest = json.loads(candidate.get("manifest_json", "{}"))
+        except json.JSONDecodeError:
+            manifest = {}
+        parameters = manifest.get("parameters", {})
+        family = detect_parameter_family(parameters) if isinstance(parameters, dict) else "unknown"
+        candidate["manifest_parameter_family"] = family
+        candidate["active_schema_compatible"] = family == "mac_array_v1"
+        return candidate
+
+    def _resolved_artifact_summary(
+        self,
+        candidate_id: str,
+        latest_run: dict[str, Any] | None,
+        resolved_artifacts: dict[str, Any],
+    ) -> dict[str, Any]:
+        sources = resolved_artifacts["sources"]
+        return {
+            "candidate_id": candidate_id,
+            "latest_run_id": latest_run["run_id"] if latest_run else None,
+            "measurement_completeness": self._measurement_completeness(sources),
+            "measurement_quality": resolved_artifacts["measurement_quality"],
+            "implementation_evidence": resolved_artifacts["implementation_evidence"],
+            "score_provisional": resolved_artifacts["score_provisional"],
+            "artifact_provenance_note": self._artifact_provenance_note(latest_run, sources),
+            "sources": sources,
+        }
+
+    def _measurement_completeness(self, sources: dict[str, dict[str, Any]]) -> str:
+        vivado_quality = sources["vivado"].get("resolution_quality")
+        perf_quality = sources["verilator_perf"].get("resolution_quality")
+        if vivado_quality == "provisional_synth_only":
+            return "provisional_synth_only"
+        if vivado_quality == "missing" or perf_quality == "missing":
+            return "incomplete"
+        return "full"
+
+    def _implementation_evidence(self, sources: dict[str, dict[str, Any]]) -> str:
+        vivado_quality = sources["vivado"].get("resolution_quality")
+        if vivado_quality == "provisional_synth_only":
+            return "synth_only"
+        if vivado_quality == "full":
+            return "full_implementation"
+        return "missing"
+
+    def _artifact_provenance_note(
+        self,
+        latest_run: dict[str, Any] | None,
+        sources: dict[str, dict[str, Any]],
+    ) -> str:
+        if latest_run is None:
+            return "No run history is available."
+
+        notes: list[str] = []
+        for stage_name, source in sources.items():
+            source_run_id = source.get("run_id")
+            if source_run_id is None:
+                continue
+            if source_run_id != latest_run["run_id"]:
+                notes.append(f"{stage_name} uses older run {source_run_id} instead of latest run {latest_run['run_id']}")
+            if source.get("resolution_quality") == "provisional_synth_only":
+                notes.append(f"{stage_name} uses synth-only metrics from latest run {latest_run['run_id']}")
+        return "; ".join(notes) if notes else "Ranking uses latest available resolved artifacts."

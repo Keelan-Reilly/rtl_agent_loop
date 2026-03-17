@@ -1,0 +1,99 @@
+{
+  "policies": [
+    {
+      "name": "default_current",
+      "label": "Default current policy",
+      "description": "Matches the repo's official score weights.",
+      "weights": {
+        "latency_cycles": -0.001,
+        "lut": -0.01,
+        "ff": -0.002,
+        "dsp": -0.5,
+        "bram": -0.5,
+        "wns_ns": 2.0
+      },
+      "penalties": {
+        "missing_metric": -5.0,
+        "timing_missing": -10.0,
+        "timing_negative_wns": -75.0,
+        "stage_failed": -100.0
+      }
+    },
+    {
+      "name": "latency_priority",
+      "label": "Latency-priority policy",
+      "description": "Emphasizes cycle count over implementation cost while still penalizing weak timing.",
+      "weights": {
+        "latency_cycles": -0.02,
+        "lut": -0.003,
+        "ff": -0.001,
+        "dsp": -0.15,
+        "bram": -0.25,
+        "wns_ns": 1.0
+      },
+      "penalties": {
+        "missing_metric": -5.0,
+        "timing_missing": -10.0,
+        "timing_negative_wns": -75.0,
+        "stage_failed": -100.0
+      }
+    },
+    {
+      "name": "area_priority",
+      "label": "Area-priority policy",
+      "description": "Emphasizes LUT and DSP cost over raw latency.",
+      "weights": {
+        "latency_cycles": -0.0005,
+        "lut": -0.02,
+        "ff": -0.003,
+        "dsp": -1.0,
+        "bram": -0.5,
+        "wns_ns": 1.0
+      },
+      "penalties": {
+        "missing_metric": -5.0,
+        "timing_missing": -10.0,
+        "timing_negative_wns": -75.0,
+        "stage_failed": -100.0
+      }
+    },
+    {
+      "name": "timing_priority",
+      "label": "Timing-priority policy",
+      "description": "Rewards positive WNS strongly while still accounting for area and latency.",
+      "weights": {
+        "latency_cycles": -0.0005,
+        "lut": -0.004,
+        "ff": -0.001,
+        "dsp": -0.2,
+        "bram": -0.25,
+        "wns_ns": 6.0
+      },
+      "penalties": {
+        "missing_metric": -5.0,
+        "timing_missing": -10.0,
+        "timing_negative_wns": -75.0,
+        "stage_failed": -100.0
+      }
+    },
+    {
+      "name": "balanced_no_throughput",
+      "label": "Balanced no-throughput policy",
+      "description": "Balances latency and implementation cost without adding any throughput term.",
+      "weights": {
+        "latency_cycles": -0.004,
+        "lut": -0.008,
+        "ff": -0.002,
+        "dsp": -0.35,
+        "bram": -0.5,
+        "wns_ns": 1.5
+      },
+      "penalties": {
+        "missing_metric": -5.0,
+        "timing_missing": -10.0,
+        "timing_negative_wns": -75.0,
+        "stage_failed": -100.0
+      }
+    }
+  ]
+}

@@ -44,6 +44,7 @@ def build_parser() -> argparse.ArgumentParser:
     rank_parser.add_argument("--lineage-root")
     rank_parser.add_argument("--latest-only-per-root", action="store_true")
     rank_parser.add_argument("--leaf-only", action="store_true")
+    rank_parser.add_argument("--active-schema-only", action="store_true")
 
     lineage_parser = subparsers.add_parser("link-lineage", help="Attach an existing child candidate to a parent lineage")
     lineage_parser.add_argument("--parent-candidate-id", required=True)
@@ -61,6 +62,7 @@ def build_parser() -> argparse.ArgumentParser:
     list_parser.add_argument("--parent-candidate-id")
     list_parser.add_argument("--lineage-root")
     list_parser.add_argument("--leaf-only", action="store_true")
+    list_parser.add_argument("--active-schema-only", action="store_true")
     return parser
 
 
@@ -111,6 +113,7 @@ def main() -> int:
                 lineage_root_candidate_id=args.lineage_root,
                 latest_only_per_root=args.latest_only_per_root,
                 leaf_only=args.leaf_only,
+                active_schema_only=args.active_schema_only,
             )
             print(json.dumps(result, indent=2))
             return 0
@@ -139,6 +142,7 @@ def main() -> int:
                 parent_candidate_id=args.parent_candidate_id,
                 lineage_root_candidate_id=args.lineage_root,
                 leaf_only=args.leaf_only,
+                active_schema_only=args.active_schema_only,
             )
             print(json.dumps(result, indent=2))
             return 0

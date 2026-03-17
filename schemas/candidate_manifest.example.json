@@ -1,14 +1,21 @@
 {
-  "candidate_id": "dense2_dw16_fb7_base",
-  "source": "manual",
-  "created_at": "2026-03-15T00:00:00Z",
+  "candidate_id": "mac_baseline_4x4_dw16",
+  "source": "mac_array_fpga_first_study",
+  "created_at": "2026-03-16T00:00:00Z",
   "parameters": {
-    "DENSE_OUT_PAR": 2,
+    "ARCH_VARIANT": 0,
+    "ARRAY_M": 4,
+    "ARRAY_N": 4,
+    "CLUSTER_SIZE": 4,
+    "SHARE_FACTOR": 1,
     "DATA_WIDTH": 16,
-    "FRAC_BITS": 7,
-    "CONV_CHANNEL_PAR": 1,
-    "CONV_VARIANT": "baseline"
+    "FRAC_BITS": 8,
+    "ACC_WIDTH": 32,
+    "PIPE_STAGES": 1,
+    "TILE_K": 4,
+    "INPUT_MEM_DEPTH": 64,
+    "OUTPUT_MEM_DEPTH": 64
   },
-  "notes": "Baseline architecture point for controller bring-up.",
-  "tags": ["baseline", "manual"]
+  "notes": "Baseline MAC-array point for the first bounded architecture study.",
+  "tags": ["mac-array", "baseline", "4x4", "first-study"]
 }

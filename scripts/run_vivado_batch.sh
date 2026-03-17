@@ -125,6 +125,7 @@ for key in sorted(params):
     command.extend(["--generic", f"{key}={params[key]}"])
 
 status = "passed"
+outcome_classification = "full_pass"
 message = "Vivado batch completed successfully."
 returncode = 0
 parsed_metrics = {}
@@ -144,15 +145,22 @@ with log_path.open("w") as logf:
         logf.write(f"  {key}={value}\n")
     if not all(checks.values()):
         status = "failed"
+        outcome_classification = "failed_preflight"
         message = "Vivado wrapper preflight failed."
         returncode = 2
     else:
         proc = subprocess.run(command, cwd=wrapper_run_dir, stdout=logf, stderr=subprocess.STDOUT)
         returncode = proc.returncode
-        if returncode != 0:
-            status = "failed"
-            message = f"Vivado batch failed with exit code {returncode}"
-        else:
+        have_reports = any(
+            path.exists()
+            for path in (
+                reports_dir / "utilization_impl.rpt",
+                reports_dir / "timing_impl.rpt",
+                reports_dir / "utilization_synth.rpt",
+                reports_dir / "timing_synth.rpt",
+            )
+        )
+        if have_reports:
             parse_command = [
                 sys.executable,
                 str(parse_script),
@@ -164,16 +172,39 @@ with log_path.open("w") as logf:
                 str(metrics_path),
             ]
             parse_proc = subprocess.run(parse_command, cwd=wrapper_run_dir, stdout=logf, stderr=subprocess.STDOUT)
+            if metrics_path.exists():
+                parsed_metrics = json.loads(metrics_path.read_text())
             if parse_proc.returncode != 0:
                 status = "failed"
+                outcome_classification = "missing_result"
                 message = f"Vivado report parsing failed with exit code {parse_proc.returncode}"
                 returncode = parse_proc.returncode
-            elif metrics_path.exists():
-                parsed_metrics = json.loads(metrics_path.read_text())
+            elif parsed_metrics.get("report_kind") == "implementation" and proc.returncode == 0:
+                status = "passed"
+                outcome_classification = "full_pass"
+                message = "Vivado batch completed successfully with implementation metrics."
+            elif parsed_metrics.get("report_kind") == "synthesis":
+                status = "failed"
+                outcome_classification = "synth_only"
+                message = "Vivado implementation did not complete, but synthesis-stage metrics were preserved."
+            elif proc.returncode != 0:
+                status = "failed"
+                outcome_classification = "failed_tool"
+                message = f"Vivado batch failed with exit code {proc.returncode}"
+            else:
+                status = "failed"
+                outcome_classification = "missing_result"
+                message = "Vivado batch completed but no machine-readable metrics were parsed."
+        else:
+            status = "failed"
+            outcome_classification = "failed_tool"
+            message = f"Vivado batch failed with exit code {returncode}"
 
 payload = {
     "stage": "vivado",
     "status": status,
+    "passed": status == "passed",
+    "outcome_classification": outcome_classification,
     "message": message,
     "candidate_id": manifest.get("candidate_id"),
     "parameters": manifest.get("parameters", {}),
@@ -183,6 +214,7 @@ payload = {
     "reports_dir": str(reports_dir.relative_to(run_dir)) if reports_dir.exists() else None,
     "metrics_path": str(metrics_path.relative_to(run_dir)) if metrics_path.exists() else None,
     "metrics": parsed_metrics,
+    "metrics_kind": parsed_metrics.get("report_kind") if parsed_metrics else None,
     "todo": "ARCH_VARIANT is forwarded as a real generic. PIPE_STAGES currently models deterministic drain latency rather than a fully retimed datapath.",
     "log_path": str(log_path.relative_to(run_dir)),
 }

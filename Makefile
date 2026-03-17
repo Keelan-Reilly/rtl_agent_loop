@@ -29,12 +29,19 @@ endif
 
 .PHONY: setup verify_candidate implement_candidate perf_candidate score_candidate
 
+define warn_shared_manual_dir
+	@if [ -z "$(RUN_DIR)" ]; then \
+		echo "WARNING: using default shared manual stage directories under runs/$(CANDIDATE_ID)/manual_*; set RUN_DIR=... for parallel-safe execution."; \
+	fi
+endef
+
 setup:
 	@RTL_AGENT_LOOP_PYTHON="$(PYTHON)" RTL_AGENT_LOOP_EXTERNAL_REPO="$(EXTERNAL_REPO)" VIVADO_BIN="$(VIVADO_BIN)" \
 		bash scripts/bootstrap_env.sh
 
 verify_candidate:
 	@test -n "$(CANDIDATE_ID)" || { echo "ERROR: set CANDIDATE_ID=<id>"; exit 2; }
+	$(call warn_shared_manual_dir)
 	@RTL_AGENT_LOOP_EXTERNAL_REPO="$(EXTERNAL_REPO)" \
 		bash scripts/fast_verify.sh \
 		--candidate-id "$(CANDIDATE_ID)" \
@@ -44,6 +51,7 @@ verify_candidate:
 
 implement_candidate:
 	@test -n "$(CANDIDATE_ID)" || { echo "ERROR: set CANDIDATE_ID=<id>"; exit 2; }
+	$(call warn_shared_manual_dir)
 	@RTL_AGENT_LOOP_EXTERNAL_REPO="$(EXTERNAL_REPO)" VIVADO_BIN="$(VIVADO_BIN)" \
 		bash scripts/run_vivado_batch.sh \
 		--candidate-id "$(CANDIDATE_ID)" \
@@ -53,6 +61,7 @@ implement_candidate:
 
 perf_candidate:
 	@test -n "$(CANDIDATE_ID)" || { echo "ERROR: set CANDIDATE_ID=<id>"; exit 2; }
+	$(call warn_shared_manual_dir)
 	@RTL_AGENT_LOOP_EXTERNAL_REPO="$(EXTERNAL_REPO)" \
 		bash scripts/collect_verilator_perf.sh \
 		--candidate-id "$(CANDIDATE_ID)" \

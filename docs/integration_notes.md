@@ -1,66 +1,74 @@
 # Integration Notes
 
-This repo intentionally stops short of inventing `CNN_FPGA`-specific details that are not yet fixed. The current v1 skeleton is runnable, but these integration points still need to be finalized for a production flow.
+This repo now actively targets [`external/MAC_ARRAY_FPGA`](/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA), not the older CNN-oriented flow.
 
-## External repo path
+## Active External Boundary
 
-- Default path: `external/CNN_FPGA`
-- Source of truth: `config/search_space.json`
-- TODO: decide whether this remains a submodule path or becomes a user-supplied checkout path in CI and multi-machine setups.
+The controller and wrappers currently depend on these external files:
 
-## Fast verification gate
+- `hdl/top_level.sv`
+- `tb/tb_full_pipeline.cpp`
+- `experiments/collect_verilator_perf.py`
+- `fpga/vivado/run_batch.sh`
+- `fpga/vivado/parse_reports.py`
+- `data/input_a.mem`
+- `data/input_b.mem`
+- `data/expected_output.mem`
 
-- Current wrapper now performs a real candidate-aware Verilator lint pass against `external/CNN_FPGA/hdl/*.sv`.
-- It also checks:
-  - `top_level.sv`
-  - `tb/tb_full_pipeline.cpp`
-  - `weights/input_image.mem`
-  - Vivado and Verilator helper scripts
-- The lint gate validates the actual searched generics currently exposed by `top_level`: `DATA_WIDTH`, `FRAC_BITS`, `DENSE_OUT_PAR`, and `CONV_CHANNEL_PAR`.
-- TODO: decide whether to keep lint-only as the v1 gate or replace it with a lightweight compile/regression target later.
+## Real Top-Level Parameters
 
-## `CONV_CHANNEL_PAR`
+The active searched generics are:
 
-- `CONV_CHANNEL_PAR` is accepted, validated, stored, and forwarded through fast verify, Vivado batch, and Verilator performance collection.
-- The external RTL now exposes it as a synthesis generic on `top_level` and `conv2d`.
-- The current implementation realizes the knob by mirroring IFMAP storage into `CONV_CHANNEL_PAR` deterministic read banks, then summing up to that many channel products per convolution tap group.
-- Important current-system limitation: the checked-in accelerator still uses `IN_CHANNELS=1` at `top_level`, so wider `CONV_CHANNEL_PAR` points currently measure synthesis/timing/resource effects but do not reduce end-to-end latency for the shipped network.
+- `ARCH_VARIANT`
+- `ARRAY_M`
+- `ARRAY_N`
+- `CLUSTER_SIZE`
+- `SHARE_FACTOR`
+- `DATA_WIDTH`
+- `FRAC_BITS`
+- `ACC_WIDTH`
+- `PIPE_STAGES`
+- `TILE_K`
+- `INPUT_MEM_DEPTH`
+- `OUTPUT_MEM_DEPTH`
 
-## `CONV_VARIANT`
+All three wrapper stages now treat `ARCH_VARIANT` as a real hardware control, not orchestration-only metadata.
 
-- `CONV_VARIANT` is accepted, validated, stored, and passed through the orchestration layer.
-- The current external repo does not expose a visible synthesis generic for this flag.
-- TODO: decide whether this becomes:
-  - a synthesis generic
-  - a generated include/config file
-  - a branch/patch selection hook
+## Partial Vivado Outcomes
 
-Until then, wrappers record the selected value but do not mutate external RTL.
+The external study flow can preserve synth-stage metrics even when implementation fails.
 
-## Vivado batch flow
+Current behavior split:
 
-- Current wrapper targets `external/CNN_FPGA/fpga/vivado/run_batch.sh`
-- Report parsing targets `external/CNN_FPGA/fpga/vivado/parse_reports.py`
-- Defaults in config assume:
-  - part: `xc7a35tcpg236-1`
-  - top: `top_level`
-  - xdc: `CNN_constraints.xdc`
-  - target clock: `10.0ns`
-- TODO: confirm these remain valid for your intended board and branch.
+- the external bounded sweep records synth-only rows such as `passed_perf_synth_only`
+- the controller Vivado wrapper now preserves synth-stage metrics in `vivado_result.json`
+- controller stage success still requires a true full pass; synth-only outcomes remain explicitly non-passing
+- controller ranking/status prefers the newest measurement-usable Vivado evidence, even if that newest evidence is synth-only rather than a stale older full implementation run
 
-## Verilator performance flow
+This is intentional. Useful evidence is preserved, but partial outcomes are not mislabeled as full implementation success.
 
-- Current wrapper targets `external/CNN_FPGA/experiments/collect_verilator_perf.py`
-- That flow depends on dataset files and any external weight/image prerequisites expected by `CNN_FPGA`.
-- The current external script does not accept dataset path CLI flags; it reads `weights/input_image.mem` directly.
-- `config/search_space.json` still carries `images_path` and `labels_path` placeholders for future wiring, but they are not active in v1.
-- TODO: confirm data path strategy:
-  - checked into external repo
-  - generated on demand
-  - configured through environment or local machine path
+Practical consequence:
 
-## Logging and artifacts
+- synth-only Vivado evidence is treated as provisional measurement evidence
+- it remains scoreable and rankable
+- it carries the stage-failed penalty so reports do not blur it with full implementation passes
 
-- All controller-owned metadata goes into `var/rtl_agent_loop.db`
-- Candidate-owned artifacts live under `runs/<candidate_id>/`
-- TODO: define your preferred artifact retention policy once real sweeps start producing many runs.
+## `PIPE_STAGES`
+
+`PIPE_STAGES` is a real searched/configured knob and is forwarded through lint, synthesis, and simulation.
+
+Current limitation:
+
+- it still acts more like deterministic drain-latency modeling than a full arithmetic retiming framework
+
+That limitation should be documented honestly in study writeups and candidate notes.
+
+## Legacy Candidate State
+
+Legacy CNN-era manifests remain in `candidates/` for historical context.
+
+Practical consequence:
+
+- they are no longer valid under the active MAC-array schema
+- `list-candidates --active-schema-only` and `rank-candidates --active-schema-only` should be preferred for current studies
+- `./scripts/bootstrap_active_mac_candidates.sh` provides a deterministic way to register the checked-in MAC manifests before controller-owned runs are created

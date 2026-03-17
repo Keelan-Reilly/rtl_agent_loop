@@ -147,6 +147,7 @@ for key, value in checks.items():
     log_lines.append(f"  {key}={value}")
 
 status = "passed"
+outcome_classification = "full_pass"
 message = "Fast verification completed successfully."
 command = None
 returncode = 0
@@ -168,11 +169,13 @@ required_check_keys = [
 ]
 if not all(checks[k] for k in required_check_keys):
     status = "failed"
+    outcome_classification = "failed_preflight"
     message = "Required external repo integration points are missing."
     returncode = 1
 elif mode == "verilator_lint":
     if not checks["verilator_available"]:
         status = "failed"
+        outcome_classification = "failed_preflight"
         message = "Fast verification requires 'verilator' in PATH."
         returncode = 2
     else:
@@ -180,6 +183,7 @@ elif mode == "verilator_lint":
         hdl_files.sort(key=lambda path: (0 if path.name == "types_pkg.sv" else 1, path.name))
         if not hdl_files:
             status = "failed"
+            outcome_classification = "failed_preflight"
             message = "No HDL files found under external/MAC_ARRAY_FPGA/hdl."
             returncode = 3
         else:
@@ -207,11 +211,13 @@ elif mode == "verilator_lint":
             returncode = proc.returncode
             if returncode != 0:
                 status = "failed"
+                outcome_classification = "failed_tool"
                 message = f"Verilator lint failed with exit code {returncode}"
             else:
                 message = "Candidate-aware Verilator lint passed."
 else:
     status = "failed"
+    outcome_classification = "failed_preflight"
     message = f"Unsupported fast_verify mode: {mode}"
     returncode = 4
 
@@ -226,6 +232,8 @@ if command is None:
 payload = {
     "stage": "fast_verify",
     "status": status,
+    "passed": status == "passed",
+    "outcome_classification": outcome_classification,
     "message": message,
     "mode": mode,
     "candidate_id": manifest.get("candidate_id"),

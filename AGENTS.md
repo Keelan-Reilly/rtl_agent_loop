@@ -2,7 +2,7 @@
 
 ## Purpose
 
-`rtl_agent_loop` is a deterministic FPGA design-space exploration controller for the external `CNN_FPGA` accelerator repository.
+`rtl_agent_loop` is a deterministic FPGA design-space exploration controller for the external `MAC_ARRAY_FPGA` accelerator repository.
 
 This repository is responsible for:
 
@@ -14,7 +14,7 @@ This repository is responsible for:
 - score computation
 - SQLite-backed experiment logging
 
-This repository is not the source of truth for the accelerator RTL itself. The accelerator implementation remains in the external `CNN_FPGA` repository.
+This repository is not the source of truth for the accelerator RTL itself. The accelerator implementation remains in the external `MAC_ARRAY_FPGA` repository.
 
 ## Source Of Truth
 
@@ -38,7 +38,7 @@ Treat the following as authoritative:
 
 Treat the following as external dependency state, not local ownership:
 
-- `external/CNN_FPGA/`
+- `external/MAC_ARRAY_FPGA/`
 
 Do not silently override the behavior of any source-of-truth file through undocumented ad hoc scripts.
 
@@ -65,7 +65,7 @@ Responsibilities:
 
 Must not:
 
-- edit `external/CNN_FPGA/*` unless explicitly instructed
+- edit `external/MAC_ARRAY_FPGA/*` unless explicitly instructed
 - invent new execution stages that are not implemented
 
 ### 2. Wrapper Agent
@@ -81,7 +81,7 @@ Allowed modifications:
 Responsibilities:
 
 - keep wrapper argument contracts stable
-- align wrapper behavior with the actual external `CNN_FPGA` interfaces
+- align wrapper behavior with the actual external `MAC_ARRAY_FPGA` interfaces
 - fail fast with explicit logs and result JSON
 
 Must not:
@@ -131,8 +131,8 @@ Must not:
 
 The following actions are forbidden unless explicitly requested by the project owner:
 
-- modifying files under `external/CNN_FPGA/`
-- copying RTL or scripts from `external/CNN_FPGA/` into this repo
+- modifying files under `external/MAC_ARRAY_FPGA/`
+- copying RTL or scripts from `external/MAC_ARRAY_FPGA/` into this repo
 - deleting `runs/` or `var/rtl_agent_loop.db` to hide failures
 - editing generated files under `runs/<candidate_id>/...` except to remove disposable local test artifacts you created yourself
 - changing wrapper interfaces without updating `Makefile`, `README.md`, and this file in the same change
@@ -257,18 +257,21 @@ Candidate IDs must be:
 
 Preferred pattern:
 
-- `<dense>_<width>_<frac>_<variant>`
+- `<arch>_<mxn>_<detail>_<width>`
 
-Concrete example:
+Concrete examples:
 
-- `dense2_dw16_fb7_base`
+- `mac_baseline_4x4_dw16`
+- `mac_shared_4x4_sf2_dw16`
+- `mac_replicated_4x4_c2_dw16`
 
 Recommended tokens:
 
-- `dense<N>` for `DENSE_OUT_PAR`
+- `baseline`, `shared`, or `replicated` for `ARCH_VARIANT`
+- `<m>x<n>` for `ARRAY_M` and `ARRAY_N`
+- `sf<N>` for `SHARE_FACTOR` when shared mode is active
+- `c<N>` for `CLUSTER_SIZE` when that detail is part of the hypothesis
 - `dw<N>` for `DATA_WIDTH`
-- `fb<N>` for `FRAC_BITS`
-- `base` or `pipe` for `CONV_VARIANT`
 
 Rules:
 

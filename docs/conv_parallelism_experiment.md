@@ -1,5 +1,7 @@
 # Convolution Parallelism Experiment
 
+Legacy note: this is a historical CNN-oriented experiment kept for provenance. The active repo target is now `external/MAC_ARRAY_FPGA`.
+
 ## Scope
 
 This experiment adds a single architectural knob, `CONV_CHANNEL_PAR`, to the `CNN_FPGA` convolution stage and evaluates it through the canonical `rtl_agent_loop` flow for three candidates:

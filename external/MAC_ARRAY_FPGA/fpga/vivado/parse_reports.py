@@ -31,15 +31,20 @@ def main() -> int:
     reports_dir = args.reports_dir
     util_path = reports_dir / "utilization_impl.rpt"
     timing_path = reports_dir / "timing_impl.rpt"
+    report_kind = "implementation"
     if not util_path.exists():
         util_path = reports_dir / "utilization_synth.rpt"
+        report_kind = "synthesis"
     if not timing_path.exists():
         timing_path = reports_dir / "timing_synth.rpt"
+        report_kind = "synthesis"
 
     util_text = util_path.read_text() if util_path.exists() else ""
     timing_text = timing_path.read_text() if timing_path.exists() else ""
 
     lut = find_used_value("Slice LUTs*", util_text)
+    if lut is None:
+        lut = find_used_value("Slice LUTs", util_text)
     ff = find_used_value("Slice Registers", util_text)
     dsp = find_used_value("DSPs", util_text)
     bram = find_used_value("Block RAM Tile", util_text)
@@ -59,6 +64,7 @@ def main() -> int:
         "bram": bram,
         "wns_ns": wns,
         "fmax_mhz_est": fmax,
+        "report_kind": report_kind,
         "utilization_report": str(util_path),
         "timing_report": str(timing_path),
     }

@@ -14,22 +14,32 @@ def _metric_value(metrics: dict[str, Any], name: str) -> float | None:
 def flatten_metrics(vivado_metrics: dict[str, Any] | None, perf_metrics: dict[str, Any] | None) -> dict[str, float]:
     flattened: dict[str, float] = {}
     if vivado_metrics:
-        util = vivado_metrics.get("utilization", {})
-        timing = vivado_metrics.get("timing", {})
+        util = vivado_metrics.get("utilization", {}) if isinstance(vivado_metrics.get("utilization"), dict) else {}
+        timing = vivado_metrics.get("timing", {}) if isinstance(vivado_metrics.get("timing"), dict) else {}
         mapping = {
-            "lut": util.get("lut"),
-            "ff": util.get("ff"),
-            "dsp": util.get("dsp"),
-            "bram": util.get("bram"),
-            "wns_ns": timing.get("wns_ns"),
-            "fmax_mhz_est": timing.get("fmax_mhz_est"),
+            "lut": vivado_metrics.get("lut", util.get("lut")),
+            "ff": vivado_metrics.get("ff", util.get("ff")),
+            "dsp": vivado_metrics.get("dsp", util.get("dsp")),
+            "bram": vivado_metrics.get("bram", util.get("bram")),
+            "wns_ns": vivado_metrics.get("wns_ns", timing.get("wns_ns")),
+            "fmax_mhz_est": vivado_metrics.get("fmax_mhz_est", timing.get("fmax_mhz_est")),
         }
         for key, value in mapping.items():
             if isinstance(value, (int, float)):
                 flattened[key] = float(value)
     if perf_metrics:
-        for key in ("latency_cycles", "latency_time_ms", "throughput_inferences_per_sec"):
-            value = perf_metrics.get(key)
+        throughput_value = perf_metrics.get("throughput_ops_per_sec")
+        if not isinstance(throughput_value, (int, float)):
+            throughput_value = perf_metrics.get("throughput_inferences_per_sec")
+        perf_mapping = {
+            "latency_cycles": perf_metrics.get("latency_cycles"),
+            "latency_time_ms": perf_metrics.get("latency_time_ms"),
+            # Preserve the canonical controller-facing metric name while
+            # remaining backward compatible with older CNN-era artifacts.
+            "throughput_ops_per_sec": throughput_value,
+            "throughput_inferences_per_sec": throughput_value,
+        }
+        for key, value in perf_mapping.items():
             if isinstance(value, (int, float)):
                 flattened[key] = float(value)
     return flattened
@@ -78,4 +88,3 @@ def score_candidate(
         "metrics": metrics,
         "missing_metrics": missing_metrics,
     }
-

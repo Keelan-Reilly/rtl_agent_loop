@@ -12,6 +12,14 @@ class ValidationError(ValueError):
     """Raised when config or manifest validation fails."""
 
 
+LEGACY_CNN_PARAMETER_KEYS = {
+    "DENSE_OUT_PAR",
+    "CONV_CHANNEL_PAR",
+    "CONV_VARIANT",
+    "DENSE_SPLIT_MAC_PIPELINE",
+}
+
+
 def load_json(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text())
 
@@ -22,6 +30,16 @@ def load_search_space(path: Path | None = None) -> dict[str, Any]:
 
 def load_score_weights(path: Path | None = None) -> dict[str, Any]:
     return load_json(path or DEFAULT_SCORE_WEIGHTS_PATH)
+
+
+def detect_parameter_family(parameters: dict[str, Any]) -> str:
+    keys = set(parameters)
+    required = set(REQUIRED_PARAMETER_KEYS)
+    if required.issubset(keys):
+        return "mac_array_v1"
+    if keys & LEGACY_CNN_PARAMETER_KEYS:
+        return "cnn_legacy"
+    return "unknown"
 
 
 def validate_manifest(manifest_data: dict[str, Any], manifest_path: Path, search_space: dict[str, Any]) -> CandidateManifest:
@@ -38,13 +56,26 @@ def validate_manifest(manifest_data: dict[str, Any], manifest_path: Path, search
     if not isinstance(parameters, dict):
         raise ValidationError("parameters must be an object")
 
+    parameter_family = detect_parameter_family(parameters)
+
     missing_params = [key for key in REQUIRED_PARAMETER_KEYS if key not in parameters]
     if missing_params:
+        if parameter_family == "cnn_legacy":
+            raise ValidationError(
+                "Manifest uses the legacy CNN-era parameter family. "
+                "The active schema now targets MAC-array candidates and requires: "
+                + ", ".join(REQUIRED_PARAMETER_KEYS)
+            )
         raise ValidationError(f"Manifest missing required parameters: {', '.join(missing_params)}")
 
     allowed_parameter_keys = set(REQUIRED_PARAMETER_KEYS) | set(OPTIONAL_PARAMETER_KEYS)
     unsupported = sorted(set(parameters) - allowed_parameter_keys)
     if unsupported:
+        if parameter_family == "cnn_legacy":
+            raise ValidationError(
+                "Manifest uses legacy CNN-era parameters that are no longer part of the active MAC-array schema: "
+                + ", ".join(unsupported)
+            )
         raise ValidationError(f"Unsupported parameters in manifest: {', '.join(unsupported)}")
 
     search_space_def = search_space["search_space"]

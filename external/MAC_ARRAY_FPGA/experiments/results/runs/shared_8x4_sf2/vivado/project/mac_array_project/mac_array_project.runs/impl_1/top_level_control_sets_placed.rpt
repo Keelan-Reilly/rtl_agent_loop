@@ -1,7 +1,7 @@
 Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
 ---------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2025.2 (lin64) Build 6299465 Fri Nov 14 12:34:56 MST 2025
-| Date         : Mon Mar 16 14:41:28 2026
+| Date         : Tue Mar 17 02:13:11 2026
 | Host         : keelan-Inspiron-5593 running 64-bit Ubuntu 22.04.5 LTS
 | Command      : report_control_sets -verbose -file top_level_control_sets_placed.rpt
 | Design       : top_level
@@ -74,49 +74,49 @@ Table of Contents
 |  Clock Signal  |                    Enable Signal                    |                   Set/Reset Signal                  | Slice Load Count | Bel Load Count | Bels / Slice |
 +----------------+-----------------------------------------------------+-----------------------------------------------------+------------------+----------------+--------------+
 |  clk_IBUF_BUFG | u_control/FSM_onehot_state_q[5]_i_1_n_0             | rst_IBUF                                            |                2 |              6 |         3.00 |
-|  clk_IBUF_BUFG | gen_clusters[7].u_cluster/accum_bank[1][31]_i_1_n_0 | gen_clusters[7].u_cluster/accum_bank[0][31]_i_1_n_0 |                8 |             32 |         4.00 |
+|  clk_IBUF_BUFG | u_control/Q[2]                                      | rst_IBUF                                            |               16 |             32 |         2.00 |
+|  clk_IBUF_BUFG | gen_clusters[3].u_cluster/accum_bank[3][31]_i_1_n_0 | gen_clusters[3].u_cluster/accum_bank[0][31]_i_1_n_0 |               11 |             32 |         2.91 |
+|  clk_IBUF_BUFG | gen_clusters[2].u_cluster/accum_bank[0][31]_i_2_n_0 | gen_clusters[2].u_cluster/accum_bank[0][31]_i_1_n_0 |                8 |             32 |         4.00 |
+|  clk_IBUF_BUFG | gen_clusters[2].u_cluster/accum_bank[1][31]_i_1_n_0 | gen_clusters[2].u_cluster/accum_bank[0][31]_i_1_n_0 |                8 |             32 |         4.00 |
+|  clk_IBUF_BUFG | gen_clusters[2].u_cluster/accum_bank[2][31]_i_1_n_0 | gen_clusters[2].u_cluster/accum_bank[0][31]_i_1_n_0 |                9 |             32 |         3.56 |
 |  clk_IBUF_BUFG | gen_clusters[2].u_cluster/accum_bank[3][31]_i_1_n_0 | gen_clusters[2].u_cluster/accum_bank[0][31]_i_1_n_0 |                8 |             32 |         4.00 |
+|  clk_IBUF_BUFG | gen_clusters[0].u_cluster/accum_bank[0][31]_i_2_n_0 | gen_clusters[0].u_cluster/accum_bank[0][31]_i_1_n_0 |                8 |             32 |         4.00 |
+|  clk_IBUF_BUFG | gen_clusters[0].u_cluster/accum_bank[1][31]_i_1_n_0 | gen_clusters[0].u_cluster/accum_bank[0][31]_i_1_n_0 |                8 |             32 |         4.00 |
+|  clk_IBUF_BUFG | gen_clusters[0].u_cluster/accum_bank[2][31]_i_1_n_0 | gen_clusters[0].u_cluster/accum_bank[0][31]_i_1_n_0 |                8 |             32 |         4.00 |
+|  clk_IBUF_BUFG | gen_clusters[0].u_cluster/accum_bank[3][31]_i_1_n_0 | gen_clusters[0].u_cluster/accum_bank[0][31]_i_1_n_0 |                9 |             32 |         3.56 |
+|  clk_IBUF_BUFG | gen_clusters[3].u_cluster/accum_bank[2][31]_i_1_n_0 | gen_clusters[3].u_cluster/accum_bank[0][31]_i_1_n_0 |                8 |             32 |         4.00 |
+|  clk_IBUF_BUFG | u_control/compute_iter_d[0]                         | rst_IBUF                                            |               13 |             32 |         2.46 |
+|  clk_IBUF_BUFG | gen_clusters[7].u_cluster/accum_bank[0][31]_i_2_n_0 | gen_clusters[7].u_cluster/accum_bank[0][31]_i_1_n_0 |                8 |             32 |         4.00 |
+|  clk_IBUF_BUFG | gen_clusters[7].u_cluster/accum_bank[1][31]_i_1_n_0 | gen_clusters[7].u_cluster/accum_bank[0][31]_i_1_n_0 |                8 |             32 |         4.00 |
+|  clk_IBUF_BUFG | gen_clusters[7].u_cluster/accum_bank[2][31]_i_1_n_0 | gen_clusters[7].u_cluster/accum_bank[0][31]_i_1_n_0 |                8 |             32 |         4.00 |
+|  clk_IBUF_BUFG | gen_clusters[7].u_cluster/accum_bank[3][31]_i_1_n_0 | gen_clusters[7].u_cluster/accum_bank[0][31]_i_1_n_0 |                8 |             32 |         4.00 |
 |  clk_IBUF_BUFG | gen_clusters[1].u_cluster/accum_bank[0][31]_i_2_n_0 | gen_clusters[1].u_cluster/accum_bank[0][31]_i_1_n_0 |                8 |             32 |         4.00 |
 |  clk_IBUF_BUFG | gen_clusters[1].u_cluster/accum_bank[1][31]_i_1_n_0 | gen_clusters[1].u_cluster/accum_bank[0][31]_i_1_n_0 |                8 |             32 |         4.00 |
 |  clk_IBUF_BUFG | gen_clusters[1].u_cluster/accum_bank[2][31]_i_1_n_0 | gen_clusters[1].u_cluster/accum_bank[0][31]_i_1_n_0 |                8 |             32 |         4.00 |
 |  clk_IBUF_BUFG | gen_clusters[1].u_cluster/accum_bank[3][31]_i_1_n_0 | gen_clusters[1].u_cluster/accum_bank[0][31]_i_1_n_0 |                8 |             32 |         4.00 |
+|  clk_IBUF_BUFG | gen_clusters[3].u_cluster/accum_bank[1][31]_i_1_n_0 | gen_clusters[3].u_cluster/accum_bank[0][31]_i_1_n_0 |                8 |             32 |         4.00 |
 |  clk_IBUF_BUFG | gen_clusters[4].u_cluster/accum_bank[0][31]_i_2_n_0 | gen_clusters[4].u_cluster/accum_bank[0][31]_i_1_n_0 |                8 |             32 |         4.00 |
 |  clk_IBUF_BUFG | gen_clusters[4].u_cluster/accum_bank[1][31]_i_1_n_0 | gen_clusters[4].u_cluster/accum_bank[0][31]_i_1_n_0 |                8 |             32 |         4.00 |
 |  clk_IBUF_BUFG | gen_clusters[4].u_cluster/accum_bank[2][31]_i_1_n_0 | gen_clusters[4].u_cluster/accum_bank[0][31]_i_1_n_0 |                8 |             32 |         4.00 |
 |  clk_IBUF_BUFG | gen_clusters[4].u_cluster/accum_bank[3][31]_i_1_n_0 | gen_clusters[4].u_cluster/accum_bank[0][31]_i_1_n_0 |                9 |             32 |         3.56 |
-|  clk_IBUF_BUFG | gen_clusters[7].u_cluster/accum_bank[0][31]_i_2_n_0 | gen_clusters[7].u_cluster/accum_bank[0][31]_i_1_n_0 |                8 |             32 |         4.00 |
-|  clk_IBUF_BUFG | gen_clusters[2].u_cluster/accum_bank[2][31]_i_1_n_0 | gen_clusters[2].u_cluster/accum_bank[0][31]_i_1_n_0 |                9 |             32 |         3.56 |
-|  clk_IBUF_BUFG | gen_clusters[7].u_cluster/accum_bank[2][31]_i_1_n_0 | gen_clusters[7].u_cluster/accum_bank[0][31]_i_1_n_0 |                8 |             32 |         4.00 |
-|  clk_IBUF_BUFG | gen_clusters[7].u_cluster/accum_bank[3][31]_i_1_n_0 | gen_clusters[7].u_cluster/accum_bank[0][31]_i_1_n_0 |                8 |             32 |         4.00 |
+|  clk_IBUF_BUFG | gen_clusters[5].u_cluster/accum_bank[0][31]_i_2_n_0 | gen_clusters[5].u_cluster/accum_bank[0][31]_i_1_n_0 |                8 |             32 |         4.00 |
+|  clk_IBUF_BUFG | gen_clusters[5].u_cluster/accum_bank[1][31]_i_1_n_0 | gen_clusters[5].u_cluster/accum_bank[0][31]_i_1_n_0 |                8 |             32 |         4.00 |
+|  clk_IBUF_BUFG | gen_clusters[5].u_cluster/accum_bank[2][31]_i_1_n_0 | gen_clusters[5].u_cluster/accum_bank[0][31]_i_1_n_0 |                8 |             32 |         4.00 |
+|  clk_IBUF_BUFG | gen_clusters[5].u_cluster/accum_bank[3][31]_i_1_n_0 | gen_clusters[5].u_cluster/accum_bank[0][31]_i_1_n_0 |                9 |             32 |         3.56 |
 |  clk_IBUF_BUFG | gen_clusters[6].u_cluster/accum_bank[0][31]_i_2_n_0 | gen_clusters[6].u_cluster/accum_bank[0][31]_i_1_n_0 |                8 |             32 |         4.00 |
 |  clk_IBUF_BUFG | gen_clusters[6].u_cluster/accum_bank[1][31]_i_1_n_0 | gen_clusters[6].u_cluster/accum_bank[0][31]_i_1_n_0 |                8 |             32 |         4.00 |
 |  clk_IBUF_BUFG | gen_clusters[6].u_cluster/accum_bank[2][31]_i_1_n_0 | gen_clusters[6].u_cluster/accum_bank[0][31]_i_1_n_0 |               10 |             32 |         3.20 |
 |  clk_IBUF_BUFG | gen_clusters[6].u_cluster/accum_bank[3][31]_i_1_n_0 | gen_clusters[6].u_cluster/accum_bank[0][31]_i_1_n_0 |                9 |             32 |         3.56 |
 |  clk_IBUF_BUFG | gen_clusters[3].u_cluster/accum_bank[0][31]_i_2_n_0 | gen_clusters[3].u_cluster/accum_bank[0][31]_i_1_n_0 |                8 |             32 |         4.00 |
-|  clk_IBUF_BUFG | gen_clusters[3].u_cluster/accum_bank[1][31]_i_1_n_0 | gen_clusters[3].u_cluster/accum_bank[0][31]_i_1_n_0 |                8 |             32 |         4.00 |
-|  clk_IBUF_BUFG | gen_clusters[3].u_cluster/accum_bank[2][31]_i_1_n_0 | gen_clusters[3].u_cluster/accum_bank[0][31]_i_1_n_0 |                8 |             32 |         4.00 |
-|  clk_IBUF_BUFG | gen_clusters[3].u_cluster/accum_bank[3][31]_i_1_n_0 | gen_clusters[3].u_cluster/accum_bank[0][31]_i_1_n_0 |               11 |             32 |         2.91 |
-|  clk_IBUF_BUFG | gen_clusters[2].u_cluster/accum_bank[1][31]_i_1_n_0 | gen_clusters[2].u_cluster/accum_bank[0][31]_i_1_n_0 |                8 |             32 |         4.00 |
-|  clk_IBUF_BUFG | gen_clusters[5].u_cluster/accum_bank[0][31]_i_2_n_0 | gen_clusters[5].u_cluster/accum_bank[0][31]_i_1_n_0 |                8 |             32 |         4.00 |
-|  clk_IBUF_BUFG | gen_clusters[5].u_cluster/accum_bank[1][31]_i_1_n_0 | gen_clusters[5].u_cluster/accum_bank[0][31]_i_1_n_0 |                8 |             32 |         4.00 |
-|  clk_IBUF_BUFG | gen_clusters[5].u_cluster/accum_bank[2][31]_i_1_n_0 | gen_clusters[5].u_cluster/accum_bank[0][31]_i_1_n_0 |                8 |             32 |         4.00 |
-|  clk_IBUF_BUFG | gen_clusters[5].u_cluster/accum_bank[3][31]_i_1_n_0 | gen_clusters[5].u_cluster/accum_bank[0][31]_i_1_n_0 |                9 |             32 |         3.56 |
-|  clk_IBUF_BUFG | gen_clusters[0].u_cluster/accum_bank[0][31]_i_2_n_0 | gen_clusters[0].u_cluster/accum_bank[0][31]_i_1_n_0 |                8 |             32 |         4.00 |
-|  clk_IBUF_BUFG | gen_clusters[0].u_cluster/accum_bank[1][31]_i_1_n_0 | gen_clusters[0].u_cluster/accum_bank[0][31]_i_1_n_0 |                8 |             32 |         4.00 |
-|  clk_IBUF_BUFG | gen_clusters[0].u_cluster/accum_bank[2][31]_i_1_n_0 | gen_clusters[0].u_cluster/accum_bank[0][31]_i_1_n_0 |                8 |             32 |         4.00 |
-|  clk_IBUF_BUFG | gen_clusters[0].u_cluster/accum_bank[3][31]_i_1_n_0 | gen_clusters[0].u_cluster/accum_bank[0][31]_i_1_n_0 |                9 |             32 |         3.56 |
-|  clk_IBUF_BUFG | u_control/Q[2]                                      | rst_IBUF                                            |               16 |             32 |         2.00 |
-|  clk_IBUF_BUFG | u_control/compute_iter_d[0]                         | rst_IBUF                                            |               13 |             32 |         2.46 |
-|  clk_IBUF_BUFG | gen_clusters[2].u_cluster/accum_bank[0][31]_i_2_n_0 | gen_clusters[2].u_cluster/accum_bank[0][31]_i_1_n_0 |                8 |             32 |         4.00 |
 |  clk_IBUF_BUFG | u_control/write_iter_d[0]                           | rst_IBUF                                            |                8 |             34 |         4.25 |
 |  clk_IBUF_BUFG |                                                     | gen_clusters[5].u_cluster/accum_bank[0][31]_i_1_n_0 |               27 |            128 |         4.74 |
-|  clk_IBUF_BUFG |                                                     | gen_clusters[3].u_cluster/accum_bank[0][31]_i_1_n_0 |               56 |            128 |         2.29 |
 |  clk_IBUF_BUFG |                                                     | gen_clusters[6].u_cluster/accum_bank[0][31]_i_1_n_0 |               30 |            128 |         4.27 |
-|  clk_IBUF_BUFG |                                                     | gen_clusters[7].u_cluster/accum_bank[0][31]_i_1_n_0 |               53 |            128 |         2.42 |
-|  clk_IBUF_BUFG |                                                     | gen_clusters[4].u_cluster/accum_bank[0][31]_i_1_n_0 |               25 |            128 |         5.12 |
-|  clk_IBUF_BUFG |                                                     | gen_clusters[1].u_cluster/accum_bank[0][31]_i_1_n_0 |               29 |            128 |         4.41 |
+|  clk_IBUF_BUFG |                                                     | gen_clusters[3].u_cluster/accum_bank[0][31]_i_1_n_0 |               56 |            128 |         2.29 |
 |  clk_IBUF_BUFG |                                                     | gen_clusters[2].u_cluster/accum_bank[0][31]_i_1_n_0 |               31 |            128 |         4.13 |
 |  clk_IBUF_BUFG |                                                     | gen_clusters[0].u_cluster/accum_bank[0][31]_i_1_n_0 |               27 |            128 |         4.74 |
+|  clk_IBUF_BUFG |                                                     | gen_clusters[7].u_cluster/accum_bank[0][31]_i_1_n_0 |               53 |            128 |         2.42 |
+|  clk_IBUF_BUFG |                                                     | gen_clusters[1].u_cluster/accum_bank[0][31]_i_1_n_0 |               29 |            128 |         4.41 |
+|  clk_IBUF_BUFG |                                                     | gen_clusters[4].u_cluster/accum_bank[0][31]_i_1_n_0 |               25 |            128 |         5.12 |
 +----------------+-----------------------------------------------------+-----------------------------------------------------+------------------+----------------+--------------+
 
 
