@@ -9,9 +9,17 @@ It is designed for bounded architecture studies where we want:
 - fast verification, Vivado, and Verilator perf collection
 - SQLite-backed provenance
 - transparent scoring and ranking
+- thin closed-loop search with persistent JSON-backed search memory
 - reproducible study artifacts rather than ad hoc one-off runs
 
 The hardware implementation boundary stays outside this repo in `external/MAC_ARRAY_FPGA`. This repo is the control plane, experiment ledger, and reporting layer.
+
+The closed-loop v1 layer is intentionally thin. It adds a deterministic `optimize` command on top of the existing controller rather than introducing a new workflow engine.
+
+Parent selection is explicit:
+
+- use ranked candidates from the current optimize pool when scoreable evidence exists
+- otherwise fall back to the optimize candidate-pool order, which starts from sorted seed ids and then appends newly registered children deterministically
 
 ## Current Study Question
 
@@ -49,6 +57,7 @@ See:
 - SQLite experiment state in `var/rtl_agent_loop.db`
 - score computation and ranking
 - stable wrapper contracts to the external repo
+- JSON-backed optimize session memory and reports under `var/optimize/`
 
 ## What The External Repo Owns
 
@@ -122,11 +131,24 @@ python3 -m rtl_agent_loop status --candidate-id mac_baseline_4x4_dw16 --runs --l
 python3 -m rtl_agent_loop rank-candidates --active-schema-only
 ```
 
+Run the minimal closed-loop optimizer:
+
+```bash
+python3 -m rtl_agent_loop optimize \
+  --iterations 1 \
+  --seed-candidate-id mac_baseline_4x4_dw16 \
+  --top-k 1 \
+  --mutations-per-parent 1 \
+  --worktree-ref localopt
+```
+
 Bootstrap the checked-in MAC candidates into SQLite before running canonical studies:
 
 ```bash
 ./scripts/bootstrap_active_mac_candidates.sh
 ```
+
+That bootstrap intentionally skips optimize-generated manifests whose `source` is `rtl_agent_loop_optimize_v1`, so the starter seed set stays distinct from closed-loop children.
 
 External bounded sweep:
 
@@ -141,6 +163,12 @@ Source manifests:
 
 - `candidates/<candidate_id>.json`
 
+Optimize-generated child manifests:
+
+- `candidates/<child_candidate_id>.json`
+
+These remain contributor-visible source manifests, but optimize owns their creation and they should be treated as controller-generated inputs rather than hand-edited study notes.
+
 Canonical registered manifest copy:
 
 - `runs/<candidate_id>/candidate_manifest.json`
@@ -154,6 +182,12 @@ Generated stage result files:
 - `fast_verify/fast_verify.json`
 - `vivado/vivado_result.json`
 - `verilator_perf/verilator_result.json`
+
+Closed-loop optimize session artifacts:
+
+- `var/optimize/<session_id>/search_state.json`
+- `var/optimize/<session_id>/summary.json`
+- `var/optimize/<session_id>/summary.md`
 
 The controller-owned run directories are the canonical presentation layer for measured evidence. Manual `RUN_DIR=/tmp/...` runs are still useful for exploratory work, but they should be treated as local scratch artifacts unless the same result is reproduced canonically.
 
@@ -184,3 +218,14 @@ The strongest current signal in this repo is not “AI orchestration.” It is:
 - preserved partial-failure evidence such as synth-only Vivado outcomes
 - transparent ranking and provenance
 - a real external accelerator platform with bounded but meaningful microarchitectural variation
+- a thin evidence-driven search layer rather than a generic scheduler
+
+## V2 Gaps
+
+The current `optimize` flow intentionally stops at:
+
+- deterministic seed selection and one-parameter mutation
+- JSON-backed learned exclusions
+- session-local evidence summaries
+
+It does not yet include richer mutation strategies, SQLite-backed search memory, or broader search policies.

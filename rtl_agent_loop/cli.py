@@ -30,6 +30,15 @@ def build_parser() -> argparse.ArgumentParser:
     pending_parser = subparsers.add_parser("run-pending", help="Run registered candidates in order")
     pending_parser.add_argument("--limit", type=int, default=1)
 
+    optimize_parser = subparsers.add_parser("optimize", help="Run the closed-loop search layer on registered candidates")
+    optimize_parser.add_argument("--iterations", required=True, type=int)
+    optimize_parser.add_argument("--seed-candidate-id", action="append", dest="seed_candidate_ids")
+    optimize_parser.add_argument("--top-k", type=int, default=3)
+    optimize_parser.add_argument("--mutations-per-parent", type=int, default=1)
+    optimize_parser.add_argument("--worktree-ref")
+    optimize_parser.add_argument("--active-schema-only", action="store_true", help="Restrict optimize to MAC-array v1 candidates")
+    optimize_parser.set_defaults(active_schema_only=True)
+
     status_parser = subparsers.add_parser("status", help="Show candidate status")
     status_parser.add_argument("--candidate-id", required=True)
     status_parser.add_argument("--lineage", action="store_true")
@@ -97,6 +106,17 @@ def main() -> int:
             return 0
         if args.command == "run-pending":
             result = controller.run_pending(args.limit)
+            print(json.dumps(result, indent=2))
+            return 0
+        if args.command == "optimize":
+            result = controller.optimize_candidates(
+                iterations=args.iterations,
+                seed_candidate_ids=args.seed_candidate_ids,
+                top_k=args.top_k,
+                mutations_per_parent=args.mutations_per_parent,
+                worktree_ref=args.worktree_ref,
+                active_schema_only=args.active_schema_only,
+            )
             print(json.dumps(result, indent=2))
             return 0
         if args.command == "status":

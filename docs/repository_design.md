@@ -1,6 +1,6 @@
 # Repository Design
 
-This document describes the current implementation of `rtl_agent_loop` as it exists in this repository on 2026-03-16. It is intentionally implementation-first: where code, config, generated artifacts, and docs disagree, this note names the mismatch instead of smoothing it over.
+This document describes the current implementation of `rtl_agent_loop` as it exists in this repository on 2026-04-18. It is intentionally implementation-first: where code, config, generated artifacts, and docs disagree, this note names the mismatch instead of smoothing it over.
 
 ## 1. System Purpose
 
@@ -15,6 +15,7 @@ This repository owns:
 - run artifact ownership under `runs/`
 - score computation and ranking
 - SQLite-backed experiment state
+- JSON-backed optimize session state
 - role prompts and operator-facing documentation
 
 This repository does not own the accelerator RTL implementation as a product surface. The external MAC-array repo is the hardware implementation boundary.
@@ -29,6 +30,7 @@ The repo is organized into a few clear ownership zones:
 - [`candidates/`](/home/keelan/rtl_agent_loop/candidates): contributor-authored source manifests
 - [`runs/`](/home/keelan/rtl_agent_loop/runs): controller-owned manifest copies and per-run artifacts
 - [`var/`](/home/keelan/rtl_agent_loop/var): SQLite state and best-candidate pointer JSON
+- [`var/optimize/`](/home/keelan/rtl_agent_loop/var/optimize): closed-loop search state and summary reports
 - [`docs/`](/home/keelan/rtl_agent_loop/docs): operator notes, scoring policy, measured summaries, and this design note
 - [`prompts/`](/home/keelan/rtl_agent_loop/prompts): role-specific operating prompts
 - [`external/MAC_ARRAY_FPGA/`](/home/keelan/rtl_agent_loop/external/MAC_ARRAY_FPGA): active external accelerator dependency
@@ -36,13 +38,22 @@ The repo is organized into a few clear ownership zones:
 
 ## 3. Core Execution Model
 
-The implementation centers on a controller class, [`rtl_agent_loop/controller.py`](/home/keelan/rtl_agent_loop/rtl_agent_loop/controller.py), which coordinates five concerns:
+The implementation centers on a controller class, [`rtl_agent_loop/controller.py`](/home/keelan/rtl_agent_loop/rtl_agent_loop/controller.py), plus a thin search layer in [`rtl_agent_loop/optimizer.py`](/home/keelan/rtl_agent_loop/rtl_agent_loop/optimizer.py).
+
+The controller coordinates five concerns:
 
 1. Load and validate configuration and manifests.
 2. Register candidates and copy their manifests into canonical repo-owned locations.
 3. Create a fresh owned run directory for every controller execution.
 4. Invoke stage wrappers in order and persist stage/run/state metadata.
 5. Resolve measured artifacts into scores and rankings.
+
+The optimizer adds:
+
+1. seed selection from registered MAC-array candidates
+2. deterministic one-parameter mutation inside `config/search_space.json`
+3. JSON-backed failure memory and learned exclusions
+4. end-of-session optimize summaries under `var/optimize/`
 
 The system is deterministic in the sense that:
 
@@ -110,6 +121,7 @@ Stage range handling is implemented by `normalize_stage_range()`. If the caller 
 - `register`
 - `run`
 - `run-pending`
+- `optimize`
 - `status`
 - `score`
 - `rank-candidates`
@@ -144,6 +156,7 @@ Key public methods:
 - `register_candidate()`: validates a manifest, writes the canonical manifest copy under `runs/<candidate_id>/candidate_manifest.json`, and inserts the candidate plus lineage metadata into SQLite
 - `run_candidate()`: creates a new owned run and executes the selected stage window
 - `run_pending()`: finds `registered` candidates and runs them
+- `optimize_candidates()`: runs the minimal closed-loop search loop without changing the controller stage model
 - `get_status()`: returns candidate, latest run, state history, optional lineage, and optional run details
 - `list_candidates()`: filterable listing by parent/root/leaf status
 - `compute_candidate_score()`: computes a score either from an explicit run dir or by resolving the latest measurement-usable canonical artifacts
@@ -163,11 +176,46 @@ Important design choices:
 
 - scoring is artifact-resolution based, not latest-run based
 - Vivado resolution now prefers the newest measurement-usable evidence, including a newer `synth_only` payload over an older full implementation payload
+- optimize persists session memory as JSON rather than adding new SQLite tables in v1
 
 Practical consequence:
 
 - a candidate can rank from older canonical artifacts when newer runs are junk or missing
 - a candidate can also rank from newer synth-only Vivado evidence, but that evidence is explicitly marked provisional and carries the stage-failed penalty
+- optimize treats those partial failures as reusable evidence instead of throwing them away
+
+### 5.4 Optimizer
+
+The optimizer is intentionally conservative.
+
+Current behavior:
+
+- select seed candidates from the registered MAC-array v1 pool
+- rank them using the existing artifact-resolution logic
+- choose promising parents from the current ranked pool
+- if no optimize-pool candidate is rankable yet, fall back deterministically to optimize candidate-pool order
+- generate unseen one-parameter child manifests under `candidates/`
+- register them with lineage using `revision_kind="optimize_v1_mutation"`
+- run them through the unchanged controller execution path
+- classify outcomes into closed-loop evidence classes
+- record session state in `var/optimize/<session_id>/search_state.json`
+- emit final reports in `var/optimize/<session_id>/summary.json` and `summary.md`
+
+Important detail:
+
+- `ARCH_VARIANT` mutation may carry a dependent `SHARE_FACTOR` repair so that baseline/shared transitions remain reachable while still using validator-enforced legality
+- `scripts/bootstrap_active_mac_candidates.sh` intentionally skips optimize-generated manifests so bootstrap remains a seed-registration path rather than a replay of prior search output
+
+Current failure classes:
+
+- `schema_invalid`
+- `verification_fail`
+- `synth_fail`
+- `route_fail`
+- `timing_fail`
+- `resource_exceeded`
+- `perf_regressed`
+- `synth_only_measurement`
 
 ## 6. Active Search Space And Manifest Validation
 

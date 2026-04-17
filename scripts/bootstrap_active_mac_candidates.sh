@@ -13,6 +13,15 @@ if [[ "${#manifests[@]}" -eq 0 ]]; then
 fi
 
 for manifest in "${manifests[@]}"; do
+  manifest_source="$("${python_bin}" - <<'PY' "$manifest"
+import json, sys
+print(json.loads(open(sys.argv[1]).read()).get("source", ""))
+PY
+)"
+  if [[ "${manifest_source}" == "rtl_agent_loop_optimize_v1" ]]; then
+    echo "skipping optimize-generated manifest: ${manifest}"
+    continue
+  fi
   candidate_id="$("${python_bin}" - <<'PY' "$manifest"
 import json, sys
 print(json.loads(open(sys.argv[1]).read())["candidate_id"])

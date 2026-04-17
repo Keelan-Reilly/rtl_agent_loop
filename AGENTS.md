@@ -13,6 +13,7 @@ This repository is responsible for:
 - Verilator performance collection
 - score computation
 - SQLite-backed experiment logging
+- closed-loop search orchestration through `python -m rtl_agent_loop optimize`
 
 This repository is not the source of truth for the accelerator RTL itself. The accelerator implementation remains in the external `MAC_ARRAY_FPGA` repository.
 
@@ -62,6 +63,7 @@ Responsibilities:
 - score computation
 - database schema and logging behavior
 - stable CLI behavior
+- optimize-session search memory and reporting behavior
 
 Must not:
 
@@ -118,6 +120,7 @@ Allowed actions:
 - run `make perf_candidate`
 - run `make score_candidate`
 - run `python -m rtl_agent_loop ...` supported CLI commands
+- run `python -m rtl_agent_loop optimize ...`
 - register manifests
 - inspect `runs/` artifacts and SQLite state
 
@@ -137,6 +140,7 @@ The following actions are forbidden unless explicitly requested by the project o
 - editing generated files under `runs/<candidate_id>/...` except to remove disposable local test artifacts you created yourself
 - changing wrapper interfaces without updating `Makefile`, `README.md`, and this file in the same change
 - inventing unimplemented pipeline stages, agent loops, schedulers, or mutation workflows
+- bypassing optimize-session lineage or search-state recording when using `optimize`
 - bypassing `config/search_space.json` validation for v1 parameters
 - changing candidate IDs after a candidate has been registered
 - mutating an existing source manifest in `candidates/` to represent a repaired or revised design
@@ -183,6 +187,10 @@ If you changed wrapper scripts or `Makefile`:
 If you changed scoring or controller behavior:
 
 - run `python3 -m rtl_agent_loop score --candidate-id <id>` for a real candidate with existing artifacts, or explain why no suitable candidate exists
+- if you changed closed-loop search behavior:
+  - run `python3 -m rtl_agent_loop optimize --iterations 1 --seed-candidate-id <id> [--worktree-ref <label>]`
+  - capture whether the command passed or failed
+  - if it fails because of missing external tools or configuration, state that explicitly
 
 If you changed documentation only:
 
@@ -220,6 +228,7 @@ Supported controller CLI subcommands:
 - `register --manifest <path> [--parent-candidate-id <id>] [--revision-kind <kind>]`
 - `run --candidate-id <id> [--start-stage <stage>] [--end-stage <stage>] [--worktree-ref <label>]`
 - `run-pending --limit <n>`
+- `optimize --iterations <n> [--seed-candidate-id <id> ...] [--top-k <n>] [--mutations-per-parent <n>] [--worktree-ref <label>] [--active-schema-only]`
 - `status --candidate-id <id> [--lineage] [--runs]`
 - `score --candidate-id <id> [--run-dir <dir>]`
 - `rank-candidates [--markdown-out <path>] [--lineage-root <id>] [--latest-only-per-root] [--leaf-only]`
@@ -310,6 +319,11 @@ Measured outcomes must be taken from:
 - `python -m rtl_agent_loop score ...`
 - SQLite entries in `var/rtl_agent_loop.db`
 
+Closed-loop search memory must be taken from:
+
+- `var/optimize/<session_id>/search_state.json`
+- `var/optimize/<session_id>/summary.json`
+
 Do not record measured outcomes by manually editing manifest notes after execution. Post-run interpretation belongs in commit messages, PR text, or external analysis notes, not by mutating generated result files.
 
 ## Manifest And Artifact Hygiene
@@ -336,6 +350,7 @@ Every handoff must state:
 - which commands passed
 - which commands failed
 - which failures are expected environment limitations versus code defects
+- which optimize session artifacts were created, if `optimize` was run
 - any remaining explicit TODOs, with paths
 
 Be precise. If an integration point remains unresolved, name the exact file and TODO rather than describing it vaguely.

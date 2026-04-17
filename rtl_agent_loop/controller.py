@@ -15,6 +15,7 @@ from .config import (
 )
 from .models import CandidateManifest, StageResult
 from .paths import BEST_CANDIDATES_PATH, DEFAULT_SCORE_WEIGHTS_PATH, RUNS_DIR, SCRIPTS_DIR, VAR_DIR
+from .optimizer import Optimizer
 from .scoring import score_candidate
 from .sqlite_store import SQLiteStore
 from .state_machine import (
@@ -41,6 +42,10 @@ class Controller:
 
     def init_db(self) -> None:
         self.store.init_db()
+
+    @staticmethod
+    def utc_now() -> str:
+        return utc_now()
 
     def register_candidate(
         self,
@@ -663,6 +668,27 @@ class Controller:
                 "note": "No best-candidate pointer has been recorded yet.",
             }
         return load_json(BEST_CANDIDATES_PATH)
+
+    def optimize_candidates(
+        self,
+        *,
+        iterations: int,
+        seed_candidate_ids: list[str] | None = None,
+        top_k: int = 3,
+        mutations_per_parent: int = 1,
+        worktree_ref: str | None = None,
+        active_schema_only: bool = True,
+    ) -> dict[str, Any]:
+        self.store.init_db()
+        optimizer = Optimizer(self)
+        return optimizer.optimize(
+            iterations=iterations,
+            seed_candidate_ids=seed_candidate_ids,
+            top_k=top_k,
+            mutations_per_parent=mutations_per_parent,
+            worktree_ref=worktree_ref,
+            active_schema_only=active_schema_only,
+        )
 
     def _run_stage(self, stage_name: str, manifest_path: Path, run_dir: Path, result_relpath: str) -> StageResult:
         script_map = {
