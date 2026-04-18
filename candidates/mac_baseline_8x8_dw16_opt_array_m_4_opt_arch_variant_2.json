@@ -1,0 +1,28 @@
+{
+  "candidate_id": "mac_baseline_8x8_dw16_opt_array_m_4_opt_arch_variant_2",
+  "source": "rtl_agent_loop_optimize_v1",
+  "created_at": "2026-04-18T01:14:13Z",
+  "parameters": {
+    "ACC_WIDTH": 32,
+    "ARCH_VARIANT": 2,
+    "ARRAY_M": 4,
+    "ARRAY_N": 8,
+    "CLUSTER_SIZE": 4,
+    "DATA_WIDTH": 16,
+    "FRAC_BITS": 8,
+    "INPUT_MEM_DEPTH": 64,
+    "OUTPUT_MEM_DEPTH": 64,
+    "PIPE_STAGES": 1,
+    "SHARE_FACTOR": 1,
+    "TILE_K": 4
+  },
+  "notes": "Hypothesis: baseline 8x8 is the widest bounded non-shared reference point in the first study. It should preserve the simplest schedule while making latency, LUT, DSP, and timing scaling visible against baseline 4x4 and 8x4.\n\nOptimize v1 child derived from mac_baseline_8x8_dw16 with mutation ARRAY_M:8->4.\n\nOptimize v1 child derived from mac_baseline_8x8_dw16_opt_array_m_4 with mutation ARCH_VARIANT:0->2.",
+  "tags": [
+    "mac-array",
+    "baseline",
+    "8x8",
+    "first-study",
+    "optimize_v1",
+    "auto_generated"
+  ]
+}
