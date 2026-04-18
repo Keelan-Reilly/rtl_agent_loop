@@ -1,6 +1,6 @@
 # rtl_agent_loop
 
-`rtl_agent_loop` is a deterministic, local-first FPGA accelerator exploration controller centered on the external [`MAC_ARRAY_FPGA`](./external/MAC_ARRAY_FPGA) repo.
+`rtl_agent_loop` is a deterministic hardware exploration control plane centered on the external [`MAC_ARRAY_FPGA`](./external/MAC_ARRAY_FPGA) repo.
 
 It is designed for bounded architecture studies where we want:
 
@@ -14,12 +14,42 @@ It is designed for bounded architecture studies where we want:
 
 The hardware implementation boundary stays outside this repo in `external/MAC_ARRAY_FPGA`. This repo is the control plane, experiment ledger, and reporting layer.
 
+Strategically, this repo exists to make hardware teams iterate materially faster on real designs by turning implementation feedback into a continuously improving decision loop.
+
+Technically, it is a closed-loop hardware optimization control plane that treats synthesis, implementation, timing, and performance feedback as searchable evidence for architecture decisions.
+
 The closed-loop v1 layer is intentionally thin. It adds a deterministic `optimize` command on top of the existing controller rather than introducing a new workflow engine.
 
 Parent selection is explicit:
 
 - use ranked candidates from the current optimize pool when scoreable evidence exists
 - otherwise fall back to the optimize candidate-pool order, which starts from sorted seed ids and then appends newly registered children deterministically
+
+## Validated V1
+
+The current repo state is not just aspirational. The closed-loop v1 path has been validated on a real Linux plus Vivado server.
+
+Validated facts:
+
+- `optimize` runs as a thin layer above the existing deterministic controller
+- optimize-generated children register through the controller with lineage preserved
+- canonical controller-owned run artifacts land under `runs/<candidate_id>/attempt_<n>/`
+- optimize session state and reports land under `var/optimize/<session_id>/`
+- full Vivado implementation evidence is parsed through the optimize path
+- the validated child session ended in `perf_regressed` based on scored metrics versus its parent, not on fallback failure heuristics
+
+Exact validated command:
+
+```bash
+python3 -m rtl_agent_loop optimize \
+  --iterations 1 \
+  --seed-candidate-id mac_baseline_4x4_dw16 \
+  --top-k 1 \
+  --mutations-per-parent 1 \
+  --worktree-ref servercheck
+```
+
+That successful run proved the v1 loop can deterministically generate a child, register it with lineage, execute fast verify plus Vivado plus Verilator under controller ownership, resolve full implementation evidence, score the result, and emit a persistent optimize summary.
 
 ## Current Study Question
 
@@ -142,6 +172,17 @@ python3 -m rtl_agent_loop optimize \
   --worktree-ref localopt
 ```
 
+The exact server-validated variant used:
+
+```bash
+python3 -m rtl_agent_loop optimize \
+  --iterations 1 \
+  --seed-candidate-id mac_baseline_4x4_dw16 \
+  --top-k 1 \
+  --mutations-per-parent 1 \
+  --worktree-ref servercheck
+```
+
 Bootstrap the checked-in MAC candidates into SQLite before running canonical studies:
 
 ```bash
@@ -189,6 +230,14 @@ Closed-loop optimize session artifacts:
 - `var/optimize/<session_id>/summary.json`
 - `var/optimize/<session_id>/summary.md`
 
+What a successful optimize session proves:
+
+- the search layer generated or selected candidates deterministically
+- candidate registration and lineage stayed inside the controller path
+- canonical measured evidence was captured under controller-owned run directories
+- scoring and ranking used the latest resolved Vivado and Verilator artifacts
+- the session left behind reproducible search memory and a human-readable summary
+
 The controller-owned run directories are the canonical presentation layer for measured evidence. Manual `RUN_DIR=/tmp/...` runs are still useful for exploratory work, but they should be treated as local scratch artifacts unless the same result is reproduced canonically.
 
 Vivado evidence semantics are intentionally split:
@@ -229,3 +278,9 @@ The current `optimize` flow intentionally stops at:
 - session-local evidence summaries
 
 It does not yet include richer mutation strategies, SQLite-backed search memory, or broader search policies.
+
+## Next Small Fix
+
+The highest-value next hardening step is narrow wrapper metadata, not a broader optimizer redesign:
+
+- emit structured Vivado failure phase and reason fields in wrapper result JSON so failed implementation runs are less dependent on message-text heuristics when full implementation closure is unavailable

@@ -2,7 +2,7 @@
 
 ## Purpose
 
-`rtl_agent_loop` is a deterministic FPGA design-space exploration controller for the external `MAC_ARRAY_FPGA` accelerator repository.
+`rtl_agent_loop` is a deterministic hardware exploration control plane for the external `MAC_ARRAY_FPGA` accelerator repository.
 
 This repository is responsible for:
 
@@ -13,9 +13,25 @@ This repository is responsible for:
 - Verilator performance collection
 - score computation
 - SQLite-backed experiment logging
-- closed-loop search orchestration through `python -m rtl_agent_loop optimize`
+- a validated closed-loop optimize/search layer through `python -m rtl_agent_loop optimize`
 
 This repository is not the source of truth for the accelerator RTL itself. The accelerator implementation remains in the external `MAC_ARRAY_FPGA` repository.
+
+Strategic definition:
+
+- a system that makes hardware teams iterate materially faster on real designs by turning implementation feedback into a continuously improving decision loop
+
+Technical definition:
+
+- a closed-loop hardware optimization control plane that treats synthesis, implementation, timing, and performance feedback as searchable evidence for architecture decisions
+
+Current validated status:
+
+- the optimize path has completed end to end on a real Vivado server
+- optimize-generated children register through the existing controller with lineage preserved
+- canonical controller-owned run artifacts are created under `runs/<candidate_id>/attempt_<n>/`
+- optimize session state is written under `var/optimize/<session_id>/`
+- full Vivado implementation evidence has been observed flowing through optimize and into final classification
 
 ## Source Of Truth
 

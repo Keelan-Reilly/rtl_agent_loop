@@ -287,6 +287,93 @@ class OptimizerTests(unittest.TestCase):
         self.assertIn("Optimize v1 child derived from mac_baseline_4x4_dw16", child_manifest["notes"])
         self.assertIn("optimize_v1", child_manifest["tags"])
 
+    def test_optimize_prefers_scored_regression_classification_when_full_implementation_evidence_exists(self) -> None:
+        seed_manifest = make_manifest("mac_baseline_4x4_dw16")
+        seed_path = self.candidates_dir / "mac_baseline_4x4_dw16.json"
+        seed_path.write_text(json.dumps(seed_manifest, indent=2) + "\n")
+        self.controller.candidates["mac_baseline_4x4_dw16"] = self.controller._candidate_view(seed_manifest, manifest_path=seed_path)
+        self.controller.ranking_items["mac_baseline_4x4_dw16"] = self._ranking_item(
+            "mac_baseline_4x4_dw16",
+            total_score=-10.992,
+            latency_cycles=22.0,
+            lut=689.0,
+            wns_ns=3.028,
+        )
+
+        child_candidate_id = "mac_baseline_4x4_dw16_opt_arch_variant_2"
+        child_ranking_item = self._ranking_item(
+            child_candidate_id,
+            total_score=-25.48,
+            latency_cycles=22.0,
+            lut=1209.0,
+            wns_ns=2.384,
+        )
+        self.controller.child_run_plans.append(
+            {
+                "run_id": 39,
+                "attempt_index": 1,
+                "stage_failed": False,
+                "score": child_ranking_item["score"],
+                "current_state": "scored",
+                "stage_payloads": {
+                    "fast_verify": {
+                        "passed": True,
+                        "outcome_classification": "full_pass",
+                        "message": "Candidate-aware Verilator lint passed.",
+                    },
+                    "vivado": {
+                        "passed": True,
+                        "outcome_classification": "full_pass",
+                        "message": "Vivado batch completed successfully with implementation metrics.",
+                        "metrics_kind": "implementation",
+                        "metrics": {
+                            "report_kind": "implementation",
+                            "lut": 1209.0,
+                            "ff": 1068.0,
+                            "dsp": 32.0,
+                            "wns_ns": 2.384,
+                        },
+                    },
+                    "verilator_perf": {
+                        "passed": True,
+                        "outcome_classification": "full_pass",
+                        "message": "Verilator performance collection completed successfully.",
+                        "metrics": {
+                            "latency_cycles": 22.0,
+                            "throughput_ops_per_sec": 290909090.9090909,
+                        },
+                    },
+                },
+                "ranking_item": child_ranking_item,
+            }
+        )
+
+        summary = self.optimizer.optimize(
+            iterations=1,
+            seed_candidate_ids=["mac_baseline_4x4_dw16"],
+            top_k=1,
+            mutations_per_parent=1,
+            worktree_ref="servercheck",
+            active_schema_only=True,
+        )
+
+        generated_child = summary["iteration_history"][0]["generated_children"][0]
+        self.assertEqual(generated_child["run_id"], 39)
+        self.assertEqual(generated_child["current_state"], "scored")
+        self.assertEqual(generated_child["failure_classification"]["failure_class"], "perf_regressed")
+        self.assertEqual(generated_child["failure_classification"]["stage"], "scoring")
+        self.assertEqual(generated_child["score"]["total_score"], -25.48)
+
+        run_dir = self.tmp_path / "runs" / generated_child["candidate_id"] / "attempt_0001"
+        vivado_payload = json.loads((run_dir / "vivado" / "vivado.json").read_text())
+        perf_payload = json.loads((run_dir / "verilator_perf" / "verilator_perf.json").read_text())
+        self.assertEqual(vivado_payload["metrics_kind"], "implementation")
+        self.assertEqual(vivado_payload["metrics"]["report_kind"], "implementation")
+        self.assertEqual(perf_payload["metrics"]["latency_cycles"], 22.0)
+        self.assertEqual(summary["failure_evidence"][0]["failure_class"], "perf_regressed")
+        self.assertEqual(summary["rejected_regions"][0]["failure_classes"], ["perf_regressed"])
+        self.assertEqual(summary["top_ranked_candidates"][0]["candidate_id"], "mac_baseline_4x4_dw16")
+
     def test_failure_classification_covers_closed_loop_categories(self) -> None:
         parent_rank_item = self._ranking_item("parent", total_score=-5.0, latency_cycles=20.0, lut=800.0, wns_ns=1.0)
 
