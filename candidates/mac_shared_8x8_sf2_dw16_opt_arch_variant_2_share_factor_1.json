@@ -1,0 +1,29 @@
+{
+  "candidate_id": "mac_shared_8x8_sf2_dw16_opt_arch_variant_2_share_factor_1",
+  "source": "rtl_agent_loop_optimize_v1",
+  "created_at": "2026-04-18T00:47:19Z",
+  "parameters": {
+    "ACC_WIDTH": 32,
+    "ARCH_VARIANT": 2,
+    "ARRAY_M": 8,
+    "ARRAY_N": 8,
+    "CLUSTER_SIZE": 4,
+    "DATA_WIDTH": 16,
+    "FRAC_BITS": 8,
+    "INPUT_MEM_DEPTH": 64,
+    "OUTPUT_MEM_DEPTH": 64,
+    "PIPE_STAGES": 1,
+    "SHARE_FACTOR": 1,
+    "TILE_K": 4
+  },
+  "notes": "Hypothesis: shared 8x8 with SHARE_FACTOR=2 is the widest bounded shared point in the first study. It should halve DSP demand relative to baseline 8x8 while making the muxing, phased scheduling, and routing cost visible against baseline 8x8 and shared 8x4.\n\nOptimize v1 child derived from mac_shared_8x8_sf2_dw16 with mutation ARCH_VARIANT:1->2,SHARE_FACTOR:2->1.",
+  "tags": [
+    "mac-array",
+    "shared",
+    "8x8",
+    "sf2",
+    "first-study",
+    "optimize_v1",
+    "auto_generated"
+  ]
+}
