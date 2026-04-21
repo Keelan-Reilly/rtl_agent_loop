@@ -1,6 +1,6 @@
 # Repository Design
 
-This document describes the current implementation of `rtl_agent_loop` as it exists in this repository on 2026-04-18. It is intentionally implementation-first: where code, config, generated artifacts, and docs disagree, this note names the mismatch instead of smoothing it over.
+This document describes the current implementation of `rtl_agent_loop` as it exists in this repository on 2026-04-21. It is intentionally implementation-first: where code, config, generated artifacts, and docs disagree, this note names the mismatch instead of smoothing it over.
 
 ## 1. System Purpose
 
@@ -130,6 +130,13 @@ Stage range handling is implemented by `normalize_stage_range()`. If the caller 
 - `show-best-candidates`
 - `list-candidates`
 
+Notable implemented arguments beyond the older minimal command list:
+
+- `register` also supports `--derived-from-run-id` and `--supersedes-candidate-id`
+- `link-lineage` also supports `--derived-from-run-id`
+- `rank-candidates` and `list-candidates` support `--active-schema-only`
+- `optimize` defaults `--active-schema-only` on, while still exposing the flag explicitly
+
 CLI behavior is thin by design:
 
 - parse arguments
@@ -175,7 +182,7 @@ The most important internal helpers are:
 Important design choices:
 
 - scoring is artifact-resolution based, not latest-run based
-- Vivado resolution now prefers the newest measurement-usable evidence, including a newer `synth_only` payload over an older full implementation payload
+- Vivado resolution prefers the newest measurement-usable evidence, including a newer `synth_only` payload over an older full implementation payload
 - optimize persists session memory as JSON rather than adding new SQLite tables in v1
 
 Practical consequence:
@@ -322,13 +329,15 @@ Flattened performance metrics:
 
 - `latency_cycles`
 - `latency_time_ms`
+- `throughput_ops_per_sec`
 - `throughput_inferences_per_sec`
 
-Important current mismatch:
+Current compatibility behavior:
 
-- the MAC-array external repo emits `throughput_ops_per_sec`
-- the controller scoring code still looks for `throughput_inferences_per_sec`
-- the active weights do not currently depend on throughput, so this mismatch does not affect the numeric score today, but it is real drift
+- the MAC-array perf flow emits `throughput_ops_per_sec`
+- the controller flattener accepts either `throughput_ops_per_sec` or legacy `throughput_inferences_per_sec`
+- both names are populated in the flattened score metrics for backward compatibility
+- the active weights do not currently depend on throughput, so this compatibility layer is not score-critical today
 
 ## 9. SQLite Store
 
@@ -635,13 +644,17 @@ This repo currently has a few important mismatches between the active implementa
 
 ### 16.1 Top-level docs and AGENTS drift
 
-Several top-level source-of-truth documents still describe the old CNN-oriented system:
+The strongest remaining drift is not between the active controller docs. It is between current MAC-array-era execution surfaces and historical material that still lives in the repo for context.
 
-- [`README.md`](/home/keelan/rtl_agent_loop/README.md)
-- [`AGENTS.md`](/home/keelan/rtl_agent_loop/AGENTS.md)
-- [`docs/integration_notes.md`](/home/keelan/rtl_agent_loop/docs/integration_notes.md)
+Active top-level source-of-truth documents such as [`README.md`](/home/keelan/rtl_agent_loop/README.md), [`AGENTS.md`](/home/keelan/rtl_agent_loop/AGENTS.md), and [`docs/integration_notes.md`](/home/keelan/rtl_agent_loop/docs/integration_notes.md) now broadly match the MAC-array implementation.
 
-Those files still talk about `external/CNN_FPGA`, `DENSE_OUT_PAR`, `CONV_CHANNEL_PAR`, and `CONV_VARIANT`, while the active config, wrappers, and external default now target `external/MAC_ARRAY_FPGA`.
+Historical CNN-oriented material still exists in older study notes such as:
+
+- [`docs/conv_parallelism_experiment.md`](/home/keelan/rtl_agent_loop/docs/conv_parallelism_experiment.md)
+- [`docs/measured_dse_summary.md`](/home/keelan/rtl_agent_loop/docs/measured_dse_summary.md)
+- legacy CNN-era manifests under [`candidates/`](/home/keelan/rtl_agent_loop/candidates)
+
+Those historical files should not be read as the current execution contract.
 
 ### 16.2 Mixed-era candidate manifests
 
@@ -655,14 +668,15 @@ Practical consequence:
 - old source manifests such as `dense*.json` and `conv*.json` do not satisfy the active MAC-array schema
 - newly registered candidates must use the MAC-array parameter set described in Section 6
 
-### 16.3 Throughput metric naming drift
+### 16.3 Throughput metric name compatibility
 
-As noted above, the external MAC-array perf flow emits `throughput_ops_per_sec`, but controller scoring still flattens `throughput_inferences_per_sec`.
+The external MAC-array perf flow emits `throughput_ops_per_sec`, while some older docs and artifacts still refer to `throughput_inferences_per_sec`.
 
 Practical consequence:
 
-- no current score breakage, because the active weights do not depend on throughput
-- real naming drift remains and should be cleaned up if throughput becomes part of scoring
+- current controller scoring is compatible with both names
+- historical docs still use the older label in some places
+- if throughput becomes score-critical, the docs should be normalized to a single canonical metric name
 
 ### 16.4 Controller Vivado stage versus sweep behavior
 
@@ -671,12 +685,15 @@ There is now a behavioral difference between:
 - the controller Vivado wrapper
 - the external manual sweep utility
 
-The wrapper requires full external batch success before parsing metrics. The sweep utility can preserve synth-stage metrics and label the row `passed_perf_synth_only`.
+Both paths can preserve synth-stage metrics, but they present them differently:
+
+- the controller Vivado wrapper preserves synth-only metrics in canonical stage results while still marking the stage non-passing
+- the external sweep utility summarizes comparable outcomes in study-row form such as `passed_perf_synth_only`
 
 Practical consequence:
 
 - external study summaries may include synth-only rows
-- controller-managed canonical Vivado stages currently still behave as all-or-nothing passes
+- controller-managed canonical Vivado stages preserve provisional evidence without mislabeling it as a full implementation pass
 
 ### 16.5 `PIPE_STAGES` is real config, limited microarchitecture
 
@@ -694,8 +711,8 @@ This repo still does not implement:
 - a scheduler or job queue
 - distributed workers
 - a web UI or dashboard
-- automatic candidate generation loops
-- mutation engines
+- general-purpose autonomous candidate generation beyond the bounded `optimize` v1 mutation loop
+- richer mutation engines beyond the current deterministic one-parameter optimize logic
 - artifact garbage collection
 - a formal schema migration framework beyond additive SQL helpers
 - DB-backed storage for best-candidate pointers
